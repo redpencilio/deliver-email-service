@@ -1,4 +1,4 @@
-async function setEmailToMailbox(graphName, emailId, mailboxName) {
+async function moveEmailToFolder(graphName, emailId, mailboxName) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -32,4 +32,7 @@ async function setEmailToMailbox(graphName, emailId, mailboxName) {
         }
     }
 `);
+
 };
+
+export default moveEmailToFolder
