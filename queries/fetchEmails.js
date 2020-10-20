@@ -1,9 +1,9 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
-import parseResult from '../utils/parseResults';
+import parseResults from '../utils/parseResults';
 
-export default function fetchEmails(graphName, mailfolderUri) {
-  const result = query(`
+async function fetchEmails(graphName, mailfolderUri) {
+  const result = await  query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
   PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
@@ -56,5 +56,7 @@ export default function fetchEmails(graphName, mailfolderUri) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 `);
-  return result;
+  return parseResults(result);
 };
+
+export default fetchEmails;
