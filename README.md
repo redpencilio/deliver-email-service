@@ -39,7 +39,7 @@ This service relies on the backend having the right structure so it can look in 
 When the file has succesfully migrated to your backend you should you should have a mailbox structure that looks like this:
 
 
-![browsermode](assets/mailbox-structure.png)
+![mailboxStructure](https://user-images.githubusercontent.com/52280338/97017210-edba3280-154d-11eb-8c16-baee06e7cca1.png)
 
 
 > Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default.
