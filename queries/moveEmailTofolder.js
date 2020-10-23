@@ -1,3 +1,6 @@
+import { querySudo as query } from '@lblod/mu-auth-sudo';
+import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
+
 async function moveEmailToFolder(graphName, emailId, mailboxName) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
