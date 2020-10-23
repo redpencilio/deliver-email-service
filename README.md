@@ -34,7 +34,7 @@ deliver-email-service:
 
 ## Mailbox Structure *fix sparql file
 
-This service relies on the backend having the right structure so it can look in the sendbox folder for emails to be send and if they fail while sending, move them to the failbox folder. If you do no have a mailbox structure in the backend then you will have to migrate the following file [HERE](assets\20190122110800-mailbox-folders.sparql) to your backend using the [Migration Service](https://github.com/mu-semtech/mu-migrations-service).
+This service relies on the backend having the right structure so it can look in the sendbox folder for emails to be send and if they fail while sending, move them to the failbox folder. If you do no have a mailbox structure in the backend then you will have to migrate the following file [HERE](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql) to your backend using the [Migration Service](https://github.com/mu-semtech/mu-migrations-service).
 
 When the file has succesfully migrated to your backend you should you should have a mailbox structure that looks like this:
 
