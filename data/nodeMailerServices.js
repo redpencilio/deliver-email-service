@@ -1,4 +1,4 @@
-const wellKnownServices = [
+const nodeMailerServices = [
     '126',
     '163',
     '1und1',
@@ -42,4 +42,4 @@ const wellKnownServices = [
     'qiye.aliyun'
   ];
 
-  export default wellKnownServices
+  export default nodeMailerServices
