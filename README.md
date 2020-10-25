@@ -1,4 +1,36 @@
+# Table of content
 
+- [Description](#description)
+- [Basic Usage](#basic-usage)
+  * [Prerequisite](#prerequisite)
+  * [Docker-compose **build service file and add image name](#docker-compose---build-service-file-and-add-image-name)
+  * [Mailbox Structure *fix sparql file](#mailbox-structure--fix-sparql-file)
+- [Environment Variables](#environment-variables)
+  * [Database](#database)
+  * [Email *](#email--)
+  * [Debugging *](#debugging--)
+- [Development](#development)
+  * [Optional](#optional)
+- [Testing](#testing)
+- [API](#api)
+  * [Folder Structure](#folder-structure)
+  * [Root](#root)
+    + [App.js](#appjs)
+  * [Data](#data)
+    + [nodeMailerServices.js](#nodemailerservicesjs)
+  * [Queries](#queries)
+    + [fetchEmails.js](#fetchemailsjs)
+    + [createSentDate.js](#createsentdatejs)
+    + [moveEmailToFolder.js](#moveemailtofolderjs)
+    + [updateEmailId.js](#updateemailidjs)
+  * [Services](#services)
+    + [main.js](#mainjs)
+  * [Protocols](#protocols)
+    + [REST.js](#restjs)
+    + [SMTP.js](#smtpjs)
+    + [TEST.js](#testjs)
+    
+    
 # Description
 
 Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
