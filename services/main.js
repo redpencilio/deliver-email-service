@@ -1,6 +1,7 @@
 // IMPORTS
-const { default: fetchEmails } = require('../queries/fetchEmails')
-const { default: smtp } = require('./protocols/SMTP')
+const { default: fetchEmails } = require('../queries/fetchEmails');
+const { default: smtp } = require('./protocols/SMTP');
+const { default: test } = require('./protocols/TEST');
 
 // ENV
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
@@ -9,14 +10,14 @@ const protocol = process.env.EMAIL_PROTOCOL;
 
 
 // MAIN FUNCTION
-async function main() {
+async function main(res) {
   try{
     console.log(" >>> Find & Retrieve Emails from the database.")
     let emails = await fetchEmails(graph, uri);
-    checkLength(emails)
+    _checkLength(emails, res)
 
     console.log(` >>> Start sending emails`)
-    processEmails(emails);
+    _processEmails(emails);
   }
   catch(err){
     console.log(err)
@@ -25,16 +26,18 @@ async function main() {
 
 
   // SUB FUNCTIONS CALLED BY MAIN FUNCTION
-  function checkLength(emails) {
+  function _checkLength(emails, res) {
 
     if (emails.length == 0) {
-      throw "*** No Emails found to be send. ***"
+      res.status(204).end();
+      throw "*** No Emails found to be send. ***" 
+
     } else {
       console.log(` >  ${emails.length} emails found that need to be send. `)
     }
   }
 
-  function processEmails(emails) {
+  function _processEmails(emails) {
 
     switch (protocol) {
       case "smtp":
@@ -42,8 +45,11 @@ async function main() {
         break;
       case "rest":
         throw `*** Sending emails via 'rest' is not supported at the moment. ***`;
+      case "test":
+        test(emails)
+        break;
       default:
-        throw "*** Unsupported or no protocol defined.***";
+        throw "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***";
     }
   }
   
