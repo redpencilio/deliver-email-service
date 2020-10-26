@@ -12,10 +12,21 @@ new CronJob(cronFrequency, function() {
   console.log(`***  Email delivery triggered by cron job at ${new Date().toISOString()} ***`);
   console.log(`*************************************************************************`);
   Axios.patch('http://localhost/email-delivery/');
+
 }, null, true);
 
 app.patch('/email-delivery/', async function(req, res, next) {
-    await main()
+  try{
+    await main(res)
+  }
+  catch(err){
+    return next(new Error(e.message));
+  }
+});
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
 });
 
 
