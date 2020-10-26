@@ -3,7 +3,7 @@ import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
 import parseResults from '../utils/parseResults';
 
 async function fetchEmails(graphName, mailfolderUri) {
-  const result = await  query(`
+  const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
   PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
@@ -56,6 +56,7 @@ async function fetchEmails(graphName, mailfolderUri) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 `);
+
   return parseResults(result);
 };
 
