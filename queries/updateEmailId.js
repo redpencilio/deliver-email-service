@@ -1,3 +1,6 @@
+import { querySudo as query } from '@lblod/mu-auth-sudo';
+import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
+
 export default async function updateEmailId(graphName, oldMessageId, newMessageId) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
@@ -21,4 +24,6 @@ export default async function updateEmailId(graphName, oldMessageId, newMessageI
         }
     }
 `);
+
+return result
 };
