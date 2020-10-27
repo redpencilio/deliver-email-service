@@ -106,6 +106,7 @@ The following environment variables can be added to your docker-compose file. Yo
 ## Debugging
 
 | ENV  | Description | default |
+|---|---|---|
 | NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" |
 
 
