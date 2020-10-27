@@ -20,7 +20,7 @@
   * [Services](#services)
   * [Protocols](#protocols)
     
-        <br> <br>
+  <br> <br>
 # Description
 
 Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
