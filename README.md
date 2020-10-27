@@ -30,11 +30,11 @@
     + [SMTP.js](#smtpjs)
     + [TEST.js](#testjs)
     
-    
+        <br> <br>
 # Description
 
 Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
-
+        <br> <br>
 
 # Basic Usage
 
@@ -84,7 +84,7 @@ Recommended Email-structure (default in testing app-deliver-email-service)
 
 
 
-
+<br> <br>
 # Environment Variables
 
 The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file. 
@@ -117,7 +117,7 @@ The following environment variables can be added to your docker-compose file. Yo
 |---|---|---|
 | NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" |
 
-
+<br> <br>
 # Development
 
 
@@ -156,7 +156,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
     logging: *default-logging
 
 ```
-
+<br> <br>
 # Testing
 
 You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your docker-compose file to "test"
@@ -178,7 +178,7 @@ When creating a mail in the database (see [usefull queries](#usefull-queries)) t
 ```
 When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail. 
 Now you do not have to worry about spamming your own mailbox when testing.
-
+<br> <br>
 # Usefull Queries
 
 ## Creating a mail
@@ -260,7 +260,7 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 ```
 
-
+<br> <br>
 # API
 
 ## Folder Structure
