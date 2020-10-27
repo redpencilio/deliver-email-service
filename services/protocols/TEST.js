@@ -1,6 +1,5 @@
 
 // IMPORTS
-const { default: nodemailerServices } = require('../../data/nodeMailerServices');
 const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder");
 const { default: updateEmailId } = require('../../queries/updateEmailId');
 const { default: createSentDate } = require('../../queries/createSentDate');
@@ -12,33 +11,31 @@ const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
 
 // MAIN FUNCTION
-function test(emails){
-  console.log(" >>> Sending mails in Testing Environment")
+async function test(emails){
+  console.log(" >>> Sending mails in Testing Environment");
   let count = 0;
-  emails.forEach(async email => {
-    count++
+  emails.forEach(email => {
+    count++;
     try {
-      _sendEmailToSending(email)
-      _checkSendDate(email)
-      _checkTimeout(email)
-      _sendMail(email, count)
+      _sendEmailToSending(email);
+      _checkSendDate(email);
+      _checkTimeout(email);
+      _sendMail(email, count);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   });
 }
 
 // SUB FUNCTIONS CALLED BY MAIN
-
 async function _sendEmailToSending(email){
-  await moveEmailToFolder(graph, email.uuid, "sending");
+  moveEmailToFolder(graph, email.uuid, "sending");
 }
 
 async function _checkSendDate(email) {
   if (!email.sentDate) {
-    await createSentDate(graph, email)
-    ;
-    console.log(` > No send date found, a send date has been created.`)
+    await createSentDate(graph, email);
+    console.log(` > No send date found, a send date has been created.`);
   }
 }
 
@@ -49,7 +46,6 @@ async function _checkTimeout(email) {
 
   if (timeout) {
     await moveEmailToFolder(graph, email.uuid, "failbox");
-    ;
     throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
   }
 }
@@ -87,23 +83,22 @@ async function _sendMail(email, count) {
   };
 
   transporter.sendMail(mailProperties, async (failed, success) => {
-    
   if(failed){
-  // await moveEmailToFolder(graph, email.uuid, "failbox");
-  console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`)
-  console.log(` > ${failed}`)
+  await moveEmailToFolder(graph, email.uuid, "failbox");
+  console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
+  console.dir(` > Email ${count}: ${failed}`);
 
   } else {
     console.log(` > Email ${count} UUID:`, email.uuid);
-    await moveEmailToFolder(graph, email.uuid, "sentbox");
-    ;
-    console.log(` > Message moved to sentbox: ${email.uuid}`);
-    await updateEmailId(graph, email.messageId, success.messageId);
-    ;
-    console.log(` > MessageId updated from ${email.messageId} to ${success.messageId}`);
+    moveEmailToFolder(graph, email.uuid, "sentbox");
+    console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
+
+    updateEmailId(graph, email.messageId, success.messageId);
+    console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
+    console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
     email.messageId = success.messageId;
-    console.log(` > Preview URL EMAIL ${count}: %s`, nodemailer.getTestMessageUrl(success));
-  }
+    console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+    }
   })
 
 }

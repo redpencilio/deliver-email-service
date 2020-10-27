@@ -1,5 +1,5 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
-import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 
 async function moveEmailToFolder(graphName, emailId, mailboxName) {
     const result = await query(`
@@ -35,9 +35,7 @@ async function moveEmailToFolder(graphName, emailId, mailboxName) {
         }
     }
   `);
-  
   return result
-
 };
 
 export default moveEmailToFolder

@@ -1,5 +1,5 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
-import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 
 export default async function updateEmailId(graphName, oldMessageId, newMessageId) {
   const result = await query(`

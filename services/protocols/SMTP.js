@@ -14,31 +14,27 @@ const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email'
 // MAIN FUNCTION
 function smtp(emails) {
   let count = 0;
-  emails.forEach(async email => {
-    count++
+  emails.forEach(email => {
+    count++;
     try {
-      _sendEmailToSending(email)
-      _checkSentDate(email)
-      
-      _checkTimeout(email)
-      
-      _sendMail(email, count)
+      _sendEmailToSending(email);
+      _checkSentDate(email);
+      _checkTimeout(email);
+      _sendMail(email, count);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   });
 }
 
-// SUB FUNCTIONS CALLED BY MAIN
-
+// SUB FUNCTIONS
 async function _sendEmailToSending(email){
   await moveEmailToFolder(graph, email.uuid, "sending");
 }
 
 async function _checkSentDate(email) {
   if (!email.sentDate || email.sentDate == "") {
-    await createSentDate(graph, email)
-
+    createSentDate(graph, email);
     console.log(` > No send date found, a send date has been created.`)
   }
 }
@@ -49,18 +45,16 @@ async function _checkTimeout(email) {
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
 
   if (timeout) {
-    await moveEmailToFolder(graph, email.uuid, "failbox");
-    ;
+    moveEmailToFolder(graph, email.uuid, "failbox");
     throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
-  }
+  };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
-
   if (!((nodemailerServices.indexOf(wkServiceOrServer) > (-1)) || (nodemailerServices == 'server'))) {
     throw ` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`;
-  }
+  };
 
   if (wkServiceOrServer.toLowerCase() == "server") {
     transporter = nodemailer.createTransport({
@@ -73,8 +67,6 @@ async function _sendMail(email, count) {
   }
 
   if (wkServiceOrServer.toLowerCase() != "server") {
-    console.log("!server")
-    // create reusable transporter object using the default SMTP transport
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -107,28 +99,28 @@ async function _sendMail(email, count) {
   try{
 
     transporter.sendMail(mailProperties, async (failed, success) => {
-      if (failed) {
-
-        await moveEmailToFolder(graph, email.uuid, "failbox");
-        
-        console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`)
-        console.log(` > ${failed}`)
-
+      if(failed){
+      moveEmailToFolder(graph, email.uuid, "failbox");
+      console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
+      console.dir(` > Email ${count}: ${failed}`);
+    
       } else {
         console.log(` > Email ${count} UUID:`, email.uuid);
-        await moveEmailToFolder(graph, email.uuid, "sentbox");
-        console.log(` > Message moved to sentbox: ${email.uuid}`);
-        await updateEmailId(graph, email.messageId, success.messageId);
-        console.log(` > MessageId updated from ${email.messageId} to ${success.messageId}`);
+        moveEmailToFolder(graph, email.uuid, "sentbox");
+        console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
+    
+        updateEmailId(graph, email.messageId, success.messageId);
+        console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
+        console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
         email.messageId = success.messageId;
-      }
-    })
-  }
+        console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+        }
+      })
+    }
 
   catch(err) {
-    console.log(err)
+    console.dir(err);
   }
-    
 }
 
 export default smtp;

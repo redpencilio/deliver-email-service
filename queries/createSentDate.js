@@ -1,5 +1,6 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
-import { app, sparqlEscapeString, sparqlEscapeUri } from 'mu';
+import { sparqlEscapeUri } from 'mu';
+import parseResults from '../utils/parseResults';
 
 async function createSentDate(graphName, email) {
   const sentDate = new Date().toISOString();
@@ -20,7 +21,6 @@ async function createSentDate(graphName, email) {
         }
     }
   `);
-  
 
   return result
 
