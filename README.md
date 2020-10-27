@@ -15,20 +15,10 @@
 - [API](#api)
   * [Folder Structure](#folder-structure)
   * [Root](#root)
-    + [App.js](#appjs)
   * [Data](#data)
-    + [nodeMailerServices.js](#nodemailerservicesjs)
   * [Queries](#queries)
-    + [fetchEmails.js](#fetchemailsjs)
-    + [createSentDate.js](#createsentdatejs)
-    + [moveEmailToFolder.js](#moveemailtofolderjs)
-    + [updateEmailId.js](#updateemailidjs)
   * [Services](#services)
-    + [main.js](#mainjs)
   * [Protocols](#protocols)
-    + [REST.js](#restjs)
-    + [SMTP.js](#smtpjs)
-    + [TEST.js](#testjs)
     
         <br> <br>
 # Description
