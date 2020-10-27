@@ -110,11 +110,66 @@ TODO*
 
 # Development
 
-## Optional
-    You might want to dev
 
+**Optional:**
+   You might want to go through the [testing](#testing) section first if you want test your mails using a temporary mailbox
+<br>
+
+## Service
+
+## Backend
+If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the nescessary migrations file to get you up and running quickly.
+
+[link to backend repo](http://comingsoon)
+
+
+As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debuggin. To get started quickly, change the deliver-email-service in your docker-compose file to this:
+
+```yaml
+  deliver-email-service:
+    image: deliver-email-service
+    ports:
+      - 8888:80
+      - 9229:9229
+    environment:
+      SECURE_CONNECTION: "true"
+      NODE_ENV: "development"
+      EMAIL_PROTOCOL: "smtp"
+      WELL_KNOWN_SERVICE_OR_SERVER: "myservice"
+      EMAIL_ADDRESS: "mymail@hotmail.com"
+      EMAIL_PASSWORD: "myemailpassword"
+      FROM_NAME: "myname"
+    labels:
+      - "logging=true"
+    restart: always
+    volumes:
+      - /path/to/local/cloned/deliver-email-service/folder/:/app/
+    logging: *default-logging
+
+```
+  
 
 # Testing
+
+You can easily create a testing environment by changing the EMAIL_PROTOCOL ENV in your docker-compose file to "test"
+```yaml
+  deliver-email-service:
+    image: deliver-email-service
+    environment:
+      EMAIL_PROTOCOL: "test"
+      FROM_NAME: "RedPencil"
+    labels:
+      - "logging=true"
+    restart: always
+    logging: *default-logging
+```
+When creating a mail in the database (see [usefull queries](#usefull-queries)) the email will go through the same process as it would when sending a mail using SMTP (except testing for known services or server). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
+
+```
+> EMAIL 1: Preview ur https://ethereal.email/message/123456788abcdefg
+```
+When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail. 
+Now you do not have to worry about spamming your own mailbox when testing.
 
 # API
 
