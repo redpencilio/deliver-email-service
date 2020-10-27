@@ -3,12 +3,12 @@
 - [Description](#description)
 - [Basic Usage](#basic-usage)
   * [Prerequisite](#prerequisite)
-  * [Docker-compose **build service file and add image name](#docker-compose---build-service-file-and-add-image-name)
-  * [Mailbox Structure *fix sparql file](#mailbox-structure--fix-sparql-file)
+  * [Docker-compose](#docker-compose)
+  * [Mailbox Structure](#mailbox-structure)
 - [Environment Variables](#environment-variables)
   * [Database](#database)
-  * [Email *](#email--)
-  * [Debugging *](#debugging--)
+  * [Email](#email)
+  * [Debugging](#debugging)
 - [Development](#development)
   * [Optional](#optional)
 - [Testing](#testing)
@@ -48,7 +48,7 @@ To use the service add the following to your docker-compose.yml file
 
 ```yaml 
 deliver-email-service:
-    image: Need-to-be-made-created!!
+    image: aatauil/deliver-email-service:1.0.0
     labels:
         - "logging=true"
     restart: always
@@ -126,7 +126,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```yaml
   deliver-email-service:
-    image: deliver-email-service
+    image: aatauil/deliver-email-service:1.0.0
     ports:
       - 8888:80
       - 9229:9229
@@ -152,7 +152,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
-    image: deliver-email-service
+    image: aatauil/deliver-email-service:1.0.0
     environment:
       EMAIL_PROTOCOL: "test"
       FROM_NAME: "RedPencil"
