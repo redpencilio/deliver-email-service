@@ -4,12 +4,15 @@ const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder"
 const { default: updateEmailId } = require('../../queries/updateEmailId');
 const { default: createSentDate } = require('../../queries/createSentDate');
 const nodemailer = require("nodemailer");
+const sgTransport = require('nodemailer-sendgrid-transport');
 
 // ENV
 const wkServiceOrServer = process.env.WELL_KNOWN_SERVICE_OR_SERVER;
 const fromName = process.env.FROM_NAME || '';
 const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
+
+
 
 // MAIN FUNCTION
 function smtp(emails) {
@@ -66,7 +69,7 @@ async function _sendMail(email, count) {
     });
   }
 
-  if (wkServiceOrServer.toLowerCase() != "server") {
+  if (wkServiceOrServer.toLowerCase() != "server" && wkServiceOrServer.toLowerCase() != "sendgrid") {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -77,6 +80,18 @@ async function _sendMail(email, count) {
       }
     });
   }
+
+  if (wkServiceOrServer.toLowerCase() == "sendgrid") {
+    transporter = nodemailer.createTransport(sgTransport(
+        {
+          auth: {
+              api_user: process.env.EMAIL_ADDRESS,
+              api_key: process.env.EMAIL_PASSWORD
+          }
+      }
+    ))
+  }
+
 
   const attachments = (email.attachments || []).map((attachment) => {
     return {
