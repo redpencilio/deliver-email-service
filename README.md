@@ -28,7 +28,7 @@ Service used for processing emails. This is meant be used in a mu-semtech stack.
 
 # Basic Usage
 
-The minimum to get the email service up and running as quickly as possible
+The minimum to get the email service up and running.
 
 ## Prerequisite
 
