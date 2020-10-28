@@ -19,6 +19,7 @@ async function fetchEmails(graphName, mailfolderUri) {
     ?plainTextMessageContent
     ?htmlMessageContent
     ?sentDate
+    ?attachments
   WHERE {
     GRAPH ${sparqlEscapeUri(graphName)} {
       ${sparqlEscapeUri(mailfolderUri)} fni:hasPart ?mailfolder.
@@ -28,6 +29,7 @@ async function fetchEmails(graphName, mailfolderUri) {
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
+      ?email nmo:hasAttachment ?attachments
 
       BIND('' as ?defaultEmailCc).
       OPTIONAL {?email nmo:emailCc ?optionalEmailCc}.
