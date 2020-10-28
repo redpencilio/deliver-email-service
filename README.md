@@ -96,8 +96,8 @@ The following environment variables can be added to your docker-compose file. Yo
 | HOURS_DELIVERING_TIMEOUT  | NEED CHANGE *  | 1 |
 | WELL_KNOWN_SERVICE_OR_SERVER  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
-| EMAIL_ADDRESS | E-mail address from sender  | null |
-| EMAIL_PASSWORD | Password from sender  | null |
+| EMAIL_ADDRESS | E-mail address from sender (username if service is SendGrid)  | null |
+| EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null |
 | HOST | Is the hostname or IP address to connect to.  | "localhost" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
 
