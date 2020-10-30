@@ -24,9 +24,9 @@ async function main(res) {
   async function _checkLength(emails, res) {
     
     if (emails.length == 0) {
-      throw " *** No Emails found to be send. ***" ;
+      throw new Error("*** No Emails found to be send. ***") ;
     }
-    console.log(` >>>  ${emails.length} Emails found that need to be send. `);
+    console.log(` >>> ${emails.length} Emails found that need to be send. `);
   }
 
   async function _processEmails(emails) {
@@ -36,12 +36,12 @@ async function main(res) {
         smtp(emails);
         break;
       case "rest":
-        throw `*** Sending emails via 'rest' is not supported at the moment. ***`;
+        throw new Error( '*** Sending emails via "rest" is not supported at the moment. ***');
       case "test":
         test(emails);
         break;
       default:
-        throw "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***";
+        throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***");
     }
   }
   

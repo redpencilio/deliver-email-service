@@ -49,14 +49,14 @@ async function _checkTimeout(email) {
 
   if (timeout) {
     moveEmailToFolder(graph, email.uuid, "failbox");
-    throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
+    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
   if (!((nodemailerServices.indexOf(wkServiceOrServer) > (-1)) || (nodemailerServices == 'server'))) {
-    throw ` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`;
+    throw new Error(` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`);
   };
 
   if (wkServiceOrServer.toLowerCase() == "server") {

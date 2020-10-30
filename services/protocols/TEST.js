@@ -43,7 +43,7 @@ async function _checkTimeout(email) {
   
   if (timeout) {
     await moveEmailToFolder(graph, email.uuid, "outbox");
-    throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
+    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   }
   
 
