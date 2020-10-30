@@ -1,6 +1,6 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from 'mu';
-import parseResults from '../utils/parseResults';
+
 
 async function createSentDate(graphName, email) {
   const sentDate = new Date().toISOString();
@@ -9,9 +9,15 @@ async function createSentDate(graphName, email) {
     PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
     PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 
+    DELETE {
+      GRAPH ${sparqlEscapeUri(graphName)} {
+          ?email nmo:sentDate "${email.sentDate}".
+      }
+    }
+
     INSERT {
-       GRAPH ${sparqlEscapeUri(graphName)} {
-           ?email nmo:sentDate "${sentDate}".
+      GRAPH ${sparqlEscapeUri(graphName)} {
+          ?email nmo:sentDate "${sentDate}".
         }
     }
     WHERE {
@@ -21,7 +27,6 @@ async function createSentDate(graphName, email) {
         }
     }
   `);
-
   return result
 
 }
