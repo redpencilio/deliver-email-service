@@ -13,14 +13,13 @@ const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
 
 
-
 // MAIN FUNCTION
 function smtp(emails) {
   let count = 0;
-  emails.forEach(email => {
+  emails.forEach(async email => {
     count++;
     try {
-      _sendEmailToSending(email);
+      await moveEmailToFolder(graph, email.uuid, "sending");
       _checkSentDate(email);
       _checkTimeout(email);
       _sendMail(email, count);
@@ -31,9 +30,6 @@ function smtp(emails) {
 }
 
 // SUB FUNCTIONS
-async function _sendEmailToSending(email){
-  await moveEmailToFolder(graph, email.uuid, "sending");
-}
 
 async function _checkSentDate(email) {
   if (!email.sentDate || email.sentDate == "") {
