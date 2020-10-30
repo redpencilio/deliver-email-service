@@ -250,6 +250,32 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 ```
 
+## Delete all emails (!!)
+
+**This deletes all emails in all folders! use with caution**
+
+```
+
+PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
+PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
+
+  DELETE {
+    GRAPH <http://mu.semte.ch/graphs/system/email> {
+        ?email nmo:isPartOf ?folder.
+    }
+  }
+  WHERE {
+    GRAPH  <http://mu.semte.ch/graphs/system/email> {
+          ?email a nmo:Email.
+          ?email nmo:isPartOf ?folder.
+    }
+  }
+
+```
+
+
 <br> <br>
 # API
 
