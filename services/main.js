@@ -11,12 +11,9 @@ const protocol = process.env.EMAIL_PROTOCOL;
 // MAIN FUNCTION
 async function main(res) {
   try{
-    console.log(" >>> Find & Retrieve Emails from the database.");
     let emails = await fetchEmails(graph, uri);
     await _checkLength(emails, res);
-
-    console.log(` >>> Start sending emails`);
-    _processEmails(emails);
+    await _processEmails(emails);
   }
   catch(err){
     console.dir(err);
@@ -25,16 +22,15 @@ async function main(res) {
 
   // SUB FUNCTIONS
   async function _checkLength(emails, res) {
+    
     if (emails.length == 0) {
-      res.status(204).end();
-      throw "*** No Emails found to be send. ***" ;
-
-    } else {
-      console.log(` >  ${emails.length} emails found that need to be send. `);
+      throw " *** No Emails found to be send. ***" ;
     }
+    console.log(` >>>  ${emails.length} Emails found that need to be send. `);
   }
 
   async function _processEmails(emails) {
+    debugger
     switch (protocol) {
       case "smtp":
         smtp(emails);
