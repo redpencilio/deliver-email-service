@@ -24,7 +24,6 @@ new CronJob(cronFrequency, function() {
 app.patch('/email-delivery/', async function(req, res, next) {
 
   await main(res)
-  
 
 });
 
@@ -33,9 +32,6 @@ process.on('unhandledRejection', (reason, p) => {
   // application specific logging, throwing an error, or other logic here
 });
 
-process.on('beforeExit', (code) => {
-  console.log('Process beforeExit event with code: ', code);
-});
 
 
 app.use(errorHandler);
