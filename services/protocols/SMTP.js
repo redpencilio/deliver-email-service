@@ -14,27 +14,28 @@ const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email'
 
 
 // MAIN FUNCTION
-function smtp(emails) {
+async function smtp(emails){
+  console.log(" >>> PROTOCOL: TEST");
   let count = 0;
-  emails.forEach(async email => {
-    count++;
-    try {
-      await moveEmailToFolder(graph, email.uuid, "sending");
-      _checkSentDate(email);
-      _checkTimeout(email);
-      _sendMail(email, count);
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  try {
+    emails.forEach(async email => {
+      count++;
+        await moveEmailToFolder(graph, email.uuid, "outbox");
+        await _checkSentDate(email);
+        await _checkTimeout(email);
+        // await _sendMail(email, count);
+    });
+  } catch (err) {
+   console.log(err)
+  }
 }
 
-// SUB FUNCTIONS
 
+// SUB FUNCTIONS
 async function _checkSentDate(email) {
-  if (!email.sentDate || email.sentDate == "") {
-    createSentDate(graph, email);
-    console.log(` > No send date found, a send date has been created.`)
+  if (!email.sentDate) {
+    await createSentDate(graph, email);
+    console.log(` >>> No send date found, a send date has been created.`);
   }
 }
 
@@ -44,7 +45,7 @@ async function _checkTimeout(email) {
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
 
   if (timeout) {
-    moveEmailToFolder(graph, email.uuid, "failbox");
+    // moveEmailToFolder(graph, email.uuid, "failbox");
     throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   };
 }
