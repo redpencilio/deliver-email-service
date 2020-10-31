@@ -18,7 +18,7 @@ async function test(emails){
     emails.forEach(async email => {
       count++;
         await moveEmailToFolder(graph, email.uuid, "outbox");
-        await _checkSendDate(email);
+        await _checkSentDate(email);
         await _checkTimeout(email);
         await _sendMail(email, count);
     });
@@ -29,7 +29,7 @@ async function test(emails){
 
 // SUB FUNCTIONS CALLED BY MAIN
 
-async function _checkSendDate(email) {
+async function _checkSentDate(email) {
   if (!email.sentDate) {
     await createSentDate(graph, email);
     console.log(` >>> No send date found, a send date has been created.`);
