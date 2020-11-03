@@ -24,19 +24,18 @@ async function main(res) {
   async function _checkLength(emails, res) {
     
     if (emails.length == 0) {
-      throw new Error("*** No Emails found to be send. ***") ;
+      throw "*** No Emails found to be send. ***" ;
     }
     console.log(` >>> ${emails.length} Emails found that need to be send. `);
   }
 
-  async function _processEmails(emails) {
-    debugger
+ async function _processEmails(emails) {
     switch (protocol) {
       case "smtp":
         smtp(emails);
         break;
       case "rest":
-        throw new Error( '*** Sending emails via "rest" is not supported at the moment. ***');
+        throw new Error( "*** Sending emails via 'rest' is not supported at the moment. ***");
       case "test":
         test(emails);
         break;
