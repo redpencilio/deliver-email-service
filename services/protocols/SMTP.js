@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
 // ENV
-const wkServiceOrServer = process.env.WELL_KNOWN_SERVICE_OR_SERVER;
+const wkServiceOrServer = process.env.WELL_KNOWN_SERVICE_OR_SERVER.toLowerCase();
 const fromName = process.env.FROM_NAME || '';
 const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
@@ -15,7 +15,6 @@ const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email'
 
 // MAIN FUNCTION
 async function smtp(emails){
-  console.log(" >>> PROTOCOL: TEST");
   let count = 0;
   try {
     emails.forEach(async email => {
@@ -23,7 +22,7 @@ async function smtp(emails){
         await moveEmailToFolder(graph, email.uuid, "outbox");
         await _checkSentDate(email);
         await _checkTimeout(email);
-        // await _sendMail(email, count);
+        await _sendMail(email, count);
     });
   } catch (err) {
    console.log(err)
@@ -56,7 +55,7 @@ async function _sendMail(email, count) {
     throw new Error(` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`);
   };
 
-  if (wkServiceOrServer.toLowerCase() == "server") {
+  if (wkServiceOrServer == "server") {
     transporter = nodemailer.createTransport({
       service: wellKnownServiceOrServer,
       auth: {
@@ -66,7 +65,7 @@ async function _sendMail(email, count) {
     });
   }
 
-  if (wkServiceOrServer.toLowerCase() != "server" && wkServiceOrServer.toLowerCase() != "sendgrid") {
+  if (wkServiceOrServer != "server" && wkServiceOrServer != "sendgrid") {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -78,11 +77,10 @@ async function _sendMail(email, count) {
     });
   }
 
-  if (wkServiceOrServer.toLowerCase() == "sendgrid") {
+  if (wkServiceOrServer == "sendgrid") {
     transporter = nodemailer.createTransport(sgTransport(
         {
           auth: {
-              api_user: process.env.EMAIL_ADDRESS,
               api_key: process.env.EMAIL_PASSWORD
           }
       }
@@ -117,14 +115,14 @@ async function _sendMail(email, count) {
       console.dir(` > Email ${count}: ${failed}`);
     
       } else {
-        console.log(` > Email ${count} UUID:`, email.uuid);
         moveEmailToFolder(graph, email.uuid, "sentbox");
-        console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
-    
         updateEmailId(graph, email.messageId, success.messageId);
+        email.messageId = success.messageId;
+        console.log(` > Email ${count} UUID:`, email.uuid);
+        console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
         console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
         console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
-        email.messageId = success.messageId;
+
         console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
         }
       })
