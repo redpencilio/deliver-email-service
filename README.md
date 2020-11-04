@@ -19,34 +19,31 @@
   * [Queries](#queries)
   * [Services](#services)
   * [Protocols](#protocols)
-    
-  <br> <br>
+
 # Description
 
 Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
-        <br> <br>
 
 # Basic Usage
 
 The minimum to get the email service up and running.
 
-## Prerequisite
+## Prerequisites
 
 - You will need to have a mu-semtech stack running in the backend with at least the following services:
 
-| Service  | Repository 
+| Service  | Repository
 |---|---|
 | mu-identifier  | https://github.com/mu-semtech/mu-identifier  |
-| mu-disptacher  | https://github.com/mu-semtech/mu-dispatcher  |
+| mu-dispatcher  | https://github.com/mu-semtech/mu-dispatcher  |
 | virtuoso  | https://hub.docker.com/r/tenforce/virtuoso/  |
 | mu-cl-resources  | https://github.com/mu-semtech/mu-cl-resources  |
-
 
 ## Docker-compose
 
 To use the service add the following to your docker-compose.yml file
 
-```yaml 
+```yaml
 deliver-email-service:
     image: aatauil/deliver-email-service:1.0.0
     labels:
@@ -64,7 +61,7 @@ When the file has succesfully migrated to your backend you should you should hav
 ![mailboxStructure](https://user-images.githubusercontent.com/52280338/97017210-edba3280-154d-11eb-8c16-baee06e7cca1.png)
 
 
-> Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default. 
+> Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default.
 
 ## Email Structure
 
@@ -77,7 +74,7 @@ Recommended Email-structure (default in testing app-deliver-email-service)
 <br> <br>
 # Environment Variables
 
-The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file. 
+The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
 ## Database
 
@@ -116,13 +113,13 @@ The following environment variables can be added to your docker-compose file. Yo
 <br>
 
 ## Backend
-If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the nescessary migrations file to get you up and running quickly. Follow the readme file of the following repo:
+If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the necessary migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [link to backend repo](http://comingsoon)
 
-## environment
+## Environment
 
-As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debuggin. To get started quickly, change the deliver-email-service in your docker-compose file to this:
+As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
 ```yaml
   deliver-email-service:
@@ -161,15 +158,15 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your dock
     restart: always
     logging: *default-logging
 ```
-When creating a mail in the database (see [usefull queries](#usefull-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE_OR_SERVER). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
+When creating a mail in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE_OR_SERVER). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
 
 ```
 > EMAIL 1: Preview ur https://ethereal.email/message/123456788abcdefg
 ```
-When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail. 
+When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail.
 Now you do not have to worry about spamming your own mailbox when testing.
 <br> <br>
-# Usefull Queries
+# Useful Queries
 
 ## Creating a mail
 
@@ -177,7 +174,7 @@ Now you do not have to worry about spamming your own mailbox when testing.
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#> 
+PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 INSERT DATA {
   GRAPH <http://mu.semte.ch/graphs/system/email> {
@@ -186,7 +183,7 @@ INSERT DATA {
        <http://mu.semte.ch/vocabularies/core/uuid> "0cad72fd-4f21-4ea7-af8c-88d24577ee56";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erica@redpencil.io";
+       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailBcc> "aad@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageSubject> "Email deliver service";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#plainTextMessageContent> "I really like this service! But when encountering bugs, its important to create an    issue in the repo so it can get resolved";
@@ -213,7 +210,7 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
       ?messageId
       ?plainTextMessageContent
       ?htmlMessageContent
-      ?sentDate 
+      ?sentDate
       ?folder
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/system/email> {
@@ -283,11 +280,11 @@ PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 ```
 root
-	├── data ( list of static data )
-	├── queries ( all query files are located here )
-	├── services ( bussiness logic of application )
-	│   └── protocols ( files seperated by protocol used to send emails )
-	└── utils ( functions used for e.g. parsing are located here )
+    ├── data ( list of static data )
+    ├── queries ( all query files are located here )
+    ├── services ( bussiness logic of application )
+    │   └── protocols ( files seperated by protocol used to send emails )
+    └── utils ( functions used for e.g. parsing are located here )
 ```
 ## Root
 
@@ -311,13 +308,13 @@ It expects a graphName & mailfolderUri as arguments.
 
 ### createSentDate.js
 
-Every email that gets processed is checked for a sentDate. If the email does not have a sentdate specified then it gets the date of today specified as sentDate. 
+Every email that gets processed is checked for a sentDate. If the email does not have a sentdate specified then it gets the date of today specified as sentDate.
 It expects a graphName & email as arguments.
 
 
 ### moveEmailToFolder.js
 
-This query is responsible for moving email around to the correct folder. An e-mail located in the outbox that is currently being send will be deleted from the "outbox" folder and placed inside the the "sending" folder. It should be impossible to have the same e-mail in both "oubox" & "sending" at the same time unless the email is being send twice. 
+This query is responsible for moving email around to the correct folder. An e-mail located in the outbox that is currently being send will be deleted from the "outbox" folder and placed inside the the "sending" folder. It should be impossible to have the same e-mail in both "oubox" & "sending" at the same time unless the email is being send twice.
 it expects a graphName, emailId, and a mailboxName.
 
 ### updateEmailId.js
@@ -328,10 +325,10 @@ It expects a graphNamen oldMessageId & a newMessageId.
 
 This is where the main bussiness logic of the application is situated. Every service javascript file is seperated into sections.
 
-	├── IMPORTS ( List of imports )
-	├── ENV ( List of environment variables )
-	├── MAIN FUNCTION ( The function called directly by other files )
-	├── SUB FUNCTIONS ( Functions called by the file its main function )
+    ├── IMPORTS ( List of imports )
+    ├── ENV ( List of environment variables )
+    ├── MAIN FUNCTION ( The function called directly by other files )
+    ├── SUB FUNCTIONS ( Functions called by the file its main function )
 
 Sub functions are prepended by an underscore (_) to indicate that they are not meant be called by other files and are exclusively used by the file its main function
 
@@ -349,16 +346,9 @@ Currently unsupported
 
 ### SMTP.js
 
-When smtp has been specified as protocol , the main.js file will send the mail to this function. 
+When smtp has been specified as protocol , the main.js file will send the mail to this function.
 
 
 ### TEST.js
 
-You can specifiy "test" as protocol ENV. If you do so then Nodemailer will create a temporary email using Ethereal and will send the mail to that address. When the mails get send you will see a preview url displayed in the console per email. 
- 
-
-
-
-
-
-
+You can specifiy "test" as protocol ENV. If you do so then Nodemailer will create a temporary email using Ethereal and will send the mail to that address. When the mails get send you will see a preview url displayed in the console per email.
