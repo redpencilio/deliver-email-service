@@ -6,19 +6,14 @@ const { default: main } = require('./services/main');
 var CronJob = require('cron').CronJob;
 
 const cronFrequency =  '*/20 * * * * *';
-var inProgress;
+
 
 new CronJob(cronFrequency, function() {
   console.log(`*************************************************************************`);
   console.log(`***  Email delivery triggered by cron job at ${new Date().toISOString()} ***`);
   console.log(`*************************************************************************`);
+  Axios.patch('http://localhost/email-delivery/');
 
-  if(!inProgress){
-    Axios.patch('http://localhost/email-delivery/');
-    inProgress = true
-  } else {
-    console.log(" *** currently in progress *** ")
-  }
 }, null, true);
 
 app.patch('/email-delivery/', async function(req, res, next) {
