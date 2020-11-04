@@ -19,7 +19,7 @@ async function smtp(emails){
   try {
     emails.forEach(async email => {
       count++;
-        await moveEmailToFolder(graph, email.uuid, "outbox");
+        await moveEmailToFolder(graph, email.uuid, "sentbox");
         await _checkSentDate(email);
         await _checkTimeout(email);
         await _sendMail(email, count);
@@ -44,7 +44,7 @@ async function _checkTimeout(email) {
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
 
   if (timeout) {
-    // moveEmailToFolder(graph, email.uuid, "failbox");
+    moveEmailToFolder(graph, email.uuid, "failbox");
     throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   };
 }
@@ -116,8 +116,8 @@ async function _sendMail(email, count) {
     
       } else {
         moveEmailToFolder(graph, email.uuid, "sentbox");
-        updateEmailId(graph, email.messageId, success.messageId);
-        email.messageId = success.messageId;
+        // updateEmailId(graph, email.messageId, success.messageId);
+        // email.messageId = success.messageId;
         console.log(` > Email ${count} UUID:`, email.uuid);
         console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
         console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
