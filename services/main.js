@@ -29,13 +29,13 @@ async function main(res) {
 }
 
 // SUB FUNCTIONS
-function _processEmails(emails, protocol) {
+async function _processEmails(emails, protocol) {
     switch (protocol) {
       case "smtp":
-        sendSMTP(emails);
+        Promise.all(emails.map((email, index) => sendSMTP(email, index)));
         break;
       case "test":
-        sendTEST(emails);
+        Promise.all(emails.map((email, index) => sendTEST(email, index)));
         break;
       default:
         throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***");
