@@ -17,7 +17,7 @@ import {
 
 
 // MAIN FUNCTION
-async function smtp(emails){
+async function sendSMTP(emails){
   let count = 0;
   try {
     emails.forEach(async email => {
@@ -135,4 +135,4 @@ async function _sendMail(email, count) {
   }
 }
 
-export default smtp;
+export default sendSMTP;

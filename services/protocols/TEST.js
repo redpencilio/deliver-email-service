@@ -13,7 +13,7 @@ import {
 } from "../../config";
 
 // MAIN FUNCTION
-async function test(emails){
+async function sendTEST(emails){
   console.log(" >>> PROTOCOL: TEST");
   let count = 0;
   try {
@@ -103,4 +103,4 @@ async function _sendMail(email, count) {
 
 }
 
-export default test;
+export default sendTEST;

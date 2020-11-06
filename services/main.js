@@ -1,7 +1,7 @@
 // IMPORTS
 import fetchEmails  from '../queries/fetch-emails';
-import smtp from './protocols/SMTP';
-import test from './protocols/TEST';
+import sendSMTP from './protocols/SMTP';
+import sendTEST from './protocols/TEST';
 
 // ENV
 import { 
@@ -9,6 +9,7 @@ import {
   GRAPH, 
   URI
  } from '../config';
+
 
 // MAIN FUNCTION
 async function main(res) {
@@ -31,10 +32,10 @@ async function main(res) {
 function _processEmails(emails, protocol) {
     switch (protocol) {
       case "smtp":
-        smtp(emails);
+        sendSMTP(emails);
         break;
       case "test":
-        test(emails);
+        sendTEST(emails);
         break;
       default:
         throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***");
