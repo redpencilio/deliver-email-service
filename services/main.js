@@ -20,7 +20,7 @@ async function main(res) {
       return res.status(204).end();
     }
     console.log(` >>> ${emails.length} Emails found that need to be send. `);
-    await _processEmails(emails);
+    _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
     console.dir(err);
@@ -28,8 +28,8 @@ async function main(res) {
 }
 
   // SUB FUNCTIONS
-function _processEmails(emails) {
-    switch (EMAIL_PROTOCOL) {
+function _processEmails(emails, protocol) {
+    switch (protocol) {
       case "smtp":
         smtp(emails);
         break;
