@@ -3,12 +3,14 @@
 import moveEmailToFolder from "../../queries/moveEmailToFolder";
 import updateEmailId from '../../queries/updateEmailId';
 import createSentDate from '../../queries/createSentDate';
+
 const nodemailer = require("nodemailer");
 
 // ENV
-const fromName = process.env.FROM_NAME || '';
-const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
+import { 
+  GRAPH, 
+  FROM_NAME 
+} from "../../config";
 
 // MAIN FUNCTION
 async function test(emails){
@@ -17,7 +19,7 @@ async function test(emails){
   try {
     emails.forEach(async email => {
       count++;
-        await moveEmailToFolder(graph, email.uuid, "sentbox");
+        await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
         await _checkSentDate(email);
         await _checkTimeout(email);
         await _sendMail(email, count);
@@ -31,7 +33,7 @@ async function test(emails){
 
 async function _checkSentDate(email) {
   if (!email.sentDate) {
-    await createSentDate(graph, email);
+    await createSentDate(GRAPH, email);
     console.log(` >>> No send date found, a send date has been created.`);
   }
 }
@@ -39,10 +41,10 @@ async function _checkSentDate(email) {
 async function _checkTimeout(email) {
   let modifiedDate = new Date(email.sentDate);
   let currentDate = new Date();
-  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
+  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
   
   if (timeout) {
-    await moveEmailToFolder(graph, email.uuid, "failbox");
+    await moveEmailToFolder(GRAPH, email.uuid, "failbox");
     throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   }
 }
@@ -70,7 +72,7 @@ async function _sendMail(email, count) {
   });
 
   const mailProperties = {
-    from: `${fromName} ${email.messageFrom}`,
+    from: `${FROM_NAME} ${email.messageFrom}`,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -84,13 +86,13 @@ async function _sendMail(email, count) {
     
   if(failed){
     
-  await moveEmailToFolder(graph, email.uuid, "failbox");
+  await moveEmailToFolder(GRAPH, email.uuid, "failbox");
   console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
   console.dir(` > Email ${count}: ${failed}`);
 
   } else {
-    moveEmailToFolder(graph, email.uuid, "sentbox");
-    updateEmailId(graph, email.messageId, success.messageId);
+    moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    updateEmailId(GRAPH, email.messageId, success.messageId);
     console.log(` > Email ${count} UUID:`, email.uuid);
     console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
     console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);

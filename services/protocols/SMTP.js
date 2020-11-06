@@ -3,14 +3,17 @@ import nodemailerServices from '../../data/nodeMailerServices';
 import moveEmailToFolder from "../../queries/moveEmailToFolder";
 import updateEmailId from '../../queries/updateEmailId';
 import createSentDate from '../../queries/createSentDate';
+
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
 // ENV
-const wkServiceOrServer = process.env.WELL_KNOWN_SERVICE_OR_SERVER.toLowerCase();
-const fromName = process.env.FROM_NAME || '';
-const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
+import { 
+  FROM_NAME, 
+  GRAPH, 
+  HOURS_DELIVERING_TIMEOUT, 
+  WELL_KNOWN_SERVICE_OR_SERVER 
+} from '../../config';
 
 
 // MAIN FUNCTION
@@ -19,7 +22,7 @@ async function smtp(emails){
   try {
     emails.forEach(async email => {
       count++;
-        await moveEmailToFolder(graph, email.uuid, "sentbox");
+        await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
         await _checkSentDate(email);
         await _checkTimeout(email);
         await _sendMail(email, count);
@@ -33,7 +36,7 @@ async function smtp(emails){
 // SUB FUNCTIONS
 async function _checkSentDate(email) {
   if (!email.sentDate) {
-    await createSentDate(graph, email);
+    await createSentDate(GRAPH, email);
     console.log(` >>> No send date found, a send date has been created.`);
   }
 }
@@ -41,21 +44,21 @@ async function _checkSentDate(email) {
 async function _checkTimeout(email) {
   let modifiedDate = new Date(email.sentDate);
   let currentDate = new Date();
-  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
+  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
   if (timeout) {
-    moveEmailToFolder(graph, email.uuid, "failbox");
+    moveEmailToFolder(GRAPH, email.uuid, "failbox");
     throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
   };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
-  if (!((nodemailerServices.indexOf(wkServiceOrServer) > (-1)) || (nodemailerServices == 'server'))) {
+  if (!((nodemailerServices.indexOf(WELL_KNOWN_SERVICE_OR_SERVER) > (-1)) || (nodemailerServices == 'server'))) {
     throw ` >>> WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`;
   };
 
-  if (wkServiceOrServer == "server") {
+  if (WELL_KNOWN_SERVICE_OR_SERVER == "server") {
     transporter = nodemailer.createTransport({
       service: wellKnownServiceOrServer,
       auth: {
@@ -65,7 +68,7 @@ async function _sendMail(email, count) {
     });
   }
 
-  if (wkServiceOrServer != "server" && wkServiceOrServer != "sendgrid") {
+  if (WELL_KNOWN_SERVICE_OR_SERVER != "server" && WELL_KNOWN_SERVICE_OR_SERVER != "sendgrid") {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -77,7 +80,7 @@ async function _sendMail(email, count) {
     });
   }
 
-  if (wkServiceOrServer == "sendgrid") {
+  if (WELL_KNOWN_SERVICE_OR_SERVER == "sendgrid") {
     transporter = nodemailer.createTransport(sgTransport(
         {
           auth: {
@@ -96,7 +99,7 @@ async function _sendMail(email, count) {
   });
 
   const mailProperties = {
-    from: `${fromName} ${email.messageFrom}`,
+    from: `${FROM_NAME} ${email.messageFrom}`,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -110,12 +113,12 @@ async function _sendMail(email, count) {
 
     transporter.sendMail(mailProperties, async (failed, success) => {
       if(failed){
-      moveEmailToFolder(graph, email.uuid, "failbox");
+      moveEmailToFolder(GRAPH, email.uuid, "failbox");
       console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
       console.dir(` > Email ${count}: ${failed}`);
     
       } else {
-        moveEmailToFolder(graph, email.uuid, "sentbox");
+        moveEmailToFolder(GRAPH, email.uuid, "sentbox");
         // updateEmailId(graph, email.messageId, success.messageId);
         // email.messageId = success.messageId;
         console.log(` > Email ${count} UUID:`, email.uuid);

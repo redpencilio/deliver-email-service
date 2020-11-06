@@ -4,14 +4,16 @@ import smtp from './protocols/SMTP';
 import test from './protocols/TEST';
 
 // ENV
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
-const uri = process.env.MAILFOLDER_URI || 'http://data.lblod.info/id/mailboxes/1';
-const protocol = process.env.EMAIL_PROTOCOL;
+import { 
+  EMAIL_PROTOCOL, 
+  GRAPH, 
+  URI
+ } from '../config';
 
 // MAIN FUNCTION
 async function main(res) {
   try{
-    let emails = await fetchEmails(graph, uri);
+    let emails = await fetchEmails(GRAPH, URI);
     await _checkLength(emails, res);
     await _processEmails(emails);
   }
@@ -30,7 +32,7 @@ async function main(res) {
   }
 
  async function _processEmails(emails) {
-    switch (protocol) {
+    switch (EMAIL_PROTOCOL) {
       case "smtp":
         smtp(emails);
         break;
