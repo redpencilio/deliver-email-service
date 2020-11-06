@@ -1,6 +1,6 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from 'mu';
-import parseResults from '../utils/parseResults';
+import parseResults from '../utils/parse-results';
 
 async function fetchEmails(graphName, mailfolderUri) {
   const result = await query(`

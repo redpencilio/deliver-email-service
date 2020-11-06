@@ -1,5 +1,5 @@
 // IMPORTS
-import fetchEmails  from '../queries/fetchEmails';
+import fetchEmails  from '../queries/fetch-emails';
 import smtp from './protocols/SMTP';
 import test from './protocols/TEST';
 

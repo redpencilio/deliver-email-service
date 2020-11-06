@@ -1,8 +1,8 @@
 
 // IMPORTS
-import moveEmailToFolder from "../../queries/moveEmailToFolder";
-import updateEmailId from '../../queries/updateEmailId';
-import createSentDate from '../../queries/createSentDate';
+import moveEmailToFolder from "../../queries/move-email-to-folder";
+import updateEmailId from '../../queries/update-email-Id';
+import createSentDate from '../../queries/create-sent-date';
 
 const nodemailer = require("nodemailer");
 
