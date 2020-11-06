@@ -14,7 +14,12 @@ import {
 async function main(res) {
   try{
     let emails = await fetchEmails(GRAPH, URI);
-    await _checkLength(emails, res);
+
+    if (emails.length == 0) {
+      console.log("*** No Emails found to be send. ***")
+      return res.status(204).end();
+    }
+    console.log(` >>> ${emails.length} Emails found that need to be send. `);
     await _processEmails(emails);
   }
   catch(err){
@@ -23,14 +28,6 @@ async function main(res) {
 }
 
   // SUB FUNCTIONS
-  async function _checkLength(emails, res) {
-    
-    if (emails.length == 0) {
-      throw "*** No Emails found to be send. ***" ;
-    }
-    console.log(` >>> ${emails.length} Emails found that need to be send. `);
-  }
-
  async function _processEmails(emails) {
     switch (EMAIL_PROTOCOL) {
       case "smtp":
