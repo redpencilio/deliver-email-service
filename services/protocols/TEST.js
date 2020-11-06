@@ -9,21 +9,18 @@ const nodemailer = require("nodemailer");
 // ENV
 import { 
   GRAPH, 
-  FROM_NAME 
+  FROM_NAME,
+  HOURS_DELIVERING_TIMEOUT
 } from "../../config";
 
 // MAIN FUNCTION
-async function sendTEST(emails){
+async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
-  let count = 0;
   try {
-    emails.forEach(async email => {
-      count++;
-        await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
-        await _checkSentDate(email);
-        await _checkTimeout(email);
-        await _sendMail(email, count);
-    });
+    await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    await _checkSentDate(email, count);
+    await _checkTimeout(email, count);
+    await _sendMail(email, count);
   } catch (err) {
    console.log(err);
   }
@@ -31,21 +28,21 @@ async function sendTEST(emails){
 
 // SUB FUNCTIONS CALLED BY MAIN
 
-async function _checkSentDate(email) {
+async function _checkSentDate(email, count) {
   if (!email.sentDate) {
     await createSentDate(GRAPH, email);
-    console.log(` >>> No send date found, a send date has been created.`);
+    console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
 
-async function _checkTimeout(email) {
+async function _checkTimeout(email, count) {
   let modifiedDate = new Date(email.sentDate);
   let currentDate = new Date();
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
   
   if (timeout) {
     await moveEmailToFolder(GRAPH, email.uuid, "failbox");
-    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
+    throw `*** Email ${count} FAILED: Timeout reached, email moved to failbox: ${email.uuid} ***`;
   }
 }
 
@@ -87,17 +84,17 @@ async function _sendMail(email, count) {
   if(failed){
     
   await moveEmailToFolder(GRAPH, email.uuid, "failbox");
-  console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
+  console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
   console.dir(` > Email ${count}: ${failed}`);
 
   } else {
     moveEmailToFolder(GRAPH, email.uuid, "sentbox");
     updateEmailId(GRAPH, email.messageId, success.messageId);
-    console.log(` > Email ${count} UUID:`, email.uuid);
-    console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
-    console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
+    console.log(` > Email ${count}: UUID = ${email.uuid}`);
+    console.log(` > Email ${count}: Message moved to sentbox`);
+    console.log(` > Email ${count}: Email message ID updated`);
     console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
-    console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+    console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(success));
     }
   })
 

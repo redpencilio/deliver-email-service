@@ -15,18 +15,13 @@ import {
   WELL_KNOWN_SERVICE_OR_SERVER 
 } from '../../config';
 
-
 // MAIN FUNCTION
-async function sendSMTP(emails){
-  let count = 0;
+async function sendSMTP(email, count){
   try {
-    emails.forEach(async email => {
-      count++;
-        await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
-        await _checkSentDate(email);
-        await _checkTimeout(email);
-        await _sendMail(email, count);
-    });
+    await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    await _checkSentDate(email, count);
+    await _checkTimeout(email, count);
+    await _sendMail(email, count);
   } catch (err) {
    console.log(err);
   }
@@ -34,28 +29,28 @@ async function sendSMTP(emails){
 
 
 // SUB FUNCTIONS
-async function _checkSentDate(email) {
+async function _checkSentDate(email, count) {
   if (!email.sentDate) {
     await createSentDate(GRAPH, email);
-    console.log(` >>> No send date found, a send date has been created.`);
+    console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
 
-async function _checkTimeout(email) {
+async function _checkTimeout(email, count) {
   let modifiedDate = new Date(email.sentDate);
   let currentDate = new Date();
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
   if (timeout) {
     moveEmailToFolder(GRAPH, email.uuid, "failbox");
-    throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
+    throw `*** Email ${count} FAILED: Timeout reached, email moved to failbox: ${email.uuid} ***`;
   };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
   if (!((nodemailerServices.indexOf(WELL_KNOWN_SERVICE_OR_SERVER) > (-1)) || (nodemailerServices == 'server'))) {
-    throw ` >>> WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`;
+    throw ` *** WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer *** `;
   };
 
   if (WELL_KNOWN_SERVICE_OR_SERVER == "server") {
@@ -114,18 +109,18 @@ async function _sendMail(email, count) {
     transporter.sendMail(mailProperties, async (failed, success) => {
       if(failed){
       moveEmailToFolder(GRAPH, email.uuid, "failbox");
-      console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
+      console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
       console.dir(` > Email ${count}: ${failed}`);
     
       } else {
         moveEmailToFolder(GRAPH, email.uuid, "sentbox");
         // updateEmailId(graph, email.messageId, success.messageId);
         // email.messageId = success.messageId;
-        console.log(` > Email ${count} UUID:`, email.uuid);
-        console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
-        console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
+        console.log(` > Email ${count}: UUID = ${email.uuid}`);
+        console.log(` > Email ${count}: Email moved to sentbox`);
+        console.log(` > Email ${count}: Email message ID updated`);
         console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
-        console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+        console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(success));
         }
       });
     }
