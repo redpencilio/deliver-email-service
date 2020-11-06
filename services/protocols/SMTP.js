@@ -12,7 +12,7 @@ import {
   FROM_NAME, 
   GRAPH, 
   HOURS_DELIVERING_TIMEOUT, 
-  WELL_KNOWN_SERVICE_OR_SERVER 
+  WELL_KNOWN_SERVICE 
 } from '../../config';
 
 // MAIN FUNCTION
@@ -49,21 +49,19 @@ async function _checkTimeout(email, count) {
 
 async function _sendMail(email, count) {
   let transporter = null;
-  if (!((nodemailerServices.indexOf(WELL_KNOWN_SERVICE_OR_SERVER) > (-1)) || (nodemailerServices == 'server'))) {
-    throw ` *** WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer *** `;
+  if (!((nodemailerServices.indexOf(WELL_KNOWN_SERVICE) > (-1)) || (nodemailerServices == 'server'))) {
+    throw ` *** WELL_KNOWN_SERVICE should be 'server' or a known service by Nodemailer *** `;
   };
 
-  if (WELL_KNOWN_SERVICE_OR_SERVER == "server") {
+  if (WELL_KNOWN_SERVICE == "server") {
     transporter = nodemailer.createTransport({
-      service: wellKnownServiceOrServer,
+      service: "server",
       auth: {
         user: process.env.EMAIL_ADDRESS,
         pass: process.env.EMAIL_PASSWORD
       }
     });
-  }
-
-  if (WELL_KNOWN_SERVICE_OR_SERVER != "server" && WELL_KNOWN_SERVICE_OR_SERVER != "sendgrid") {
+  } else if (WELL_KNOWN_SERVICE != "server" && WELL_KNOWN_SERVICE != "sendgrid") {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -73,9 +71,7 @@ async function _sendMail(email, count) {
         pass: process.env.EMAIL_PASSWORD
       }
     });
-  }
-
-  if (WELL_KNOWN_SERVICE_OR_SERVER == "sendgrid") {
+  } else if (WELL_KNOWN_SERVICE == "sendgrid") {
     transporter = nodemailer.createTransport(sgTransport(
         {
           auth: {

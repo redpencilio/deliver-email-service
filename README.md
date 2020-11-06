@@ -91,7 +91,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | "false"  |
 | EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null |
 | HOURS_DELIVERING_TIMEOUT  | NEED CHANGE *  | 1 |
-| WELL_KNOWN_SERVICE_OR_SERVER  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null |
+| WELL_KNOWN_SERVICE  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender (username if service is SendGrid)  | null |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null |
@@ -131,7 +131,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
       SECURE_CONNECTION: "true"
       NODE_ENV: "development"
       EMAIL_PROTOCOL: "smtp"
-      WELL_KNOWN_SERVICE_OR_SERVER: "myservice"
+      WELL_KNOWN_SERVICE: "myservice"
       EMAIL_ADDRESS: "mymail@myservice.com"
       EMAIL_PASSWORD: "myemailpassword"
       FROM_NAME: "myname"
@@ -158,7 +158,7 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your dock
     restart: always
     logging: *default-logging
 ```
-When creating a mail in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE_OR_SERVER). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
+When creating a mail in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
 
 ```
 > EMAIL 1: Preview ur https://ethereal.email/message/123456788abcdefg
