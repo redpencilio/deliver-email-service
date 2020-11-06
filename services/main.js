@@ -33,8 +33,6 @@ function _processEmails(emails, protocol) {
       case "smtp":
         smtp(emails);
         break;
-      case "rest":
-        throw new Error( "*** Sending emails via 'rest' is not supported at the moment. ***");
       case "test":
         test(emails);
         break;
