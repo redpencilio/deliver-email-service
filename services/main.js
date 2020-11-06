@@ -13,7 +13,7 @@ import {
 // MAIN FUNCTION
 async function main(res) {
   try{
-    let emails = await fetchEmails(GRAPH, URI);
+    const emails = await fetchEmails(GRAPH, URI);
 
     if (emails.length == 0) {
       console.log("*** No Emails found to be send. ***")
