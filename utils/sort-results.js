@@ -1,4 +1,4 @@
-const parseResults = function(result) {
+const sortResults = function(result) {
   const bindingKeys = result.head.vars;
   return result.results.bindings.map((row) => {
     const obj = {};
@@ -7,4 +7,4 @@ const parseResults = function(result) {
   });
 };
 
-export default parseResults
+export default sortResults

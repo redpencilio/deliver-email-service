@@ -1,6 +1,6 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from 'mu';
-import parseResults from '../utils/parse-results';
+import sortResults from '../utils/sort-results';
 
 async function fetchEmails(graphName, mailfolderUri) {
   const result = await query(`
@@ -57,7 +57,7 @@ async function fetchEmails(graphName, mailfolderUri) {
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 `);
 
-  return parseResults(result);
+  return sortResults(result);
 };
 
 export default fetchEmails;
