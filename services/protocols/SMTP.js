@@ -1,8 +1,8 @@
 // IMPORTS
-const { default: nodemailerServices } = require('../../data/nodeMailerServices');
-const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder");
-const { default: updateEmailId } = require('../../queries/updateEmailId');
-const { default: createSentDate } = require('../../queries/createSentDate');
+import nodemailerServices from '../../data/nodeMailerServices';
+import moveEmailToFolder from "../../queries/moveEmailToFolder";
+import updateEmailId from '../../queries/updateEmailId';
+import createSentDate from '../../queries/createSentDate';
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
@@ -45,14 +45,14 @@ async function _checkTimeout(email) {
 
   if (timeout) {
     moveEmailToFolder(graph, email.uuid, "failbox");
-    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
+    throw `*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`;
   };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
   if (!((nodemailerServices.indexOf(wkServiceOrServer) > (-1)) || (nodemailerServices == 'server'))) {
-    throw new Error(` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`);
+    throw ` >>> WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`;
   };
 
   if (wkServiceOrServer == "server") {
@@ -122,7 +122,6 @@ async function _sendMail(email, count) {
         console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
         console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
         console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
-
         console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
         }
       })

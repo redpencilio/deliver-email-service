@@ -1,8 +1,8 @@
 
 // IMPORTS
-const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder");
-const { default: updateEmailId } = require('../../queries/updateEmailId');
-const { default: createSentDate } = require('../../queries/createSentDate');
+import moveEmailToFolder from "../../queries/moveEmailToFolder";
+import updateEmailId from '../../queries/updateEmailId';
+import createSentDate from '../../queries/createSentDate';
 const nodemailer = require("nodemailer");
 
 // ENV
