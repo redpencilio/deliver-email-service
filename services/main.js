@@ -27,7 +27,7 @@ async function main(res) {
   }
 }
 
-  // SUB FUNCTIONS
+// SUB FUNCTIONS
 function _processEmails(emails, protocol) {
     switch (protocol) {
       case "smtp":
