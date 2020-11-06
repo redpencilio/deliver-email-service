@@ -1,7 +1,7 @@
 "use strict";
 import { app, errorHandler } from 'mu';
-const { default: Axios } = require('axios');
-const { default: main } = require('./services/main');
+import Axios from 'axios';
+import main from './services/main';
 
 var CronJob = require('cron').CronJob;
 
@@ -12,11 +12,11 @@ new CronJob(cronFrequency, function() {
   console.log(`*************************************************************************`);
   console.log(`***  Email delivery triggered by cron job at ${new Date().toISOString()} ***`);
   console.log(`*************************************************************************`);
-  Axios.patch('http://localhost/email-delivery/');
+  Axios.post('http://localhost/email-delivery/');
 
 }, null, true);
 
-app.patch('/email-delivery/', async function(req, res, next) {
+app.post('/email-delivery/', async function(req, res, next) {
 
   await main(res)
 
