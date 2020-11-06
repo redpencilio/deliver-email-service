@@ -23,7 +23,7 @@ async function test(emails){
         await _sendMail(email, count);
     });
   } catch (err) {
-   console.log(err)
+   console.log(err);
   }
 }
 
@@ -45,8 +45,6 @@ async function _checkTimeout(email) {
     await moveEmailToFolder(graph, email.uuid, "failbox");
     throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
   }
-  
-
 }
 
 async function _sendMail(email, count) {
@@ -68,7 +66,7 @@ async function _sendMail(email, count) {
     return {
       filename: attachment.filename,
       path: attachment.dataSource
-    };
+    }
   });
 
   const mailProperties = {

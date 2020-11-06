@@ -1,7 +1,7 @@
 // IMPORTS
 import fetchEmails  from '../queries/fetchEmails';
 import smtp from './protocols/SMTP';
-import test from './protocols/TEST'
+import test from './protocols/TEST';
 
 // ENV
 const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';

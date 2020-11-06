@@ -25,7 +25,7 @@ async function smtp(emails){
         await _sendMail(email, count);
     });
   } catch (err) {
-   console.log(err)
+   console.log(err);
   }
 }
 
@@ -84,7 +84,7 @@ async function _sendMail(email, count) {
               api_key: process.env.EMAIL_PASSWORD
           }
       }
-    ))
+    ));
   }
 
 
@@ -92,7 +92,7 @@ async function _sendMail(email, count) {
     return {
       filename: attachment.filename,
       path: attachment.dataSource
-    };
+    }
   });
 
   const mailProperties = {
@@ -124,7 +124,7 @@ async function _sendMail(email, count) {
         console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
         console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
         }
-      })
+      });
     }
 
   catch(err) {
