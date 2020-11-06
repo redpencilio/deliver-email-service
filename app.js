@@ -18,8 +18,13 @@ new CronJob(cronFrequency, function() {
 
 app.post('/email-delivery/', async function(req, res, next) {
 
-  await main(res)
-
+  try{
+    await main(res)
+  }
+  catch(err){
+    console.log(err)
+  }
+  
 });
 
 process.on('unhandledRejection', (reason, p) => {
