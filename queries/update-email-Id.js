@@ -1,7 +1,7 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 
-export default async function updateEmailId(graphName, oldMessageId, newMessageId) {
+export default async function updateEmailId(graphName, email, newMessageId) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -9,18 +9,17 @@ export default async function updateEmailId(graphName, oldMessageId, newMessageI
 
     DELETE {
        GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email nmo:messageId ?oldMessageId.
+          ${sparqlEscapeUri(email.email)} nmo:messageId ?oldMessageId.
         }
      }
     INSERT {
        GRAPH ${sparqlEscapeUri(graphName)} {
-           ?email nmo:messageId ${sparqlEscapeString(newMessageId)}.
+          ${sparqlEscapeUri(email.email)} nmo:messageId ${sparqlEscapeString(newMessageId)}.
         }
     }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email a nmo:Email.
-            BIND ('${email.email}' as ?email).
+          ${sparqlEscapeUri(email.email)} nmo:messageId ?oldMessageId.
         }
     }
 `);
