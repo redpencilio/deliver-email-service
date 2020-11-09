@@ -7,6 +7,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
   PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+  PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
 
   SELECT ?email
     ?uuid
@@ -19,6 +20,8 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
     ?plainTextMessageContent
     ?htmlMessageContent
     ?sentDate
+    ?lastSendingAttempt
+
   WHERE {
     GRAPH ${sparqlEscapeUri(graphName)} {
       ${sparqlEscapeUri(mailboxURI)} fni:hasPart ?mailfolder.
@@ -28,6 +31,10 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
+
+      BIND(false as ?defaultSA).
+      OPTIONAL {?email ext:lastSendingAttempt ?optionalSA}.
+      BIND(coalesce(?optionalSA, ?defaultSA) as ?lastSendingAttempt).
 
       BIND('' as ?defaultEmailCc).
       OPTIONAL {?email nmo:emailCc ?optionalEmailCc}.
@@ -54,9 +61,9 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       BIND(coalesce(?optionalSentDate, ?defaultSentDate) as ?sentDate).
     }
   }
-  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
+  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?lastSendingAttempt
 `);
-
+debugger;
   return sortResults(result);
 };
 
