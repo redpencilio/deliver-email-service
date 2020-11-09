@@ -1,5 +1,5 @@
 // IMPORTS
-import nodemailerServices from '../../data/node-mailer-services';
+import nodemailerServices from './data/node-mailer-services';
 
 // CONFIGURATION
 const GRAPH = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
