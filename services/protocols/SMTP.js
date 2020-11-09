@@ -49,19 +49,17 @@ async function _checkTimeout(email, count) {
 
 async function _sendMail(email, count) {
   let transporter = null;
-  if (!((nodemailerServices.indexOf(WELL_KNOWN_SERVICE) > (-1)) || (nodemailerServices == 'server'))) {
-    throw ` *** WELL_KNOWN_SERVICE should be 'server' or a known service by Nodemailer *** `;
-  };
 
-  if (WELL_KNOWN_SERVICE == "server") {
-    transporter = nodemailer.createTransport({
-      service: "server",
-      auth: {
-        user: process.env.EMAIL_ADDRESS,
-        pass: process.env.EMAIL_PASSWORD
+  if (WELL_KNOWN_SERVICE == "sendgrid") {
+    transporter = nodemailer.createTransport(sgTransport(
+        {
+          auth: {
+              api_key: process.env.EMAIL_PASSWORD
+          }
       }
-    });
-  } else if (WELL_KNOWN_SERVICE != "server" && WELL_KNOWN_SERVICE != "sendgrid") {
+    ));
+  
+  } else if (!(nodemailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -71,15 +69,10 @@ async function _sendMail(email, count) {
         pass: process.env.EMAIL_PASSWORD
       }
     });
-  } else if (WELL_KNOWN_SERVICE == "sendgrid") {
-    transporter = nodemailer.createTransport(sgTransport(
-        {
-          auth: {
-              api_key: process.env.EMAIL_PASSWORD
-          }
-      }
-    ));
+  } else {
+    throw new Error('** Something went wrong when creating a transport using nodemailer. **')
   }
+
 
 
   const attachments = (email.attachments || []).map((attachment) => {
