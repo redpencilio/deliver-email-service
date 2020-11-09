@@ -17,7 +17,7 @@ import {
 async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
   try {
-    await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    await moveEmailToFolder(GRAPH, email, "sentbox");
     await _checkSentDate(email, count);
     await _checkTimeout(email, count);
     await _sendMail(email, count);
@@ -41,7 +41,7 @@ async function _checkTimeout(email, count) {
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
   
   if (timeout) {
-    await moveEmailToFolder(GRAPH, email.uuid, "failbox");
+    await moveEmailToFolder(GRAPH, email, "failbox");
     throw `*** Email ${count} FAILED: Timeout reached, email moved to failbox: ${email.uuid} ***`;
   }
 }
@@ -83,12 +83,12 @@ async function _sendMail(email, count) {
     
   if(failed){
     
-  await moveEmailToFolder(GRAPH, email.uuid, "failbox");
+  await moveEmailToFolder(GRAPH, email, "failbox");
   console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
   console.dir(` > Email ${count}: ${failed}`);
 
   } else {
-    moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    moveEmailToFolder(GRAPH, email, "sentbox");
     updateEmailId(GRAPH, email.messageId, success.messageId);
     console.log(` > Email ${count}: UUID = ${email.uuid}`);
     console.log(` > Email ${count}: Message moved to sentbox`);

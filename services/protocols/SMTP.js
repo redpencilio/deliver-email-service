@@ -18,7 +18,7 @@ import {
 // MAIN FUNCTION
 async function sendSMTP(email, count){
   try {
-    await moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+    await moveEmailToFolder(GRAPH, email, "sentbox");
     await _checkSentDate(email, count);
     await _checkTimeout(email, count);
     await _sendMail(email, count);
@@ -42,7 +42,7 @@ async function _checkTimeout(email, count) {
   let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
   if (timeout) {
-    moveEmailToFolder(GRAPH, email.uuid, "failbox");
+    moveEmailToFolder(GRAPH, email, "failbox");
     throw `*** Email ${count} FAILED: Timeout reached, email moved to failbox: ${email.uuid} ***`;
   };
 }
@@ -104,12 +104,12 @@ async function _sendMail(email, count) {
 
     transporter.sendMail(mailProperties, async (failed, success) => {
       if(failed){
-      moveEmailToFolder(GRAPH, email.uuid, "failbox");
+      moveEmailToFolder(GRAPH, email, "failbox");
       console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
       console.dir(` > Email ${count}: ${failed}`);
     
       } else {
-        moveEmailToFolder(GRAPH, email.uuid, "sentbox");
+        moveEmailToFolder(GRAPH, email, "sentbox");
         // updateEmailId(graph, email.messageId, success.messageId);
         // email.messageId = success.messageId;
         console.log(` > Email ${count}: UUID = ${email.uuid}`);

@@ -1,7 +1,7 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 
-async function moveEmailToFolder(graphName, emailId, mailboxName) {
+async function moveEmailToFolder(graphName, email, mailboxName) {
     const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -15,9 +15,8 @@ async function moveEmailToFolder(graphName, emailId, mailboxName) {
      }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email a nmo:Email.
-            ?email <http://mu.semte.ch/vocabularies/core/uuid> ${sparqlEscapeString(emailId)}.
             ?email nmo:isPartOf ?folder.
+            BIND('${email.email}' as ?email).
         }
     }
     ;
@@ -31,7 +30,7 @@ async function moveEmailToFolder(graphName, emailId, mailboxName) {
             ?mailfolder a nfo:Folder.
             ?mailfolder nie:title  ${sparqlEscapeString(mailboxName)}.
             ?email a nmo:Email.
-            ?email <http://mu.semte.ch/vocabularies/core/uuid> ${sparqlEscapeString(emailId)}.
+            BIND ('${email.email}' as ?email).
         }
     }
   `);
