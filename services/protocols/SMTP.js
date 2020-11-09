@@ -103,8 +103,8 @@ async function _sendMail(email, count) {
     
       } else {
         moveEmailToFolder(GRAPH, email, "sentbox");
-        // updateEmailId(graph, email.messageId, success.messageId);
-        // email.messageId = success.messageId;
+        updateEmailId(graph, success.messageId);
+        email.messageId = success.messageId;
         console.log(` > Email ${count}: UUID = ${email.uuid}`);
         console.log(` > Email ${count}: Email moved to sentbox`);
         console.log(` > Email ${count}: Email message ID updated`);

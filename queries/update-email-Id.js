@@ -9,7 +9,7 @@ export default async function updateEmailId(graphName, oldMessageId, newMessageI
 
     DELETE {
        GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email nmo:messageId ${sparqlEscapeString(oldMessageId)}.
+            ?email nmo:messageId ?oldMessageId.
         }
      }
     INSERT {
@@ -20,7 +20,7 @@ export default async function updateEmailId(graphName, oldMessageId, newMessageI
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
             ?email a nmo:Email.
-            ?email nmo:messageId ${sparqlEscapeString(oldMessageId)}.
+            BIND ('${email.email}' as ?email).
         }
     }
 `);
