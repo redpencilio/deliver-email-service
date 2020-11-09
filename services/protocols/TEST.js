@@ -3,6 +3,7 @@
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import createSentDate from '../../queries/create-sent-date';
+import setLastAttempt from "../../queries/set-last-attempt";
 
 const nodemailer = require("nodemailer");
 
@@ -13,13 +14,13 @@ import {
   HOURS_DELIVERING_TIMEOUT
 } from "../../config";
 
+
 // MAIN FUNCTION
 async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
   try {
     await moveEmailToFolder(GRAPH, email, "sending");
     await _checkSentDate(email, count);
-    await _checkTimeout(email, count);
     await _sendMail(email, count);
   } catch (err) {
    console.log(err);
@@ -32,17 +33,6 @@ async function _checkSentDate(email, count) {
   if (!email.sentDate) {
     await createSentDate(GRAPH, email);
     console.log(` > Email ${count}: No send date found, a send date has been created.`);
-  }
-}
-
-async function _checkTimeout(email, count) {
-  let modifiedDate = new Date(email.sentDate);
-  let currentDate = new Date();
-  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
-  
-  if (timeout) {
-    await moveEmailToFolder(GRAPH, email, "failbox");
-    throw `*** Email ${count} FAILED: Timeout reached, email moved to failbox: ${email.uuid} ***`;
   }
 }
 
@@ -80,13 +70,23 @@ async function _sendMail(email, count) {
   };
   
   transporter.sendMail(mailProperties, async (failed, success) => {
-    
-  if(failed){
-    
-  await moveEmailToFolder(GRAPH, email, "failbox");
-  console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
-  console.dir(` > Email ${count}: ${failed}`);
 
+  if(failed){
+    let modifiedDate = new Date(email.sentDate);
+    let currentDate = new Date();
+    let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
+
+    if(!timeout){
+      await setLastAttempt(GRAPH, email)
+      await moveEmailToFolder(GRAPH, email, "outbox");
+      console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+      console.dir(` > Email ${count}: ${failed}`);
+
+    } else {
+      moveEmailToFolder(GRAPH, email, "failbox");
+      console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
+      console.dir(` > Email ${count}: ${failed}`);
+    }
   } else {
     moveEmailToFolder(GRAPH, email, "sentbox");
     updateEmailId(GRAPH, email, success.messageId);
