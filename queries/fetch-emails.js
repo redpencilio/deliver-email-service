@@ -2,7 +2,7 @@ import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from 'mu';
 import sortResults from '../utils/sort-results';
 
-async function fetchEmails(graphName, mailboxURI) {
+async function fetchEmails(graphName, mailboxURI, folderName) {
   const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -22,7 +22,7 @@ async function fetchEmails(graphName, mailboxURI) {
   WHERE {
     GRAPH ${sparqlEscapeUri(graphName)} {
       ${sparqlEscapeUri(mailboxURI)} fni:hasPart ?mailfolder.
-      ?mailfolder nie:title "outbox".
+      ?mailfolder nie:title "${folderName}".
       ?email nmo:isPartOf ?mailfolder.
       ?email <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
       ?email nmo:messageSubject ?messageSubject.
