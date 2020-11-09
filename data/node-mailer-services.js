@@ -35,6 +35,7 @@ const nodeMailerServices = [
   'ses-us-east-1',
   'ses-us-west-2',
   'ses-eu-west-1',
+  'smtp',
   'sparkpost',
   'yahoo',
   'yandex',
