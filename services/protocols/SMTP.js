@@ -18,7 +18,7 @@ import {
 // MAIN FUNCTION
 async function sendSMTP(email, count){
   try {
-    await moveEmailToFolder(GRAPH, email, "sentbox");
+    await moveEmailToFolder(GRAPH, email, "sending");
     await _checkSentDate(email, count);
     await _checkTimeout(email, count);
     await _sendMail(email, count);
@@ -103,7 +103,7 @@ async function _sendMail(email, count) {
     
       } else {
         moveEmailToFolder(GRAPH, email, "sentbox");
-        updateEmailId(graph, success.messageId);
+        updateEmailId(graph, email, success.messageId);
         email.messageId = success.messageId;
         console.log(` > Email ${count}: UUID = ${email.uuid}`);
         console.log(` > Email ${count}: Email moved to sentbox`);

@@ -17,7 +17,7 @@ import {
 async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
   try {
-    await moveEmailToFolder(GRAPH, email, "sentbox");
+    await moveEmailToFolder(GRAPH, email, "sending");
     await _checkSentDate(email, count);
     await _checkTimeout(email, count);
     await _sendMail(email, count);
@@ -89,7 +89,7 @@ async function _sendMail(email, count) {
 
   } else {
     moveEmailToFolder(GRAPH, email, "sentbox");
-    updateEmailId(GRAPH, success.messageId);
+    updateEmailId(GRAPH, email, success.messageId);
     email.messageId = success.messageId;
     console.log(` > Email ${count}: UUID = ${email.uuid}`);
     console.log(` > Email ${count}: Message moved to sentbox`);
