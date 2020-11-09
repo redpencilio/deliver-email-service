@@ -1,5 +1,5 @@
 import { querySudo as query } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeUri } from 'mu';
+import { sparqlEscapeUri, sparqlEscapeDateTime } from 'mu';
 
 
 async function createSentDate(graphName, email) {
@@ -11,21 +11,19 @@ async function createSentDate(graphName, email) {
 
     DELETE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ?email nmo:sentDate ?sentDate.
+          ${sparqlEscapeUri(email.email)} nmo:sentDate ?sentDate.
       }
     }
 
     INSERT {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ?email nmo:sentDate "${sentDate}".
+          ${sparqlEscapeUri(email.email)} nmo:sentDate ${sparqlEscapeDateTime(sentDate)}.
         }
     }
 
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email a nmo:Email.
-            ?email nmo:sentDate ?sentDate.
-            BIND ('${email.email}' as ?email).
+          ${sparqlEscapeUri(email.email)} nmo:sentDate ?sentDate.
         }
     }
   `);
