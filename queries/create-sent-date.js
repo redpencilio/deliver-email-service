@@ -11,7 +11,7 @@ async function createSentDate(graphName, email) {
 
     DELETE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ?email nmo:sentDate "${email.sentDate}".
+          ?email nmo:sentDate ?sentDate.
       }
     }
 
@@ -20,10 +20,12 @@ async function createSentDate(graphName, email) {
           ?email nmo:sentDate "${sentDate}".
         }
     }
+
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
             ?email a nmo:Email.
-            ?email <http://mu.semte.ch/vocabularies/core/uuid> "${email.uuid}".
+            ?email nmo:sentDate ?sentDate.
+            BIND ('${email.email}' as ?email).
         }
     }
   `);
