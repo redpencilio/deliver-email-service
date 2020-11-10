@@ -196,6 +196,7 @@ INSERT DATA {
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
 
    SELECT  ?email
       ?uuid
@@ -208,6 +209,8 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
       ?htmlMessageContent
       ?sentDate 
       ?folder
+      ?lastSendingAttempt
+
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/system/email> {
         <http://data.lblod.info/id/mailboxes/1> fni:hasPart ?mailfolder.
@@ -217,6 +220,10 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
         ?email nmo:messageSubject ?messageSubject.
         ?email nmo:messageFrom ?messageFrom.
         ?email nmo:emailTo ?emailTo.
+
+        BIND(false as ?defaultSA).
+        OPTIONAL {?email ext:lastSendingAttempt ?optionalSA}.
+        BIND(coalesce(?optionalSA, ?defaultSA ) as ?lastSendingAttempt).
 
         BIND('' as ?defaultEmailCc).
         OPTIONAL {?email nmo:emailCc ?optionalEmailCc}.
