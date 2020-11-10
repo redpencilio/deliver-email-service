@@ -1,5 +1,7 @@
 /** IMPORTS */ 
 import fetchEmails  from '../queries/fetch-emails';
+import moveEmailToFolder from '../queries/move-email-to-folder';
+import setLastAttempt from '../queries/set-last-attempt';
 import sendSMTP from './protocols/SMTP';
 import sendTEST from './protocols/TEST';
 
@@ -7,7 +9,7 @@ import sendTEST from './protocols/TEST';
 import { 
   EMAIL_PROTOCOL, 
   GRAPH, 
-  URI
+  URI,
 } from '../config';
 
 /**
@@ -18,6 +20,7 @@ import {
  */
 async function main(res) {
   try{
+
     const emails = await fetchEmails(GRAPH, URI, "outbox");
     if (emails.length == 0) {
       console.log("*** No Emails found to be send. ***")
@@ -30,6 +33,36 @@ async function main(res) {
   catch(err){
     console.dir(err);
   }
+
+  await _checkForLostEmails();
+}
+
+/**
+ * Checks if there are emails stuck in sending box, if so and timeout has expired + lastAttempt has been set to true, move them to the failbox
+ * otherwhise if timeout has expired but not lastAttempt, move email to outbox & set lastAttempt to true
+ */
+async function _checkForLostEmails(){
+  const emails = await fetchEmails(GRAPH, URI, "sending")
+  
+  emails.forEach(async email => {
+    let modifiedDate = new Date(email.sentDate);
+    let currentDate = new Date();
+    let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= .4;
+    debugger;
+    if(timeout && email.lastSendingAttempt == true){
+      await moveEmailToFolder(GRAPH, email, "failbox");
+      console.log(' > Found email stuck in sending after retry. Moving the email to "failbox"');
+      console.log(` > Email UUID: ${email.uuid}`)
+
+    } else if (timeout){
+      await moveEmailToFolder(GRAPH, email, "outbox");
+      await setLastAttempt(GRAPH, email);
+
+      console.log(' > Found email stuck in sending. Will retry sending email at next cronjob');
+      console.log(` > Email UUID: ${email.uuid}`)
+    } 
+  });                                 
+
 }
 
 /**
