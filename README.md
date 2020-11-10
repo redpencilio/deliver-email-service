@@ -63,7 +63,7 @@ When the file has succesfully migrated to your backend you should you should hav
 
 Recommended Email-structure (default in testing app-deliver-email-service)
 
-![emailStructure](https://user-images.githubusercontent.com/52280338/97302208-09c51900-1859-11eb-8659-644c660065e0.png)
+![emailStructure](https://user-images.githubusercontent.com/52280338/98672594-5418c080-2356-11eb-854e-b8a8faa5ac53.png)
 
 
 
