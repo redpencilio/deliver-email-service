@@ -11,7 +11,12 @@ import {
   FROM_NAME, 
   GRAPH, 
   HOURS_DELIVERING_TIMEOUT, 
-  WELL_KNOWN_SERVICE 
+  WELL_KNOWN_SERVICE,
+  SECURE_CONNECTION,
+  EMAIL_ADDRESS,
+  EMAIL_PASSWORD,
+  HOST,
+  PORT
 } from '../../config';
 
 /**
@@ -54,19 +59,19 @@ async function _sendMail(email, count) {
     transporter = nodemailer.createTransport(sgTransport(
         {
           auth: {
-              api_key: process.env.EMAIL_PASSWORD
+              api_key: EMAIL_PASSWORD
           }
       }
     ));
   
   } else if (!(nodemailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      port: process.env.PORT,
-      secureConnection: process.env.SECURE_CONNECTION || false,
+      host: HOST,
+      port: PORT,
+      secureConnection: SECURE_CONNECTION,
       auth: {
-        user: process.env.EMAIL_ADDRESS,
-        pass: process.env.EMAIL_PASSWORD
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
       }
     });
   } else {
