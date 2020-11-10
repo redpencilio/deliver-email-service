@@ -44,26 +44,29 @@ deliver-email-service:
         - "logging=true"
     restart: always
 ```
+# Models
 
-## Mailbox Structure
+## Mailbox
+
+![mailboxStructure](https://user-images.githubusercontent.com/52280338/98683577-7f56dc00-2365-11eb-8704-e5f9145e1755.png)
+
+## Folder
+
+![folderStructure](https://user-images.githubusercontent.com/52280338/98683653-94cc0600-2365-11eb-98f7-cae7c7eb085c.png)
+
+## Email
+
+![emailStructure](https://user-images.githubusercontent.com/52280338/98683719-aa413000-2365-11eb-8c3d-a3d7dbbfd294.png)
+
+# Example Structure
 
 This service relies on the backend having the right structure so it can look in the sendbox folder for emails to be send and if they fail while sending, move them to the failbox folder for example. If you do no have a mailbox structure in the backend then you can migrate the following example file [HERE](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql) to your backend using the [Migration Service](https://github.com/mu-semtech/mu-migrations-service).
 
 When the file has succesfully migrated to your backend you should you should have a mailbox structure that looks like this:
 
-
-![mailboxStructure](https://user-images.githubusercontent.com/52280338/97017210-edba3280-154d-11eb-8c16-baee06e7cca1.png)
-
+![exampleStructure](https://user-images.githubusercontent.com/52280338/98683867-d361c080-2365-11eb-9c4d-7a800f393106.png)
 
 > Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default.
-
-## Email Structure
-
-Recommended Email-structure (default in testing app-deliver-email-service)
-
-![emailStructure](https://user-images.githubusercontent.com/52280338/98672594-5418c080-2356-11eb-854e-b8a8faa5ac53.png)
-
-
 
 <br> <br>
 # Environment Variables
