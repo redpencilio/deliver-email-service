@@ -39,7 +39,7 @@ To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: aatauil/deliver-email-service:1.0.0
+    image: aatauil/deliver-email-service:1.1.0
     labels:
         - "logging=true"
     restart: always
@@ -60,13 +60,16 @@ deliver-email-service:
 
 # Example Structure
 
-This service relies on the backend having the right structure so it can look in the sendbox folder for emails to be send and if they fail while sending, move them to the failbox folder for example. If you do no have a mailbox structure in the backend then you can migrate the following example file [HERE](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql) to your backend using the [Migration Service](https://github.com/mu-semtech/mu-migrations-service).
+This service relies on a certain structure. By default it searches for an "outbox" folder to find the emails that need to be send, a "failbox" for emails that have failed etc. You can modify the structure in the code as needed but if you want to use the defaults then you can just migrate the following file: [HERE](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
 
-When the file has succesfully migrated to your backend you should you should have a mailbox structure that looks like this:
+If you havent yet worked with the migration service then you can find a detailed explanation on how to migrate a file to your database [HERE](https://github.com/mu-semtech/mu-migrations-service).
+
+The migration file is included by default when using the example app: (app-deliver-email-service)[https://github.com/aatauil/app-deliver-email]
+When the file has succesfully migrated to your backend then the folder structure should look like this:
 
 ![exampleStructure](https://user-images.githubusercontent.com/52280338/98683867-d361c080-2365-11eb-9c4d-7a800f393106.png)
 
-> Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default.
+<sup><b>!! Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default !!</b></sup>
 
 <br> <br>
 # Environment Variables
@@ -88,9 +91,9 @@ The following environment variables can be added to your docker-compose file. Yo
 | SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | "false"  |   |
 | EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT  | NEED CHANGE *  | 1 |
-| WELL_KNOWN_SERVICE_OR_SERVER  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null | X |
+| WELL_KNOWN_SERVICE  | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | null | X |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
-| EMAIL_ADDRESS | E-mail address from sender (username if service is SendGrid)  | null | For smtp  |
+| EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
 | HOST | Is the hostname or IP address to connect to.  | "localhost" | 
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
