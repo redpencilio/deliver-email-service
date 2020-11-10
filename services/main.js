@@ -48,7 +48,6 @@ async function _checkForLostEmails(){
     let modifiedDate = new Date(email.sentDate);
     let currentDate = new Date();
     let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= .4;
-    debugger;
     if(timeout && email.lastSendingAttempt == true){
       await moveEmailToFolder(GRAPH, email, "failbox");
       console.log(' > Found email stuck in sending after retry. Moving the email to "failbox"');
