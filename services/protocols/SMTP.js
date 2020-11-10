@@ -3,6 +3,7 @@ import nodemailerServices from '../../data/node-mailer-services';
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import createSentDate from '../../queries/create-sent-date';
+import setLastAttempt from "../../queries/set-last-attempt";
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
