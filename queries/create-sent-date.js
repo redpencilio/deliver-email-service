@@ -1,7 +1,13 @@
+/** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri, sparqlEscapeDateTime } from 'mu';
 
-
+/**
+ * TYPE: query
+ * Removes old sentDate & creates a new one using current time
+ * @param  {string} graphName
+ * @param  {object} email
+ */
 async function createSentDate(graphName, email) {
   const sentDate = new Date().toISOString();
   const result = await query(`
@@ -25,8 +31,8 @@ async function createSentDate(graphName, email) {
         }
     }
   `);
-  return result
 
+  return result
 }
 
 export default createSentDate;

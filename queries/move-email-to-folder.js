@@ -1,6 +1,15 @@
+/** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 
+/**
+ * TYPE: query
+ * Removes and adds emails to a different mailfolder.
+ * e.g. from outbox folder to sending folder
+ * @param  {string} graphName
+ * @param  {string} email
+ * @param  {string} mailboxName
+ */
 async function moveEmailToFolder(graphName, email, mailboxName) {
     const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>

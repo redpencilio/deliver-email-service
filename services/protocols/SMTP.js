@@ -1,13 +1,12 @@
-// IMPORTS
+/** IMPORTS */
 import nodemailerServices from '../../data/node-mailer-services';
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import createSentDate from '../../queries/create-sent-date';
-
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
-// ENV
+/** ENV */
 import { 
   FROM_NAME, 
   GRAPH, 
@@ -15,7 +14,12 @@ import {
   WELL_KNOWN_SERVICE 
 } from '../../config';
 
-// MAIN FUNCTION
+/**
+ * TYPE: main function
+ * Sends Email to sending box , checks if a sentDate exists and then calls the sendMail sub function
+ * @param  {boolean} email
+ * @param  {integer} count
+ */
 async function sendSMTP(email, count){
   try {
     await moveEmailToFolder(GRAPH, email, "sending");
@@ -26,8 +30,16 @@ async function sendSMTP(email, count){
   }
 }
 
-
-// SUB FUNCTIONS
+/**
+ * TYPE: sub function
+ * Responsible for actually setting up and sending the email. Since the protocol is TEST, it will create a temporary test email account using Ethereal Mail.
+ * Create transport (sendGrid has its own nodemailer_transporter) > create mail object  > Send the email
+ * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
+ * SUCCESS: move email to sentbox folder, update messageID
+ * 
+ * @param  {object} email
+ * @param  {integer} count
+ */
 async function _checkSentDate(email, count) {
   if (!email.sentDate) {
     await createSentDate(GRAPH, email);
@@ -60,8 +72,6 @@ async function _sendMail(email, count) {
   } else {
     throw new Error('** Something went wrong when creating a transport using nodemailer. **')
   }
-
-
 
   const attachments = (email.attachments || []).map((attachment) => {
     return {
@@ -101,7 +111,7 @@ async function _sendMail(email, count) {
           console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
           console.dir(` > Email ${count}: ${failed}`);
         }
-        
+
       } else {
         moveEmailToFolder(GRAPH, email, "sentbox");
         updateEmailId(graph, email, success.messageId);

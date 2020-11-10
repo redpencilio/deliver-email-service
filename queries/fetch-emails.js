@@ -1,7 +1,16 @@
+/** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri } from 'mu';
 import sortResults from '../utils/sort-results';
 
+/**
+ * TYPE: query
+ * Fetches all mails in the outbox folder. 
+ * @param  {string} graphName
+ * @param  {string} mailboxURI
+ * @param  {string} folderName
+ * @returns Array of emails 
+ */
 async function fetchEmails(graphName, mailboxURI, folderName) {
   const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
@@ -63,7 +72,6 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?lastSendingAttempt
 `);
-debugger;
   return sortResults(result);
 };
 

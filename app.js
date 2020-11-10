@@ -1,17 +1,18 @@
 "use strict";
 
-// IMPORTS
+/** IMPORTS */ 
 import { app, errorHandler } from 'mu';
 import Axios from 'axios';
 import main from './services/main';
 const CronJob = require('cron').CronJob;
 
-// ENV
+/** ENV */ 
 import { CRON_FREQUENCY } from './config';
 
 /**
- * Cron job trigggered 
- * @param  {} cronFrequency
+ * Cron job that triggers on a timely basis. 
+ * 
+ * @param  {string} cronFrequency
  */
 new CronJob(CRON_FREQUENCY, function() {
   console.log(`*************************************************************************`);
@@ -21,22 +22,22 @@ new CronJob(CRON_FREQUENCY, function() {
 
 }, null, true);
 
+/**
+ * post route that will be called by CronJob. It will trigger the process of sending the emails.
+ * Calls the main function situated in the services folder
+ */
 app.post('/email-delivery/', async function(req, res, next) {
-
   try{
     await main(res);
   }
   catch(err){
     console.log(err);
   }
-
 });
 
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
   // application specific logging, throwing an error, or other logic here
 });
-
-
 
 app.use(errorHandler);

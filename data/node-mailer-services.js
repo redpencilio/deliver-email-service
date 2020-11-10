@@ -1,3 +1,7 @@
+/**
+ * List of nodemailer well known services, trimmed down to tested services
+ */
+
 const nodeMailerServices = [
   '126',
   '163',

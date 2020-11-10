@@ -1,21 +1,24 @@
 
-// IMPORTS
+/** IMPORTS */ 
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import createSentDate from '../../queries/create-sent-date';
 import setLastAttempt from "../../queries/set-last-attempt";
-
 const nodemailer = require("nodemailer");
 
-// ENV
+/** ENV */ 
 import { 
   GRAPH, 
   FROM_NAME,
   HOURS_DELIVERING_TIMEOUT
 } from "../../config";
 
-
-// MAIN FUNCTION
+/**
+ * TYPE: main function
+ * Sends Email to sending box, checks if a sentDate exists and then calls the sendMail sub function
+ * @param  {boolean} email
+ * @param  {integer} count
+ */
 async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
   try {
@@ -27,17 +30,29 @@ async function sendTEST(email, count){
   }
 }
 
-// SUB FUNCTIONS CALLED BY MAIN
-
+/**
+ * TYPE: sub function
+ * Checks if a sentDate has been set for the email. If not it will create a sentDate using the current time
+ * @param  {object} email
+ * @param  {integer} count
+ */
 async function _checkSentDate(email, count) {
   if (!email.sentDate) {
     await createSentDate(GRAPH, email);
     console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
-
+/**
+ * TYPE: sub function
+ * Responsible for actually setting up and sending the email. Since the protocol is TEST, it will create a temporary test email account using Ethereal Mail.
+ * Create transport > create mail object > Send the email
+ * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
+ * SUCCESS: move email to sentbox folder, update messageID
+ * 
+ * @param  {object} email
+ * @param  {integer} count
+ */
 async function _sendMail(email, count) {
-  
   let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
