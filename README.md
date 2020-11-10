@@ -15,11 +15,13 @@
   * [Debugging](#debugging)
 - [Development](#development)
   * [Backend](#backend)
-  * [Environment](#environment)
+  * [Docker-compose](#docker-compose-1)
 - [Testing](#testing)
+  * [Backend](#backend-1)
+  * [Docker-compose](#docker-compose-2)
 - [Useful Queries](#useful-queries)
   * [Creating a mail](#creating-a-mail)
-  * [Tracking mails](#tracking-mails)
+  * [Tracking mails](#tracking-mails
     
   <br> <br>
 # Description
