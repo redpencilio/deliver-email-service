@@ -1,14 +1,19 @@
 "use strict";
+
+// IMPORTS
 import { app, errorHandler } from 'mu';
 import Axios from 'axios';
 import main from './services/main';
+const CronJob = require('cron').CronJob;
 
-var CronJob = require('cron').CronJob;
+// ENV
+import { CRON_FREQUENCY } from './config';
 
-const cronFrequency =  '*/20 * * * * *';
-
-
-new CronJob(cronFrequency, function() {
+/**
+ * Cron job trigggered 
+ * @param  {} cronFrequency
+ */
+new CronJob(CRON_FREQUENCY, function() {
   console.log(`*************************************************************************`);
   console.log(`***  Email delivery triggered by cron job at ${new Date().toISOString()} ***`);
   console.log(`*************************************************************************`);
