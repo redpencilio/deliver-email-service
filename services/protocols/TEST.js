@@ -1,56 +1,58 @@
 
-// IMPORTS
-const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder");
-const { default: updateEmailId } = require('../../queries/updateEmailId');
-const { default: createSentDate } = require('../../queries/createSentDate');
+/** IMPORTS */ 
+import moveEmailToFolder from "../../queries/move-email-to-folder";
+import updateEmailId from '../../queries/update-email-Id';
+import createSentDate from '../../queries/create-sent-date';
+import setLastAttempt from "../../queries/set-last-attempt";
 const nodemailer = require("nodemailer");
 
-// ENV
-const fromName = process.env.FROM_NAME || '';
-const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
+/** ENV */ 
+import { 
+  GRAPH, 
+  FROM_NAME,
+  HOURS_DELIVERING_TIMEOUT
+} from "../../config";
 
-// MAIN FUNCTION
-async function test(emails){
+/**
+ * TYPE: main function
+ * Sends Email to sending box, checks if a sentDate exists and then calls the sendMail sub function
+ * @param  {boolean} email
+ * @param  {integer} count
+ */
+async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
-  let count = 0;
   try {
-    emails.forEach(async email => {
-      count++;
-        await moveEmailToFolder(graph, email.uuid, "outbox");
-        await _checkSentDate(email);
-        await _checkTimeout(email);
-        await _sendMail(email, count);
-    });
+    await moveEmailToFolder(GRAPH, email, "sending");
+    await _checkSentDate(email, count);
+    await _sendMail(email, count);
   } catch (err) {
-   console.log(err)
+   console.log(err);
   }
 }
 
-// SUB FUNCTIONS CALLED BY MAIN
-
-async function _checkSentDate(email) {
+/**
+ * TYPE: sub function
+ * Checks if a sentDate has been set for the email. If not it will create a sentDate using the current time
+ * @param  {object} email
+ * @param  {integer} count
+ */
+async function _checkSentDate(email, count) {
   if (!email.sentDate) {
-    await createSentDate(graph, email);
-    console.log(` >>> No send date found, a send date has been created.`);
+    await createSentDate(GRAPH, email);
+    console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
-
-async function _checkTimeout(email) {
-  let modifiedDate = new Date(email.sentDate);
-  let currentDate = new Date();
-  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
-  
-  if (timeout) {
-    await moveEmailToFolder(graph, email.uuid, "outbox");
-    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
-  }
-  
-
-}
-
+/**
+ * TYPE: sub function
+ * Responsible for actually setting up and sending the email. Since the protocol is TEST, it will create a temporary test email account using Ethereal Mail.
+ * Create transport > create mail object > Send the email
+ * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
+ * SUCCESS: move email to sentbox folder, update messageID
+ * 
+ * @param  {object} email
+ * @param  {integer} count
+ */
 async function _sendMail(email, count) {
-  
   let testAccount = await nodemailer.createTestAccount();
 
   // create reusable transporter object using the default SMTP transport
@@ -68,11 +70,11 @@ async function _sendMail(email, count) {
     return {
       filename: attachment.filename,
       path: attachment.dataSource
-    };
+    }
   });
 
   const mailProperties = {
-    from: `${fromName} ${email.messageFrom}`,
+    from: `${FROM_NAME} ${email.messageFrom}`,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -83,27 +85,35 @@ async function _sendMail(email, count) {
   };
   
   transporter.sendMail(mailProperties, async (failed, success) => {
-    
+
   if(failed){
-    
-  await moveEmailToFolder(graph, email.uuid, "failbox");
-  console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
-  console.dir(` > Email ${count}: ${failed}`);
+    let modifiedDate = new Date(email.sentDate);
+    let currentDate = new Date();
+    let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
+    if(!timeout){
+      await setLastAttempt(GRAPH, email)
+      await moveEmailToFolder(GRAPH, email, "outbox");
+      console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+      console.dir(` > Email ${count}: ${failed}`);
+
+    } else {
+      moveEmailToFolder(GRAPH, email, "failbox");
+      console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
+      console.dir(` > Email ${count}: ${failed}`);
+    }
   } else {
-    
-    console.log(` > Email ${count} UUID:`, email.uuid);
-    moveEmailToFolder(graph, email.uuid, "sentbox");
-    console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
-
-    updateEmailId(graph, email.messageId, success.messageId);
-    console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
-    console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
+    moveEmailToFolder(GRAPH, email, "sentbox");
+    updateEmailId(GRAPH, email, success.messageId);
     email.messageId = success.messageId;
-    console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+    console.log(` > Email ${count}: UUID = ${email.uuid}`);
+    console.log(` > Email ${count}: Message moved to sentbox`);
+    console.log(` > Email ${count}: Email message ID updated`);
+    console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
+    console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(success));
     }
   })
 
 }
 
-export default test;
+export default sendTEST;

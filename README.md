@@ -17,29 +17,27 @@
 # Description
 
 Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
-        <br> <br>
 
 # Basic Usage
 
 The minimum to get the email service up and running.
 
-## Prerequisite
+## Prerequisites
 
 - You will need to have a mu-semtech stack running in the backend with at least the following services:
 
-| Service  | Repository 
+| Service  | Repository
 |---|---|
 | mu-identifier  | https://github.com/mu-semtech/mu-identifier  |
-| mu-disptacher  | https://github.com/mu-semtech/mu-dispatcher  |
+| mu-dispatcher  | https://github.com/mu-semtech/mu-dispatcher  |
 | virtuoso  | https://hub.docker.com/r/tenforce/virtuoso/  |
 | mu-cl-resources  | https://github.com/mu-semtech/mu-cl-resources  |
-
 
 ## Docker-compose
 
 To use the service add the following to your docker-compose.yml file
 
-```yaml 
+```yaml
 deliver-email-service:
     image: aatauil/deliver-email-service:1.0.0
     labels:
@@ -57,7 +55,7 @@ When the file has succesfully migrated to your backend you should you should hav
 ![mailboxStructure](https://user-images.githubusercontent.com/52280338/97017210-edba3280-154d-11eb-8c16-baee06e7cca1.png)
 
 
-> Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default. 
+> Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default.
 
 ## Email Structure
 
@@ -70,7 +68,7 @@ Recommended Email-structure (default in testing app-deliver-email-service)
 <br> <br>
 # Environment Variables
 
-The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file. 
+The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
 ## Database
 
@@ -109,13 +107,13 @@ The following environment variables can be added to your docker-compose file. Yo
 <br>
 
 ## Backend
-If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the nescessary migrations file to get you up and running quickly. Follow the readme file of the following repo:
+If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the necessary migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [link to backend repo](http://comingsoon)
 
-## environment
+## Environment
 
-As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debuggin. To get started quickly, change the deliver-email-service in your docker-compose file to this:
+As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
 ```yaml
   deliver-email-service:
@@ -127,7 +125,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
       SECURE_CONNECTION: "true"
       NODE_ENV: "development"
       EMAIL_PROTOCOL: "smtp"
-      WELL_KNOWN_SERVICE_OR_SERVER: "myservice"
+      WELL_KNOWN_SERVICE: "myservice"
       EMAIL_ADDRESS: "mymail@myservice.com"
       EMAIL_PASSWORD: "myemailpassword"
       FROM_NAME: "myname"
@@ -154,15 +152,15 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your dock
     restart: always
     logging: *default-logging
 ```
-When creating a mail in the database (see [usefull queries](#usefull-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE_OR_SERVER). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
+When creating a mail in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
 
 ```
 > EMAIL 1: Preview ur https://ethereal.email/message/123456788abcdefg
 ```
-When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail. 
+When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail.
 Now you do not have to worry about spamming your own mailbox when testing.
 <br> <br>
-# Usefull Queries
+# Useful Queries
 
 ## Creating a mail
 
@@ -170,7 +168,7 @@ Now you do not have to worry about spamming your own mailbox when testing.
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#> 
+PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 INSERT DATA {
   GRAPH <http://mu.semte.ch/graphs/system/email> {
@@ -179,7 +177,7 @@ INSERT DATA {
        <http://mu.semte.ch/vocabularies/core/uuid> "0cad72fd-4f21-4ea7-af8c-88d24577ee56";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erica@redpencil.io";
+       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailBcc> "aad@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageSubject> "Email deliver service";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#plainTextMessageContent> "I really like this service! But when encountering bugs, its important to create an    issue in the repo so it can get resolved";
@@ -207,7 +205,7 @@ PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
       ?messageId
       ?plainTextMessageContent
       ?htmlMessageContent
-      ?sentDate 
+      ?sentDate
       ?folder
       ?lastSendingAttempt
 

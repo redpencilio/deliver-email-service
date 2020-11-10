@@ -1,43 +1,51 @@
-// IMPORTS
-const { default: fetchEmails } = require('../queries/fetchEmails');
-const { default: smtp } = require('./protocols/SMTP');
-const { default: test } = require('./protocols/TEST');
+/** IMPORTS */ 
+import fetchEmails  from '../queries/fetch-emails';
+import sendSMTP from './protocols/SMTP';
+import sendTEST from './protocols/TEST';
 
-// ENV
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
-const uri = process.env.MAILFOLDER_URI || 'http://data.lblod.info/id/mailboxes/1';
-const protocol = process.env.EMAIL_PROTOCOL;
+/** ENV */ 
+import { 
+  EMAIL_PROTOCOL, 
+  GRAPH, 
+  URI
+} from '../config';
 
-// MAIN FUNCTION
+/**
+ * TYPE: main function
+ * Fetches the mail and checks for existing mails, and calles processEmails when emails are found
+ * 
+ * @param  {object} res
+ */
 async function main(res) {
   try{
-    let emails = await fetchEmails(graph, uri);
-    await _checkLength(emails, res);
-    await _processEmails(emails);
+    const emails = await fetchEmails(GRAPH, URI, "outbox");
+    if (emails.length == 0) {
+      console.log("*** No Emails found to be send. ***")
+      return res.status(204).end();
+    }
+
+    console.log(` >>> ${emails.length} Emails found that need to be send. `);
+    _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
     console.dir(err);
   }
 }
 
-  // SUB FUNCTIONS
-  async function _checkLength(emails, res) {
-    
-    if (emails.length == 0) {
-      throw "*** No Emails found to be send. ***" ;
-    }
-    console.log(` >>> ${emails.length} Emails found that need to be send. `);
-  }
-
- async function _processEmails(emails) {
+/**
+ * TYPE: sub function
+ * Function called by main when emails are found. Checks the protocol passed in the environment variables and calls the right function or throws an error, if protocol does not exist
+ * 
+ * @param  {object} emails
+ * @param  {string} protocol
+ */
+async function _processEmails(emails, protocol) {
     switch (protocol) {
       case "smtp":
-        smtp(emails);
+        Promise.all(emails.map((email, index) => sendSMTP(email, index)));
         break;
-      case "rest":
-        throw new Error( "*** Sending emails via 'rest' is not supported at the moment. ***");
       case "test":
-        test(emails);
+        Promise.all(emails.map((email, index) => sendTEST(email, index)));
         break;
       default:
         throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***");

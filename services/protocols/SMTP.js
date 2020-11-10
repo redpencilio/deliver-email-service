@@ -1,71 +1,65 @@
-// IMPORTS
-const { default: nodemailerServices } = require('../../data/nodeMailerServices');
-const { default: moveEmailToFolder } = require("../../queries/moveEmailToFolder");
-const { default: updateEmailId } = require('../../queries/updateEmailId');
-const { default: createSentDate } = require('../../queries/createSentDate');
+/** IMPORTS */
+import nodemailerServices from '../../data/node-mailer-services';
+import moveEmailToFolder from "../../queries/move-email-to-folder";
+import updateEmailId from '../../queries/update-email-Id';
+import createSentDate from '../../queries/create-sent-date';
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
-// ENV
-const wkServiceOrServer = process.env.WELL_KNOWN_SERVICE_OR_SERVER.toLowerCase();
-const fromName = process.env.FROM_NAME || '';
-const hoursDeliveringTimeout = process.env.HOURS_DELIVERING_TIMEOUT || 1;
-const graph = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
+/** ENV */
+import { 
+  FROM_NAME, 
+  GRAPH, 
+  HOURS_DELIVERING_TIMEOUT, 
+  WELL_KNOWN_SERVICE 
+} from '../../config';
 
-
-// MAIN FUNCTION
-async function smtp(emails){
-  let count = 0;
+/**
+ * TYPE: main function
+ * Sends Email to sending box , checks if a sentDate exists and then calls the sendMail sub function
+ * @param  {boolean} email
+ * @param  {integer} count
+ */
+async function sendSMTP(email, count){
   try {
-    emails.forEach(async email => {
-      count++;
-        await moveEmailToFolder(graph, email.uuid, "outbox");
-        await _checkSentDate(email);
-        await _checkTimeout(email);
-        await _sendMail(email, count);
-    });
+    await moveEmailToFolder(GRAPH, email, "sending");
+    await _checkSentDate(email, count);
+    await _sendMail(email, count);
   } catch (err) {
-   console.log(err)
+   console.log(err);
   }
 }
 
-
-// SUB FUNCTIONS
-async function _checkSentDate(email) {
+/**
+ * TYPE: sub function
+ * Responsible for actually setting up and sending the email. Since the protocol is TEST, it will create a temporary test email account using Ethereal Mail.
+ * Create transport (sendGrid has its own nodemailer_transporter) > create mail object  > Send the email
+ * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
+ * SUCCESS: move email to sentbox folder, update messageID
+ * 
+ * @param  {object} email
+ * @param  {integer} count
+ */
+async function _checkSentDate(email, count) {
   if (!email.sentDate) {
-    await createSentDate(graph, email);
-    console.log(` >>> No send date found, a send date has been created.`);
+    await createSentDate(GRAPH, email);
+    console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
-}
-
-async function _checkTimeout(email) {
-  let modifiedDate = new Date(email.sentDate);
-  let currentDate = new Date();
-  let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(hoursDeliveringTimeout);
-
-  if (timeout) {
-    // moveEmailToFolder(graph, email.uuid, "failbox");
-    throw new Error(`*** FAILED: Timeout reached, message moved to failbox: ${email.uuid} ***`);
-  };
 }
 
 async function _sendMail(email, count) {
   let transporter = null;
-  if (!((nodemailerServices.indexOf(wkServiceOrServer) > (-1)) || (nodemailerServices == 'server'))) {
-    throw new Error(` > WELL_KNOWN_SERVICE_OR_SERVER should be 'server' or a known service by Nodemailer`);
-  };
 
-  if (wkServiceOrServer == "server") {
-    transporter = nodemailer.createTransport({
-      service: wellKnownServiceOrServer,
-      auth: {
-        user: process.env.EMAIL_ADDRESS,
-        pass: process.env.EMAIL_PASSWORD
+  if (WELL_KNOWN_SERVICE == "sendgrid") {
+    transporter = nodemailer.createTransport(sgTransport(
+        {
+          auth: {
+              api_key: process.env.EMAIL_PASSWORD
+          }
       }
-    });
-  }
-
-  if (wkServiceOrServer != "server" && wkServiceOrServer != "sendgrid") {
+    ));
+  
+  } else if (!(nodemailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
       host: process.env.HOST,
       port: process.env.PORT,
@@ -75,28 +69,19 @@ async function _sendMail(email, count) {
         pass: process.env.EMAIL_PASSWORD
       }
     });
+  } else {
+    throw new Error('** Something went wrong when creating a transport using nodemailer. **')
   }
-
-  if (wkServiceOrServer == "sendgrid") {
-    transporter = nodemailer.createTransport(sgTransport(
-        {
-          auth: {
-              api_key: process.env.EMAIL_PASSWORD
-          }
-      }
-    ))
-  }
-
 
   const attachments = (email.attachments || []).map((attachment) => {
     return {
       filename: attachment.filename,
       path: attachment.dataSource
-    };
+    }
   });
 
   const mailProperties = {
-    from: `${fromName} ${email.messageFrom}`,
+    from: `${FROM_NAME} ${email.messageFrom}`,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -109,23 +94,35 @@ async function _sendMail(email, count) {
   try{
 
     transporter.sendMail(mailProperties, async (failed, success) => {
-      if(failed){
-      moveEmailToFolder(graph, email.uuid, "failbox");
-      console.log(` > The destination server responded with an error. Email ${count} send to Failbox.`);
-      console.dir(` > Email ${count}: ${failed}`);
     
-      } else {
-        moveEmailToFolder(graph, email.uuid, "sentbox");
-        updateEmailId(graph, email.messageId, success.messageId);
-        email.messageId = success.messageId;
-        console.log(` > Email ${count} UUID:`, email.uuid);
-        console.log(` > Email ${count}: Message moved to sentbox: ${email.uuid}`);
-        console.log(` > Email ${count}: Email message ID updated: ${email.uuid}`);
-        console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
+      if(failed){
+        let modifiedDate = new Date(email.sentDate);
+        let currentDate = new Date();
+        let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
-        console.log(` > Email ${count}:  Preview URL %s`, nodemailer.getTestMessageUrl(success));
+        if(!timeout){
+          await setLastAttempt(GRAPH, email)
+          await moveEmailToFolder(GRAPH, email, "outbox");
+          console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+          console.dir(` > Email ${count}: ${failed}`);
+
+        } else {
+          moveEmailToFolder(GRAPH, email, "failbox");
+          console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
+          console.dir(` > Email ${count}: ${failed}`);
         }
-      })
+
+      } else {
+        moveEmailToFolder(GRAPH, email, "sentbox");
+        updateEmailId(graph, email, success.messageId);
+        email.messageId = success.messageId;
+        console.log(` > Email ${count}: UUID = ${email.uuid}`);
+        console.log(` > Email ${count}: Email moved to sentbox`);
+        console.log(` > Email ${count}: Email message ID updated`);
+        console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
+        console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(success));
+        }
+      });
     }
 
   catch(err) {
@@ -133,4 +130,4 @@ async function _sendMail(email, count) {
   }
 }
 
-export default smtp;
+export default sendSMTP;
