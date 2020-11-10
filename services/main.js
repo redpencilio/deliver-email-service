@@ -9,7 +9,7 @@ import sendTEST from './protocols/TEST';
 import { 
   EMAIL_PROTOCOL, 
   GRAPH, 
-  URI,
+  URI
 } from '../config';
 
 /**
@@ -20,7 +20,7 @@ import {
  */
 async function main(res) {
   try{
-
+    await _checkForLostEmails();
     const emails = await fetchEmails(GRAPH, URI, "outbox");
     if (emails.length == 0) {
       console.log("*** No Emails found to be send. ***")
@@ -34,7 +34,7 @@ async function main(res) {
     console.dir(err);
   }
 
-  await _checkForLostEmails();
+
 }
 
 /**
@@ -58,11 +58,10 @@ async function _checkForLostEmails(){
       await moveEmailToFolder(GRAPH, email, "outbox");
       await setLastAttempt(GRAPH, email);
 
-      console.log(' > Found email stuck in sending. Will retry sending email at next cronjob');
+      console.log(' > Found email stuck in sending. Will retry sending email again');
       console.log(` > Email UUID: ${email.uuid}`)
     } 
   });                                 
-
 }
 
 /**
