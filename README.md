@@ -2,21 +2,29 @@
 
 - [Description](#description)
 - [Basic Usage](#basic-usage)
-  * [Prerequisite](#prerequisite)
+  * [Prerequisites](#prerequisites)
   * [Docker-compose](#docker-compose)
-  * [Mailbox Structure](#mailbox-structure)
+- [Models](#models)
+  * [Mailbox](#mailbox)
+  * [Folder](#folder)
+  * [Email](#email)
+- [Example Structure](#example-structure)
 - [Environment Variables](#environment-variables)
   * [Database](#database)
-  * [Email](#email)
+  * [Email](#email-1)
   * [Debugging](#debugging)
 - [Development](#development)
-  * [Optional](#optional)
+  * [Backend](#backend)
+  * [Environment](#environment)
 - [Testing](#testing)
+- [Useful Queries](#useful-queries)
+  * [Creating a mail](#creating-a-mail)
+  * [Tracking mails](#tracking-mails)
     
   <br> <br>
 # Description
 
-Service used for processing emails. This is meant be used in a mu-semtech stack. It uses a cron job to periodically look for emails located in the sendBox folder. It uses NodeMailer to send the E-mails.
+Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. It uses NodeMailer to send the e-mails.
 
 # Basic Usage
 
@@ -64,17 +72,17 @@ This service relies on a certain structure. By default it searches for an "outbo
 
 If you havent yet worked with the migration service then you can find a detailed explanation on how to migrate a file to your database [HERE](https://github.com/mu-semtech/mu-migrations-service).
 
-The migration file is included by default when using the example app: (app-deliver-email-service)[https://github.com/aatauil/app-deliver-email]
-When the file has succesfully migrated to your backend then the folder structure should look like this:
+The migration file is included by default when using the example app: (app-deliver-email)[https://github.com/aatauil/app-deliver-email]
+When the file has succesfully migrated to your backend then the mailbox & folder structure in the backend should look like this:
 
 ![exampleStructure](https://user-images.githubusercontent.com/52280338/98683867-d361c080-2365-11eb-9c4d-7a800f393106.png)
 
-<sup><b>!! Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default !!</b></sup>
+<sup><b>!! Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default</b></sup>
 
 <br> <br>
 # Environment Variables
 
-The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related. All these environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
+The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
 ## Database
 
@@ -88,9 +96,9 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | "false"  |   |
+| SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
 | EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
-| HOURS_DELIVERING_TIMEOUT  | NEED CHANGE *  | 1 |
+| HOURS_DELIVERING_TIMEOUT  | Timeout after which an the service will stop retrying to send the e-mail after it has failed  | 1 |
 | WELL_KNOWN_SERVICE  | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | null | X |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
@@ -107,17 +115,19 @@ The following environment variables can be added to your docker-compose file. Yo
 <br> <br>
 # Development
 
+This will show you how to setup a development environment so you can take advantage of features like 'live reload' & 'chrome debugger';
+
 
 **Optional:**
    You might want to go through the [testing](#testing) section first if you want to test your mails using a temporary mailbox
 <br>
 
 ## Backend
-If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the necessary migrations file to get you up and running quickly. Follow the readme file of the following repo:
+If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
-[link to backend repo](http://comingsoon)
+[App-deliver-email](https://github.com/aatauil/app-deliver-email)
 
-## Environment
+## Docker-compose
 
 As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
@@ -143,13 +153,25 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
     logging: *default-logging
 
 ```
+
+<sup><b>!! Ofcoarse you will want to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
 <br> <br>
 # Testing
 
-You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your docker-compose file to "test"
+Testing environment will send create a temporary ethereal mailbox where you can inspect the email. 
+<sup>!! This will not ACTUALLY send the emails. So if you have the 'to' property of a mail set to example@test.com then this address will <b>not</b> receive that email in their mailbox. </sup>
+
+## Backend
+If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
+
+[App-deliver-email](https://github.com/aatauil/app-deliver-email)
+
+## Docker-compose
+
+You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
-    image: aatauil/deliver-email-service:1.0.0
+    image: aatauil/deliver-email-service:1.1.0
     environment:
       EMAIL_PROTOCOL: "test"
       FROM_NAME: "RedPencil"
@@ -158,10 +180,10 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL ENV in your dock
     restart: always
     logging: *default-logging
 ```
-When creating a mail in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending a mail using SMTP (exluding testing for WELL_KNOWN_SERVICE). The main difference being that nodemailer will create a temporary ethereal mailbox for you where you can view your send mail. At the end of the logs you will see something like:
+When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using SMTP or any other service. The main difference being that the service will create a temporary ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
 
 ```
-> EMAIL 1: Preview ur https://ethereal.email/message/123456788abcdefg
+> EMAIL 3: Preview ur https://ethereal.email/message/123456788abcdefg
 ```
 When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail.
 Now you do not have to worry about spamming your own mailbox when testing.
@@ -192,6 +214,8 @@ INSERT DATA {
  }
 }
 ```
+
+<sup>You will want to modify <http://data.lblod.info/id/emails/1> after each inserted mail otherwise you will create duplicates. e.g.  <http://data.lblod.info/id/emails/2>,  <http://data.lblod.info/id/emails/3> etc..</sup>
 
 ## Tracking mails
 
@@ -253,33 +277,6 @@ PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
     }
 GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
 ```
-
-## Delete all emails (!!)
-
-**This deletes all emails in all folders! use with caution**
-
-```
-
-PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
-PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
-PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
-
-  DELETE {
-    GRAPH <http://mu.semte.ch/graphs/system/email> {
-        ?email nmo:isPartOf ?folder.
-    }
-  }
-  WHERE {
-    GRAPH  <http://mu.semte.ch/graphs/system/email> {
-          ?email a nmo:Email.
-          ?email nmo:isPartOf ?folder.
-    }
-  }
-
-```
-
-
 
 
 
