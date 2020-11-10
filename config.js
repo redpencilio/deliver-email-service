@@ -9,6 +9,11 @@ const FROM_NAME = process.env.FROM_NAME || '';
 const HOURS_DELIVERING_TIMEOUT = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const WELL_KNOWN_SERVICE = process.env.WELL_KNOWN_SERVICE.toLowerCase();
 const CRON_FREQUENCY = process.env.EMAIL_CRON_PATTERN || '*/1 * * * *';
+const SECURE_CONNECTION = process.env.SECURE_CONNECTION || false;
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const HOST = process.env.HOST;
+const PORT = process.env.PORT;
 
 /**
  * Checks if service passed in environment variables is valid or throws an error early
@@ -25,5 +30,10 @@ export {
   FROM_NAME,
   HOURS_DELIVERING_TIMEOUT,
   WELL_KNOWN_SERVICE,
-  CRON_FREQUENCY
+  CRON_FREQUENCY,
+  SECURE_CONNECTION,
+  EMAIL_ADDRESS,
+  EMAIL_PASSWORD,
+  HOST,
+  PORT
 }
