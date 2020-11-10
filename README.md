@@ -12,13 +12,6 @@
 - [Development](#development)
   * [Optional](#optional)
 - [Testing](#testing)
-- [API](#api)
-  * [Folder Structure](#folder-structure)
-  * [Root](#root)
-  * [Data](#data)
-  * [Queries](#queries)
-  * [Services](#services)
-  * [Protocols](#protocols)
     
   <br> <br>
 # Description
@@ -274,89 +267,6 @@ PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
   }
 
 ```
-
-
-<br> <br>
-# API
-
-## Folder Structure
-
-```
-root
-	├── data ( list of static data )
-	├── queries ( all query files are located here )
-	├── services ( bussiness logic of application )
-	│   └── protocols ( files seperated by protocol used to send emails )
-	└── utils ( functions used for e.g. parsing are located here )
-```
-## Root
-
-### App.js
-
-Entrypoint of application. It has one patch endpoint that calls the main() function. It is also responsible for triggering cron jobs. Bussiness logic should be seperated from this file.
-
-## Data
-
-### nodeMailerServices.js
-This contains a list of known nodemailer services and can be extended if needed. The list should not be updated programatically.
-
-## Queries
-
-You can find all queries in the queries folder.
-
-### fetchEmails.js
-
-This query looks for emails that are located in the outbox folder. It returns a list of object with the found email details.
-It expects a graphName & mailfolderUri as arguments.
-
-### createSentDate.js
-
-Every email that gets processed is checked for a sentDate. If the email does not have a sentdate specified then it gets the date of today specified as sentDate. 
-It expects a graphName & email as arguments.
-
-
-### moveEmailToFolder.js
-
-This query is responsible for moving email around to the correct folder. An e-mail located in the outbox that is currently being send will be deleted from the "outbox" folder and placed inside the the "sending" folder. It should be impossible to have the same e-mail in both "oubox" & "sending" at the same time unless the email is being send twice. 
-it expects a graphName, emailId, and a mailboxName.
-
-### updateEmailId.js
-After a mail has been sended , it gets assigned a new messageId. This query deletes the old messageId and replaces it by a new one.
-It expects a graphNamen oldMessageId & a newMessageId.
-
-## Services
-
-This is where the main bussiness logic of the application is situated. Every service javascript file is seperated into sections.
-
-	├── IMPORTS ( List of imports )
-	├── ENV ( List of environment variables )
-	├── MAIN FUNCTION ( The function called directly by other files )
-	├── SUB FUNCTIONS ( Functions called by the file its main function )
-
-Sub functions are prepended by an underscore (_) to indicate that they are not meant be called by other files and are exclusively used by the file its main function
-
-### main.js
-
-This contains the main function of the app that will be called everytime a cron job is triggered. It checks for emails that need to be send and processes them accordingly distributing the mail to the right function based on the protocol that has been defined in the environment variables.
-
-## Protocols
-
-List of supported protocols for sending the mail
-
-### REST.js
-
-Currently unsupported
-
-### SMTP.js
-
-When smtp has been specified as protocol , the main.js file will send the mail to this function. 
-
-
-### TEST.js
-
-You can specifiy "test" as protocol ENV. If you do so then Nodemailer will create a temporary email using Ethereal and will send the mail to that address. When the mails get send you will see a preview url displayed in the console per email. 
- 
-
 
 
 
