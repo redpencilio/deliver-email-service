@@ -74,31 +74,31 @@ The following environment variables can be added to your docker-compose file. Yo
 
 ## Database
 
-| ENV  | Description | default |
-|---|---|---|
-| GRAPH_NAME | Specify the graph that you want to manipulate  | "http://mu.semte.ch/graphs/system/email"  |
-| MAILFOLDER_URI | Specify the uri of the mailfolder that you want to manipulate  | "http://data.lblod.info/id/mailboxes/1"  |
+| ENV  | Description | default | required |
+|---|---|---|---|
+| GRAPH_NAME | Specify the graph that you want to manipulate  | "http://mu.semte.ch/graphs/system/email"  | |
+| MAILFOLDER_URI | Specify the uri of the mailfolder that you want to manipulate  | "http://data.lblod.info/id/mailboxes/1"  | |
 
 
 ## Email
 
-| ENV  | Description | default |
-|---|---|---|
-| SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | "false"  |
-| EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null |
+| ENV  | Description | default | required |
+|---|---|---|---|
+| SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | "false"  |   |
+| EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT  | NEED CHANGE *  | 1 |
-| WELL_KNOWN_SERVICE_OR_SERVER  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null |
+| WELL_KNOWN_SERVICE_OR_SERVER  | Specify the email service you will be using to send the emails. Options: [list](https://nodemailer.com/smtp/well-known/) or "server"  | null | X |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
-| EMAIL_ADDRESS | E-mail address from sender (username if service is SendGrid)  | null |
-| EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null |
-| HOST | Is the hostname or IP address to connect to.  | "localhost" |
+| EMAIL_ADDRESS | E-mail address from sender (username if service is SendGrid)  | null | For smtp  |
+| EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
+| HOST | Is the hostname or IP address to connect to.  | "localhost" | 
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
 
 ## Debugging
 
-| ENV  | Description | default |
-|---|---|---|
-| NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" |
+| ENV  | Description | default | required |
+|---|---|---|---|
+| NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" | |
 
 <br> <br>
 # Development
