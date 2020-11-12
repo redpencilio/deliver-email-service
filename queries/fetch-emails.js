@@ -77,7 +77,6 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?lastSendingAttempt ?attachments
 `);
-debugger;
   return sortResults(result);
 };
 
