@@ -28,6 +28,8 @@
 
 Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. It uses NodeMailer to send the e-mails.
 
+**Docker-image:** https://hub.docker.com/repository/docker/aatauil/deliver-email-service
+
 # Basic Usage
 
 The minimum to get the email service up and running.
