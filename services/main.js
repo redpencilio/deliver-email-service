@@ -34,7 +34,7 @@ async function main(res) {
     console.dir(err);
   }
 
-
+  return res.status(204).end();
 }
 
 /**
@@ -79,7 +79,7 @@ async function _processEmails(emails, protocol) {
         Promise.all(emails.map((email, index) => sendTEST(email, index)));
         break;
       default:
-        throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' , 'rest' or 'test' ***");
+        throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' or 'test' ***");
     }
   }
   
