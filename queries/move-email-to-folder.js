@@ -18,27 +18,25 @@ async function moveEmailToFolder(graphName, email, mailboxName) {
 
     DELETE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email nmo:isPartOf ?folder.
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?folder.
         }
       }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?email nmo:isPartOf ?folder.
-            BIND('${email.email}' as ?email).
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?folder.
         }
     }
     ;
     INSERT {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ?email nmo:isPartOf ?mailfolder.
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?mailfolder.
         }
     }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
             ?mailfolder a nfo:Folder.
             ?mailfolder nie:title  ${sparqlEscapeString(mailboxName)}.
-            ?email a nmo:Email.
-            BIND ('${email.email}' as ?email).
+            ${sparqlEscapeUri(email.email)} a nmo:Email.
         }
     }
   `);
