@@ -41,7 +41,10 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
-      ?email nmo:hasAttachment ?attachments
+
+      BIND('' as ?defaultAttachments).
+      OPTIONAL {?email nmo:hasAttachment ?optionalAttachments}.
+      BIND(coalesce(?optionalAttachments, ?defaultAttachments) as ?attachments).
 
       BIND(false as ?defaultSA).
       OPTIONAL {?email ext:lastSendingAttempt ?optionalSA}.
@@ -74,6 +77,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?lastSendingAttempt ?attachments
 `);
+debugger;
   return sortResults(result);
 };
 
