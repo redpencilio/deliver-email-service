@@ -3,6 +3,7 @@ import nodemailerServices from '../../data/node-mailer-services';
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import createSentDate from '../../queries/create-sent-date';
+import setLastAttempt from "../../queries/set-last-attempt";
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
@@ -11,7 +12,12 @@ import {
   FROM_NAME, 
   GRAPH, 
   HOURS_DELIVERING_TIMEOUT, 
-  WELL_KNOWN_SERVICE 
+  WELL_KNOWN_SERVICE,
+  SECURE_CONNECTION,
+  EMAIL_ADDRESS,
+  EMAIL_PASSWORD,
+  HOST,
+  PORT
 } from '../../config';
 
 /**
@@ -32,7 +38,7 @@ async function sendSMTP(email, count){
 
 /**
  * TYPE: sub function
- * Responsible for actually setting up and sending the email. Since the protocol is TEST, it will create a temporary test email account using Ethereal Mail.
+ * Responsible for actually setting up and sending the email. 
  * Create transport (sendGrid has its own nodemailer_transporter) > create mail object  > Send the email
  * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
  * SUCCESS: move email to sentbox folder, update messageID
@@ -54,19 +60,19 @@ async function _sendMail(email, count) {
     transporter = nodemailer.createTransport(sgTransport(
         {
           auth: {
-              api_key: process.env.EMAIL_PASSWORD
+              api_key: EMAIL_PASSWORD
           }
       }
     ));
   
   } else if (!(nodemailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      port: process.env.PORT,
-      secureConnection: process.env.SECURE_CONNECTION || false,
+      host: HOST,
+      port: PORT,
+      secureConnection: SECURE_CONNECTION,
       auth: {
-        user: process.env.EMAIL_ADDRESS,
-        pass: process.env.EMAIL_PASSWORD
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
       }
     });
   } else {
