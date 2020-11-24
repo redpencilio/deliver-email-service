@@ -9,7 +9,8 @@ import sendTEST from './protocols/TEST';
 import { 
   EMAIL_PROTOCOL, 
   GRAPH, 
-  URI
+  URI,
+  HOURS_SENDING_TIMEOUT
 } from '../config';
 
 /**
@@ -47,7 +48,7 @@ async function _checkForLostEmails(){
   for (const email of emails) {
     const modifiedDate = new Date(email.sentDate);
     const currentDate = new Date();
-    const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= .4;
+    const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= HOURS_SENDING_TIMEOUT;
     if (timeout && email.lastSendingAttempt == true) {
       await moveEmailToFolder(GRAPH, email, "failbox");
       console.log(' > Found email stuck in sending after retry. Moving the email to "failbox"');

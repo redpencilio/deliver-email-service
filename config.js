@@ -5,6 +5,7 @@ const URI = process.env.MAILFOLDER_URI || 'http://data.lblod.info/id/mailboxes/1
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL;
 const FROM_NAME = process.env.FROM_NAME || '';
 const HOURS_DELIVERING_TIMEOUT = process.env.HOURS_DELIVERING_TIMEOUT || 1;
+const HOURS_SENDING_TIMEOUT = process.env.HOURS_SENDING_TIMEOUT || .5;
 const WELL_KNOWN_SERVICE = process.env.WELL_KNOWN_SERVICE.toLowerCase();
 const CRON_FREQUENCY = process.env.EMAIL_CRON_PATTERN || '*/1 * * * *';
 const SECURE_CONNECTION = process.env.SECURE_CONNECTION || false;
@@ -82,5 +83,6 @@ export {
   EMAIL_PASSWORD,
   HOST,
   PORT,
+  HOURS_SENDING_TIMEOUT,
   nodeMailerServices
 }
