@@ -115,6 +115,7 @@ This deliver-email-service is build around the (Nepomuk Message Ontology)[http:/
 | EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
 | HOURS_SENDING_TIMEOUT | Timeout after which emails in the sending box will be either retried or moved to the failbox  | .5 |
+| MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Its recommended not to set this number too high as it can overload the database.  | 200 |
 | WELL_KNOWN_SERVICE  | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | null | X |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
