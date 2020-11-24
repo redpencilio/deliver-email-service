@@ -51,7 +51,7 @@ To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: aatauil/deliver-email-service:1.1.0
+    image: redpencil/deliver-email-service:1.1.0
     labels:
         - "logging=true"
     restart: always
@@ -175,7 +175,7 @@ If you already have a backend you want to use for development then you can ignor
 You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
-    image: aatauil/deliver-email-service:1.1.0
+    image: redpencil/deliver-email-service:1.1.0
     environment:
       EMAIL_PROTOCOL: "test"
       FROM_NAME: "RedPencil"
