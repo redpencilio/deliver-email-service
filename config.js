@@ -1,5 +1,3 @@
-/** IMPORTS */ 
-import nodemailerServices from './data/node-mailer-services';
 
 /** CONFIGURATION */ 
 const GRAPH = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
@@ -15,12 +13,60 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
+
+const nodeMailerServices = [
+  '126',
+  '163',
+  '1und1',
+  'aol',
+  'debugmail',
+  'dynectemail',
+  'fastmail',
+  'gandimail',
+  'gmail',
+  'godaddy',
+  'godaddyasia',
+  'godaddyeurope',
+  'hot.ee',
+  'hotmail',
+  'icloud',
+  'mail.ee',
+  'mail.ru',
+  'maildev',
+  'mailgun',
+  'mailjet',
+  'mailosaur',
+  'mandrill',
+  'naver',
+  'openmailbox',
+  'outlook365',
+  'postmark',
+  'qq',
+  'qqex',
+  'sendcloud',
+  'sendgrid',
+  'sendinblue',
+  'sendpulse',
+  'ses',
+  'ses-us-east-1',
+  'ses-us-west-2',
+  'ses-eu-west-1',
+  'smtp',
+  'sparkpost',
+  'yahoo',
+  'yandex',
+  'zoho',
+  'qiye.aliyun'
+];
+
+
 /**
  * Checks if service passed in environment variables is valid or throws an error early
  */
-if (nodemailerServices.indexOf(WELL_KNOWN_SERVICE)  == -1) {
+if (nodeMailerServices.indexOf(WELL_KNOWN_SERVICE)  == -1) {
   throw new Error(` *** WELL_KNOWN_SERVICE should be 'smtp' or a known service by Nodemailer *** `);
 };
+
 
 /** EXPORTS */ 
 export {
@@ -35,5 +81,6 @@ export {
   EMAIL_ADDRESS,
   EMAIL_PASSWORD,
   HOST,
-  PORT
+  PORT,
+  nodeMailerServices
 }

@@ -1,5 +1,4 @@
 /** IMPORTS */
-import nodemailerServices from '../../data/node-mailer-services';
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import updateSentDate from '../../queries/update-sent-date';
@@ -17,7 +16,8 @@ import {
   EMAIL_ADDRESS,
   EMAIL_PASSWORD,
   HOST,
-  PORT
+  PORT,
+  nodeMailerServices
 } from '../../config';
 
 /**
@@ -65,7 +65,7 @@ async function _sendMail(email, count) {
       }
     ));
   
-  } else if (!(nodemailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
+  } else if (!(nodeMailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
       host: HOST,
       port: PORT,
