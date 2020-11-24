@@ -1,6 +1,6 @@
 /** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
-import { sparqlEscapeUri } from 'mu';
+import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
 import sortResults from '../utils/sort-results';
 
 /**
@@ -16,7 +16,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
   PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
-  PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
+  PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
   SELECT ?email
     ?uuid
@@ -29,7 +29,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
     ?plainTextMessageContent
     ?htmlMessageContent
     ?sentDate
-    ?lastSendingAttempt
+    ?numberOfRetries
     ?attachments
 
   WHERE {
@@ -46,9 +46,9 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       OPTIONAL {?email nmo:hasAttachment ?optionalAttachments}.
       BIND(coalesce(?optionalAttachments, ?defaultAttachments) as ?attachments).
 
-      BIND(false as ?defaultSA).
-      OPTIONAL {?email ext:lastSendingAttempt ?optionalSA}.
-      BIND(coalesce(?optionalSA, ?defaultSA) as ?lastSendingAttempt).
+      BIND(${sparqlEscapeInt(0)} as ?defaultRetries).
+      OPTIONAL {?email task:numberOfRetries ?optionalRetries}.
+      BIND(coalesce(?optionalRetries, ?defaultRetries) as ?numberOfRetries).
 
       BIND('' as ?defaultEmailCc).
       OPTIONAL {?email nmo:emailCc ?optionalEmailCc}.
