@@ -35,7 +35,6 @@ async function main(res) {
     console.dir(err);
   }
 
-  return res.status(204).end();
 }
 
 /**
