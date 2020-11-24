@@ -4,14 +4,17 @@ import moveEmailToFolder from '../queries/move-email-to-folder';
 import updateLastAttempt from '../queries/update-last-attempt';
 import sendSMTP from './protocols/SMTP';
 import sendTEST from './protocols/TEST';
+import chunkEmails from '../utils/chunk-emails';
 
 /** ENV */ 
 import { 
   EMAIL_PROTOCOL, 
   GRAPH, 
   URI,
-  HOURS_SENDING_TIMEOUT
+  HOURS_SENDING_TIMEOUT,
+  MAX_BATCH_SIZE
 } from '../config';
+
 
 /**
  * TYPE: main function
@@ -65,18 +68,27 @@ async function _checkForLostEmails(){
 
 /**
  * TYPE: sub function
- * Function called by main when emails are found. Checks the protocol passed in the environment variables and calls the right function or throws an error, if protocol does not exist
+ * Function called by main when emails are found.
+ * Splits emails into batches of a given number. This so to not overload the database when sending large amounts of emails in parallel. Default amount of emails in a batch is 200.
+ * Checks the protocol passed in the environment variables and calls the right function or throws an error, if protocol does not exist
  * 
  * @param  {object} emails
  * @param  {string} protocol
  */
 async function _processEmails(emails, protocol) {
+
+    const emailBatches = chunkEmails(emails, MAX_BATCH_SIZE)
+    debugger;
     switch (protocol) {
       case "smtp":
-        Promise.all(emails.map((email, index) => sendSMTP(email, index)));
+        for (const batch of emailBatches) {
+          await Promise.all(batch.map((email, index) => sendSMTP(email, index)));
+        }
         break;
       case "test":
-        Promise.all(emails.map((email, index) => sendTEST(email, index)));
+        for (const batch of emailBatches) {
+          await Promise.all(batch.map((email, index) => sendTEST(email, index)));
+        }
         break;
       default:
         throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' or 'test' ***");
