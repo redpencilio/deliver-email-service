@@ -88,6 +88,17 @@ When the file has succesfully migrated to your backend then the mailbox & folder
 
 The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
+# Ontology & Prefixes
+
+This deliver-email-service is build around the (Nepomuk Message Ontology)[http://oscaf.sourceforge.net/nmo.html]
+
+| Prefix  | URI |
+|---|---|
+| nfo | http://www.semanticdesktop.org/ontologies/2007/03/22/nfo# |
+| nie | http://www.semanticdesktop.org/ontologies/2007/01/19/nie# |
+| dct | http://purl.org/dc/terms/ |
+| dbpedia | http://dbpedia.org/ontology/ |
+
 ## Database
 
 | ENV  | Description | default | required |
