@@ -101,12 +101,12 @@ async function _sendMail(email, count) {
 
     transporter.sendMail(mailProperties, async (failed, success) => {
     
-      if(failed){
+      if (failed) {
         let modifiedDate = new Date(email.sentDate);
         let currentDate = new Date();
         let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
-        if(!timeout){
+        if (!timeout) {
           await setLastAttempt(GRAPH, email)
           await moveEmailToFolder(GRAPH, email, "outbox");
           console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
