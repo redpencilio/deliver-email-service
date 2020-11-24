@@ -75,7 +75,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       BIND(coalesce(?optionalSentDate, ?defaultSentDate) as ?sentDate).
     }
   }
-  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?lastSendingAttempt ?attachments
+  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
 `);
   return sortResults(result);
 };
