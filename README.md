@@ -204,6 +204,25 @@ When creating an email in the database (see [useful queries](#useful-queries)) t
 When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail.
 Now you do not have to worry about spamming your own mailbox when testing.
 <br> <br>
+
+# REST API
+
+**POST /email-delivery**
+Initiate a new email-delivery cycle asynchronously.
+
+Returns 202 Accepted if the email-delivery process started successfully.
+
+Returns 204 No Content if the email-delivery got triggered but no emails where found that need to be send.
+
+Returns 500 Bad Request if something went unexpected went wrong while initiating the email-delivery process.
+
+## Usefull
+
+You can use postman to trigger the service or use this command (locally)
+
+`wget --post-data='' http://localhost/email-delivery/`
+
+
 # Useful Queries
 
 ## Creating a mail
