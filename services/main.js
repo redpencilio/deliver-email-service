@@ -1,7 +1,7 @@
 /** IMPORTS */ 
 import fetchEmails  from '../queries/fetch-emails';
 import moveEmailToFolder from '../queries/move-email-to-folder';
-import setLastAttempt from '../queries/set-last-attempt';
+import updateLastAttempt from '../queries/update-last-attempt';
 import sendSMTP from './protocols/SMTP';
 import sendTEST from './protocols/TEST';
 
@@ -55,7 +55,7 @@ async function _checkForLostEmails(){
 
     } else if (timeout) {
       await moveEmailToFolder(GRAPH, email, "outbox");
-      await setLastAttempt(GRAPH, email);
+      await updateLastAttempt(GRAPH, email);
 
       console.log(' > Found email stuck in sending. Will retry sending email again');
       console.log(` > Email UUID: ${email.uuid}`)

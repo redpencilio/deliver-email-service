@@ -9,7 +9,7 @@ import { sparqlEscapeUri, sparqlEscapeBool } from 'mu';
  * @param  {string} graphName
  * @param  {object} email
  */
-async function setLastAttempt(graphName, email) {
+async function updateLastAttempt(graphName, email) {
     const result = await query(`
     PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
 
@@ -32,4 +32,4 @@ async function setLastAttempt(graphName, email) {
   return result
 };
 
-export default setLastAttempt
+export default updateLastAttempt

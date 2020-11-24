@@ -2,8 +2,8 @@
 /** IMPORTS */ 
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
-import createSentDate from '../../queries/create-sent-date';
-import setLastAttempt from "../../queries/set-last-attempt";
+import updateSentDate from '../../queries/update-sent-date';
+import updateLastAttempt from "../../queries/update-last-attempt";
 const nodemailer = require("nodemailer");
 
 /** ENV */ 
@@ -38,7 +38,7 @@ async function sendTEST(email, count){
  */
 async function _checkSentDate(email, count) {
   if (!email.sentDate) {
-    await createSentDate(GRAPH, email);
+    await updateSentDate(GRAPH, email);
     console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
@@ -92,7 +92,7 @@ async function _sendMail(email, count) {
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
     if (!timeout) {
-      await setLastAttempt(GRAPH, email)
+      await updateLastAttempt(GRAPH, email)
       await moveEmailToFolder(GRAPH, email, "outbox");
       console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
       console.dir(` > Email ${count}: ${failed}`);
