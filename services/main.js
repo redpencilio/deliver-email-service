@@ -44,7 +44,7 @@ async function main(res) {
 async function _checkForLostEmails(){
   const emails = await fetchEmails(GRAPH, URI, "sending")
   
-  emails.forEach(async email => {
+  for (const email of emails) {
     const modifiedDate = new Date(email.sentDate);
     const currentDate = new Date();
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= .4;
@@ -60,7 +60,7 @@ async function _checkForLostEmails(){
       console.log(' > Found email stuck in sending. Will retry sending email again');
       console.log(` > Email UUID: ${email.uuid}`)
     } 
-  });                                 
+  };                                 
 }
 
 /**
