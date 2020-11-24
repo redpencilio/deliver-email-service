@@ -2,7 +2,7 @@
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
 import updateSentDate from '../../queries/update-sent-date';
-import updateLastAttempt from "../../queries/update-last-attempt";
+import incrementRetryAttempt from "../../queries/increment-retry-attempt";
 const nodemailer = require("nodemailer");
 const sgTransport = require('nodemailer-sendgrid-transport');
 
@@ -107,7 +107,7 @@ async function _sendMail(email, count) {
         const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
         if (!timeout) {
-          await updateLastAttempt(GRAPH, email)
+          await incrementRetryAttempt(GRAPH, email)
           await moveEmailToFolder(GRAPH, email, "outbox");
           console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
           console.dir(` > Email ${count}: ${failed}`);
