@@ -2,15 +2,16 @@
 /** IMPORTS */ 
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-Id';
-import createSentDate from '../../queries/create-sent-date';
-import setLastAttempt from "../../queries/set-last-attempt";
+import updateSentDate from '../../queries/update-sent-date';
+import incrementRetryAttempt from "../../queries/increment-retry-attempt";
 const nodemailer = require("nodemailer");
 
 /** ENV */ 
 import { 
   GRAPH, 
   FROM_NAME,
-  HOURS_DELIVERING_TIMEOUT
+  HOURS_DELIVERING_TIMEOUT,
+  MAX_RETRY_ATTEMPTS
 } from "../../config";
 
 /**
@@ -38,7 +39,7 @@ async function sendTEST(email, count){
  */
 async function _checkSentDate(email, count) {
   if (!email.sentDate) {
-    await createSentDate(GRAPH, email);
+    await updateSentDate(GRAPH, email);
     console.log(` > Email ${count}: No send date found, a send date has been created.`);
   }
 }
@@ -86,21 +87,24 @@ async function _sendMail(email, count) {
   
   transporter.sendMail(mailProperties, async (failed, success) => {
 
-  if(failed){
-    let modifiedDate = new Date(email.sentDate);
-    let currentDate = new Date();
-    let timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
+  if (failed) {
+    const modifiedDate = new Date(email.sentDate);
+    const currentDate = new Date();
+    const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
-    if(!timeout){
-      await setLastAttempt(GRAPH, email)
-      await moveEmailToFolder(GRAPH, email, "outbox");
-      console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+    if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) { 
+      moveEmailToFolder(GRAPH, email, "failbox");
+      console.log(` > Email ${count}: The destination server responded with an error.`);
+      console.log(` > Email ${count}: Max retries (${MAX_RETRY_ATTEMPTS}) exceeded. Emails had been moved to failbox`);
       console.dir(` > Email ${count}: ${failed}`);
 
     } else {
-      moveEmailToFolder(GRAPH, email, "failbox");
-      console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
+      await incrementRetryAttempt(GRAPH, email)
+      await moveEmailToFolder(GRAPH, email, "outbox");
+      console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+      console.log(` > Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
       console.dir(` > Email ${count}: ${failed}`);
+
     }
   } else {
     moveEmailToFolder(GRAPH, email, "sentbox");

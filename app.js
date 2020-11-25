@@ -29,9 +29,12 @@ new CronJob(CRON_FREQUENCY, function() {
 app.post('/email-delivery/', async function(req, res, next) {
   try{
     await main(res);
+    res.status(202).send().end();
   }
   catch(err){
+    console.log('ERROR: something went wrong while initiating the email delivery.');
     console.log(err);
+    res.status(500).send(e.message).end();
   }
 });
 
