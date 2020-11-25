@@ -58,8 +58,7 @@ async function _checkForLostEmails(){
       console.log(` > Email UUID: ${email.uuid}`)
 
     } else if (timeout) {
-      debugger;
-      await moveEmailToFolder(GRAPH, email, "sending");
+      await moveEmailToFolder(GRAPH, email, "outbox");
       await incrementRetryAttempt(GRAPH, email);
 
       console.log(' > Found email stuck in sending. Will retry sending email again');
@@ -81,7 +80,6 @@ async function _checkForLostEmails(){
 async function _processEmails(emails, protocol) {
 
     const emailBatches = chunkEmails(emails, MAX_BATCH_SIZE)
-    debugger;
     switch (protocol) {
       case "smtp":
         for (const batch of emailBatches) {
