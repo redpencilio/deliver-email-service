@@ -17,7 +17,8 @@ import {
   EMAIL_PASSWORD,
   HOST,
   PORT,
-  nodeMailerServices
+  nodeMailerServices,
+  MAX_RETRY_ATTEMPTS
 } from '../../config';
 
 /**
@@ -106,17 +107,19 @@ async function _sendMail(email, count) {
         const currentDate = new Date();
         const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
-        if (!timeout) {
+        if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) { 
+          moveEmailToFolder(GRAPH, email, "failbox");
+          console.log(` > Email ${count}: The destination server responded with an error.`);
+          console.log(` > Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
+          console.dir(` > Email ${count}: ${failed}`);
+    
+        } else {
           await incrementRetryAttempt(GRAPH, email)
           await moveEmailToFolder(GRAPH, email, "outbox");
           console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+          console.log(` > Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
           console.dir(` > Email ${count}: ${failed}`);
-
-        } else {
-          moveEmailToFolder(GRAPH, email, "failbox");
-          console.log(` > Email ${count}: The destination server responded with an error. Email moved to failbox.`);
-          console.dir(` > Email ${count}: ${failed}`);
-        }
+        }    
 
       } else {
         moveEmailToFolder(GRAPH, email, "sentbox");

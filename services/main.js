@@ -1,7 +1,7 @@
 /** IMPORTS */ 
 import fetchEmails  from '../queries/fetch-emails';
 import moveEmailToFolder from '../queries/move-email-to-folder';
-import updateLastAttempt from '../queries/update-last-attempt';
+import incrementRetryAttempt from '../queries/increment-retry-attempt';
 import sendSMTP from './protocols/SMTP';
 import sendTEST from './protocols/TEST';
 import chunkEmails from '../utils/chunk-emails';
@@ -12,7 +12,8 @@ import {
   GRAPH, 
   URI,
   HOURS_SENDING_TIMEOUT,
-  MAX_BATCH_SIZE
+  MAX_BATCH_SIZE,
+  MAX_RETRY_ATTEMPTS
 } from '../config';
 
 
@@ -51,16 +52,18 @@ async function _checkForLostEmails(){
     const modifiedDate = new Date(email.sentDate);
     const currentDate = new Date();
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= HOURS_SENDING_TIMEOUT;
-    if (timeout && email.lastSendingAttempt == true) {
+    if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
       await moveEmailToFolder(GRAPH, email, "failbox");
-      console.log(' > Found email stuck in sending after retry. Moving the email to "failbox"');
+      console.log(` > Email still stuck in sending after ${MAX_RETRY_ATTEMPTS} retry attempts. Moving the email to "failbox"`);
       console.log(` > Email UUID: ${email.uuid}`)
 
     } else if (timeout) {
-      await moveEmailToFolder(GRAPH, email, "outbox");
-      await updateLastAttempt(GRAPH, email);
+      debugger;
+      await moveEmailToFolder(GRAPH, email, "sending");
+      await incrementRetryAttempt(GRAPH, email);
 
       console.log(' > Found email stuck in sending. Will retry sending email again');
+      console.log(` > Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
       console.log(` > Email UUID: ${email.uuid}`)
     } 
   };                                 
