@@ -71,7 +71,7 @@ deliver-email-service:
 
 ## Email
 
-![emailStructure](https://user-images.githubusercontent.com/52280338/98683719-aa413000-2365-11eb-8c3d-a3d7dbbfd294.png)
+![emailStructure](https://user-images.githubusercontent.com/52280338/100217257-8cea9500-2f13-11eb-9180-20fe7cb1a3a6.png)
 
 # Example Structure
 
