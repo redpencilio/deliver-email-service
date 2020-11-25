@@ -9,7 +9,7 @@
   * [Folder](#folder)
   * [Email](#email)
 - [Example Structure](#example-structure)
-- [Ontology & Prefixes](#ontology---prefixes)
+- [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
   * [Database](#database)
   * [Email](#email-1)
@@ -180,7 +180,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 <br> <br>
 # Testing
 
-Testing environment will send create a temporary ethereal mailbox where you can inspect the email. 
+Testing environment will send create a temporary ethereal mailbox where you can inspect the email. <br>
 <sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from. In reality you can enter any (random) sender email address and (random) receiver address.</sup>
 
 ## Backend
