@@ -111,13 +111,13 @@ This deliver-email-service is build around the (Nepomuk Message Ontology)[http:/
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| SECURE_CONNECTION  | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
-| EMAIL_PROTOCOL  | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
+| SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
+| EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
 | HOURS_SENDING_TIMEOUT | Timeout after which emails in the sending box will be either retried or moved to the failbox  | .5 |
 | MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Its recommended not to set this number too high as it can overload the database.  | 200 |
 | MAX_RETRY_ATTEMPTS | Max amount of times an email will be tried to resend after it fails  | 5 |
-| WELL_KNOWN_SERVICE  | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | null | X |
+| WELL_KNOWN_SERVICE | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | null | X |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
