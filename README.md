@@ -9,6 +9,7 @@
   * [Folder](#folder)
   * [Email](#email)
 - [Example Structure](#example-structure)
+- [Ontology & Prefixes](#ontology---prefixes)
 - [Environment Variables](#environment-variables)
   * [Database](#database)
   * [Email](#email-1)
@@ -19,6 +20,8 @@
 - [Testing](#testing)
   * [Backend](#backend-1)
   * [Docker-compose](#docker-compose-2)
+- [REST API](#rest-api)
+  * [Usefull](#usefull)
 - [Useful Queries](#useful-queries)
   * [Creating a mail](#creating-a-mail)
   * [Tracking mails](#tracking-mails)
@@ -26,9 +29,9 @@
   <br> <br>
 # Description
 
-Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. It uses NodeMailer to send the e-mails.
+Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. Emails are send using [Nodemailer](https://nodemailer.com/).
 
-**Docker-image:** https://hub.docker.com/repository/docker/aatauil/deliver-email-service
+**Docker-image:** https://hub.docker.com/repository/docker/redpencil/deliver-email-service
 
 # Basic Usage
 
@@ -72,25 +75,21 @@ deliver-email-service:
 
 # Example Structure
 
-This service relies on a certain structure. By default it searches for an "outbox" folder to find the emails that need to be send, a "failbox" for emails that have failed etc. You can modify the structure in the code as needed but if you want to use the defaults then you can just migrate the following file: [HERE](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
+This service relies on a certain structure. By default it searches for an "outbox" folder to find the emails that need to be send, a "failbox" for the emails that have failed etc.. You can modify the structure in the code as needed but in case you want to use the default, then you can migrate the following file: [Migration file](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
 
 If you havent yet worked with the migration service then you can find a detailed explanation on how to migrate a file to your database [HERE](https://github.com/mu-semtech/mu-migrations-service).
 
 The migration file is included by default when using the example app: (app-deliver-email)[https://github.com/aatauil/app-deliver-email]
-When the file has succesfully migrated to your backend then the mailbox & folder structure in the backend should look like this:
+When the file has succesfully migrated to your database, then the mailbox & folder structure in the backend should look like this:
 
 ![exampleStructure](https://user-images.githubusercontent.com/52280338/98683867-d361c080-2365-11eb-9c4d-7a800f393106.png)
 
-<sup><b>!! Emails + header boxes are displayed only for illustration purposes & are NOT included in the migration file by default</b></sup>
+<sup><b>Emails & header boxes are displayed only for illustration purposes. They are NOT included in the migrations file by default</b></sup>
 
 <br> <br>
-# Environment Variables
-
-The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
-
 # Ontology & Prefixes
 
-This deliver-email-service is build around the (Nepomuk Message Ontology)[http://oscaf.sourceforge.net/nmo.html]
+This deliver-email-service is build around the [Nepomuk Message Ontology](http://oscaf.sourceforge.net/nmo.html)
 
 | Prefix  | URI |
 |---|---|
@@ -98,6 +97,11 @@ This deliver-email-service is build around the (Nepomuk Message Ontology)[http:/
 | nie | http://www.semanticdesktop.org/ontologies/2007/01/19/nie# |
 | dct | http://purl.org/dc/terms/ |
 | dbpedia | http://dbpedia.org/ontology/ |
+
+<br> <br>
+# Environment Variables
+
+The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
 ## Database
 
@@ -133,7 +137,7 @@ This deliver-email-service is build around the (Nepomuk Message Ontology)[http:/
 <br> <br>
 # Development
 
-This will show you how to setup a development environment so you can take advantage of features like 'live reload' & 'chrome debugger';
+This will show you how to setup a development environment so you can take advantage of features and tools like **live reload** & **chrome debugger tool**;
 
 
 **Optional:**
@@ -172,12 +176,12 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```
 
-<sup><b>!! Ofcoarse you will want to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
+<sup><b>Don't forget to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
 <br> <br>
 # Testing
 
 Testing environment will send create a temporary ethereal mailbox where you can inspect the email. 
-<sup>!! This will not ACTUALLY send the emails. So if you have the 'to' property of a mail set to example@test.com then this address will <b>not</b> receive that email in their mailbox. </sup>
+<sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from. In reality you can enter any (random) sender email address and (random) receiver address.</sup>
 
 ## Backend
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
@@ -198,13 +202,13 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-c
     restart: always
     logging: *default-logging
 ```
-When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using SMTP or any other service. The main difference being that the service will create a temporary ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
+When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using SMTP or any other service. The main difference being that the service will create a temporary generated ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
 
 ```
-> EMAIL 3: Preview ur https://ethereal.email/message/123456788abcdefg
+> EMAIL 3: Preview url https://ethereal.email/message/123456788abcdefg
 ```
-When clicking on the link you will be redirected to the temporary mailbox where you can inspect the contents of the mail.
-Now you do not have to worry about spamming your own mailbox when testing.
+When clicking on the link you will be redirected to the temporary generated mailbox where you can inspect the contents of the mail.
+You do not have to worry about it spamming your own or any other mailbox when the test protocol is set.
 <br> <br>
 
 # REST API
@@ -216,13 +220,21 @@ Returns 202 Accepted if the email-delivery process started successfully.
 
 Returns 204 No Content if the email-delivery got triggered but no emails where found that need to be send.
 
-Returns 500 Bad Request if something went unexpected went wrong while initiating the email-delivery process.
+Returns 500 Bad Request if something unexpected went wrong while initiating the email-delivery process.
 
 ## Usefull
 
 You can use postman to trigger the service or use this command (locally)
 
 `wget --post-data='' http://localhost/email-delivery/`
+
+This only works if you add the following to your dispatcher
+
+```ruby
+  post "/email-delivery/*path" do
+    Proxy.forward conn, path, "http://deliver-email-service/email-delivery/"
+  end
+```
 
 
 # Useful Queries
@@ -243,9 +255,9 @@ INSERT DATA {
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
-      <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailBcc> "aad@redpencil.io";
+       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailBcc> "aad@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageSubject> "Email deliver service";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#plainTextMessageContent> "I really like this service! But when encountering bugs, its important to create an    issue in the repo so it can get resolved";
+       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#plainTextMessageContent> "I really like this service! But when encountering bugs, its important           to create an issue in the repo so it can get resolved";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#sentDate> "";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#isPartOf> <http://data.lblod.info/id/mail-folders/2>.
  }
@@ -261,7 +273,7 @@ INSERT DATA {
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
-PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
+PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
    SELECT  ?email
       ?uuid
@@ -274,7 +286,7 @@ PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
       ?htmlMessageContent
       ?sentDate
       ?folder
-      ?lastSendingAttempt
+      ?numberOfRetries
 
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/system/email> {
@@ -286,9 +298,9 @@ PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
         ?email nmo:messageFrom ?messageFrom.
         ?email nmo:emailTo ?emailTo.
 
-        BIND(false as ?defaultSA).
-        OPTIONAL {?email ext:lastSendingAttempt ?optionalSA}.
-        BIND(coalesce(?optionalSA, ?defaultSA ) as ?lastSendingAttempt).
+        BIND(0 as ?defaultRetries).
+        OPTIONAL {?email task:numberOfRetries ?optionalRetries}.
+        BIND(coalesce(?optionalRetries, ?defaultRetries) as ?numberOfRetries).
 
         BIND('' as ?defaultEmailCc).
         OPTIONAL {?email nmo:emailCc ?optionalEmailCc}.
@@ -312,7 +324,7 @@ PREFIX ext: <http://mu.semte.ch/vocabularies/ext#>
 
       }
     }
-GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate
+GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 ```
 
 
