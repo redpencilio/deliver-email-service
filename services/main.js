@@ -10,7 +10,7 @@ import chunkEmails from '../utils/chunk-emails';
 import { 
   EMAIL_PROTOCOL, 
   GRAPH, 
-  URI,
+  MAILBOX_URI,
   HOURS_SENDING_TIMEOUT,
   MAX_BATCH_SIZE,
   MAX_RETRY_ATTEMPTS
@@ -24,9 +24,10 @@ import {
  * @param  {object} res
  */
 async function main(res) {
+  debugger;
   try{
     await _checkForLostEmails();
-    const emails = await fetchEmails(GRAPH, URI, "outbox");
+    const emails = await fetchEmails(GRAPH, MAILBOX_URI, "outbox");
     if (emails.length == 0) {
       console.log("*** No Emails found to be send. ***")
       return res.status(204).end();
@@ -46,19 +47,19 @@ async function main(res) {
  * otherwhise if timeout has expired but not lastAttempt, move email to outbox & set lastAttempt to true
  */
 async function _checkForLostEmails(){
-  const emails = await fetchEmails(GRAPH, URI, "sending")
+  const emails = await fetchEmails(GRAPH, MAILBOX_URI, "sending")
   
   for (const email of emails) {
     const modifiedDate = new Date(email.sentDate);
     const currentDate = new Date();
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= HOURS_SENDING_TIMEOUT;
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
-      await moveEmailToFolder(GRAPH, email, "failbox");
+      await moveEmailToFolder(GRAPH, MAILBOX_URI,  email, "failbox");
       console.log(` > Email still stuck in sending after ${MAX_RETRY_ATTEMPTS} retry attempts. Moving the email to "failbox"`);
       console.log(` > Email UUID: ${email.uuid}`)
 
     } else if (timeout) {
-      await moveEmailToFolder(GRAPH, email, "outbox");
+      await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
       await incrementRetryAttempt(GRAPH, email);
 
       console.log(' > Found email stuck in sending. Will retry sending email again');

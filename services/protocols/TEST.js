@@ -11,7 +11,8 @@ import {
   GRAPH, 
   FROM_NAME,
   HOURS_DELIVERING_TIMEOUT,
-  MAX_RETRY_ATTEMPTS
+  MAX_RETRY_ATTEMPTS,
+  MAILBOX_URI
 } from "../../config";
 
 /**
@@ -23,7 +24,7 @@ import {
 async function sendTEST(email, count){
   console.log(" >>> PROTOCOL: TEST");
   try {
-    await moveEmailToFolder(GRAPH, email, "sending");
+    await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sending");
     await _checkSentDate(email, count);
     await _sendMail(email, count);
   } catch (err) {
@@ -93,21 +94,21 @@ async function _sendMail(email, count) {
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) { 
-      moveEmailToFolder(GRAPH, email, "failbox");
+      moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
       console.log(` > Email ${count}: The destination server responded with an error.`);
       console.log(` > Email ${count}: Max retries (${MAX_RETRY_ATTEMPTS}) exceeded. Emails had been moved to failbox`);
       console.dir(` > Email ${count}: ${failed}`);
 
     } else {
       await incrementRetryAttempt(GRAPH, email)
-      await moveEmailToFolder(GRAPH, email, "outbox");
+      await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
       console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
       console.log(` > Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
       console.dir(` > Email ${count}: ${failed}`);
 
     }
   } else {
-    moveEmailToFolder(GRAPH, email, "sentbox");
+    moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
     updateEmailId(GRAPH, email, success.messageId);
     email.messageId = success.messageId;
     console.log(` > Email ${count}: UUID = ${email.uuid}`);
