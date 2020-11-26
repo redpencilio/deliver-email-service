@@ -8,9 +8,10 @@ import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
  * e.g. from outbox folder to sending folder
  * @param  {string} graphName
  * @param  {string} email
- * @param  {string} mailboxName
+ * @param  {string} folderName
+ * @param  {string} mailboxUri
  */
-async function moveEmailToFolder(graphName, email, mailboxName) {
+async function moveEmailToFolder(graphName, mailboxUri, email, folderName) {
     const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
@@ -18,25 +19,25 @@ async function moveEmailToFolder(graphName, email, mailboxName) {
 
     DELETE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?folder.
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?oldFolder.
+
         }
       }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?folder.
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?oldFolder.
         }
     }
     ;
     INSERT {
       GRAPH ${sparqlEscapeUri(graphName)} {
-          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?mailfolder.
+          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?newFolder.
         }
     }
     WHERE {
       GRAPH ${sparqlEscapeUri(graphName)} {
-            ?mailfolder a nfo:Folder.
-            ?mailfolder nie:title  ${sparqlEscapeString(mailboxName)}.
-            ${sparqlEscapeUri(email.email)} a nmo:Email.
+            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#hasPart> ?newFolder.
+            ?newFolder nie:title  ${sparqlEscapeString(folderName)}.
         }
     }
   `);
