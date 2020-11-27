@@ -34,7 +34,7 @@ app.post('/email-delivery/', async function(req, res, next) {
   catch(err){
     console.log('ERROR: something went wrong while initiating the email delivery.');
     console.log(err);
-    res.status(500).send(e.message).end();
+    res.status(500).send(err.message).end();
   }
 });
 
