@@ -118,9 +118,10 @@ async function _sendMail(email, count) {
         }
 
       } else {
+
         await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
         await updateEmailId(GRAPH, email, success.messageId);
-        email.messageId = success.messageId;
+
         console.log(` > Email ${count}: UUID = ${email.uuid}`);
         console.log(` > Email ${count}: Email moved to sentbox`);
         console.log(` > Email ${count}: Email message ID updated`);
