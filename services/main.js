@@ -31,7 +31,7 @@ async function main() {
       console.log("*** No Emails found to be send. ***");
     }
     console.log(` >>> ${emails.length} Emails found that need to be send. `);
-    _processEmails(emails, EMAIL_PROTOCOL);
+    await _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
     console.error(err);
