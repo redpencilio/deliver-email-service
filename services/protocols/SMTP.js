@@ -51,7 +51,7 @@ async function _ensureSentDate(email, count) {
 }
 
 async function _sendMail(email, count) {
-  let transporter = nodemailer.createTransport(_generateTransporterConfiguration());
+  let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
 
   const attachments = (email.attachments || []).map((attachment) => {
     return {
