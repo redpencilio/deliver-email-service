@@ -11,9 +11,9 @@ import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
  */
 async function incrementRetryAttempt(graphName, email) {
 
-    const incrementedAttempt = parseInt(email.numberOfRetries) + 1
+  const incrementedAttempt = parseInt(email.numberOfRetries) + 1;
 
-    const result = await query(`
+  const result = await query(`
     PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
     DELETE {
@@ -32,7 +32,8 @@ async function incrementRetryAttempt(graphName, email) {
         }
     }
   `);
-  return result
+
+  return result;
 };
 
-export default incrementRetryAttempt
+export default incrementRetryAttempt;

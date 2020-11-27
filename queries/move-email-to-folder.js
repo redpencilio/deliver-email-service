@@ -12,7 +12,7 @@ import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
  * @param  {string} mailboxUri
  */
 async function moveEmailToFolder(graphName, mailboxUri, email, folderName) {
-    const result = await query(`
+  const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
     PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
@@ -41,7 +41,7 @@ async function moveEmailToFolder(graphName, mailboxUri, email, folderName) {
         }
     }
   `);
-  return result
+  return result;
 };
 
-export default moveEmailToFolder
+export default moveEmailToFolder;
