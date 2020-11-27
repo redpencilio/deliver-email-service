@@ -23,19 +23,19 @@ import {
  *
  * @param  {object} res
  */
+async function main() {
   try{
     await _checkForLostEmails();
     const emails = await fetchEmails(GRAPH, MAILBOX_URI, "outbox");
     if (emails.length == 0) {
-      console.log("*** No Emails found to be send. ***")
-      return res.status(204).end();
+      console.log("*** No Emails found to be send. ***");
     }
-
     console.log(` >>> ${emails.length} Emails found that need to be send. `);
     _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
-    console.dir(err);
+    console.error(err);
+    throw `Error while processing emails: ${err}`;
   }
 
 }
