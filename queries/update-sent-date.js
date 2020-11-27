@@ -32,7 +32,7 @@ async function updateSentDate(graphName, email) {
     }
   `);
 
-  return result
+  return result;
 }
 
 export default updateSentDate;
