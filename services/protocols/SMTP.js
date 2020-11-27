@@ -17,7 +17,7 @@ import {
   EMAIL_PASSWORD,
   HOST,
   PORT,
-  nodeMailerServices,
+  NODE_MAILER_SERVICES,
   MAX_RETRY_ATTEMPTS,
   MAILBOX_URI
 } from '../../config';
@@ -62,7 +62,7 @@ async function _sendMail(email, count) {
       }
     ));
 
-  } else if (!(nodeMailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
+  } else if (!(NODE_MAILER_SERVICES.indexOf(WELL_KNOWN_SERVICE) == -1)) {
     transporter = nodemailer.createTransport({
       host: HOST,
       port: PORT,

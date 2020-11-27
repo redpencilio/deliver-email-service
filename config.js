@@ -1,5 +1,4 @@
-
-/** CONFIGURATION */ 
+/** CONFIGURATION */
 const GRAPH = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
 const MAILBOX_URI = process.env.MAILBOX_URI || 'http://data.lblod.info/id/mailboxes/1';
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL;
@@ -17,7 +16,7 @@ const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
 
-const nodeMailerServices = [
+const NODE_MAILER_SERVICES = [
   '126',
   '163',
   '1und1',
@@ -66,12 +65,12 @@ const nodeMailerServices = [
 /**
  * Checks if service passed in environment variables is valid or throws an error early
  */
-if (nodeMailerServices.indexOf(WELL_KNOWN_SERVICE)  == -1) {
+if (NODE_MAILER_SERVICES.indexOf(WELL_KNOWN_SERVICE)  == -1) {
   throw new Error(` *** WELL_KNOWN_SERVICE should be 'smtp' or a known service by Nodemailer *** `);
 };
 
 
-/** EXPORTS */ 
+/** EXPORTS */
 export {
   GRAPH,
   MAILBOX_URI,
@@ -88,5 +87,5 @@ export {
   EMAIL_PASSWORD,
   HOST,
   PORT,
-  nodeMailerServices
+  NODE_MAILER_SERVICES
 }
