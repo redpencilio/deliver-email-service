@@ -58,7 +58,8 @@ const NODE_MAILER_SERVICES = [
   'yahoo',
   'yandex',
   'zoho',
-  'qiye.aliyun'
+  'qiye.aliyun',
+  'test'
 ];
 
 

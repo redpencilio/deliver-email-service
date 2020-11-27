@@ -62,7 +62,21 @@ async function _sendMail(email, count) {
       }
     ));
 
-  } else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
+  }
+  else if(WELL_KNOWN_SERVICE == "test"){
+    const testAccount = await nodemailer.createTestAccount();
+
+    transporter = nodemailer.createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      secure: false,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass
+      }
+    });
+  }
+  else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
     transporter = nodemailer.createTransport({
       host: HOST,
       port: PORT,
@@ -72,7 +86,8 @@ async function _sendMail(email, count) {
         pass: EMAIL_PASSWORD
       }
     });
-  } else {
+  }
+  else {
     throw new Error('** Something went wrong when creating a transport using nodemailer. **');
   }
 
