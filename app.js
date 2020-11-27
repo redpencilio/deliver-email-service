@@ -1,17 +1,17 @@
 "use strict";
 
-/** IMPORTS */ 
+/** IMPORTS */
 import { app, errorHandler } from 'mu';
 import Axios from 'axios';
 import main from './services/main';
 const CronJob = require('cron').CronJob;
 
-/** ENV */ 
+/** ENV */
 import { CRON_FREQUENCY } from './config';
 
 /**
- * Cron job that triggers on a timely basis. 
- * 
+ * Cron job that triggers on a timely basis.
+ *
  * @param  {string} cronFrequency
  */
 new CronJob(CRON_FREQUENCY, function() {
