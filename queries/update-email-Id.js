@@ -1,6 +1,7 @@
 /** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
+
 /**
  * TYPE: query
  * Updates messageID.
@@ -28,7 +29,7 @@ export default async function updateEmailId(graphName, email, newMessageId) {
           ${sparqlEscapeUri(email.email)} nmo:messageId ?oldMessageId.
         }
     }
-`);
+  `);
 
-return result
+  return result;
 };
