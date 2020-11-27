@@ -39,12 +39,7 @@ async function sendSMTP(email, count){
 }
 
 /**
- * TYPE: sub function
- * Responsible for actually setting up and sending the email.
- * Create transport (sendGrid has its own nodemailer_transporter) > create mail object  > Send the email
- * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
- * SUCCESS: move email to sentbox folder, update messageID
- *
+ * Ensures a sentDate is added to the email.
  * @param  {object} email
  * @param  {integer} count
  */
