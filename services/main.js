@@ -77,22 +77,18 @@ async function _checkForLostEmails(){
  * @param  {string} protocol
  */
 async function _processEmails(emails, protocol) {
-
   const emailBatches = chunkEmails(emails, MAX_BATCH_SIZE);
-    switch (protocol) {
-      case "smtp":
-        for (const batch of emailBatches) {
-          await Promise.all(batch.map((email, index) => sendSMTP(email, index)));
-        }
-        break;
-      case "test":
-        for (const batch of emailBatches) {
-          await Promise.all(batch.map((email, index) => sendTEST(email, index)));
-        }
-        break;
-      default:
-        throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' or 'test' ***");
+  switch (protocol) {
+
+  //Later this will be extended to other protocols
+  case "smtp":
+    for (const batch of emailBatches) {
+      await Promise.all(batch.map((email, index) => sendSMTP(email, index)));
     }
+    break;
+  default:
+    throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' or 'test' ***");
   }
+}
 
 export default main;

@@ -33,7 +33,8 @@ async function sendSMTP(email, count){
     await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sending");
     await _ensureSentDate(email, count);
     await _sendMail(email, count);
-  } catch (err) {
+  }
+  catch (err) {
    console.log(err);
   }
 }
