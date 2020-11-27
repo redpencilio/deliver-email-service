@@ -5,11 +5,11 @@ import sortResults from '../utils/sort-results';
 
 /**
  * TYPE: query
- * Fetches all mails in the outbox folder. 
+ * Fetches all mails in the outbox folder.
  * @param  {string} graphName
  * @param  {string} mailboxURI
  * @param  {string} folderName
- * @returns Array of emails 
+ * @returns Array of emails
  */
 async function fetchEmails(graphName, mailboxURI, folderName) {
   const result = await query(`
