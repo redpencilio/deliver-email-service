@@ -104,7 +104,7 @@ async function _sendMail(email, count) {
         const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
         if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
-          moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
+          await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
           console.log(` > Email ${count}: The destination server responded with an error.`);
           console.log(` > Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
           console.dir(` > Email ${count}: ${failed}`);
@@ -118,8 +118,8 @@ async function _sendMail(email, count) {
         }
 
       } else {
-        moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
-        updateEmailId(graph, email, success.messageId);
+        await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
+        await updateEmailId(GRAPH, email, success.messageId);
         email.messageId = success.messageId;
         console.log(` > Email ${count}: UUID = ${email.uuid}`);
         console.log(` > Email ${count}: Email moved to sentbox`);
