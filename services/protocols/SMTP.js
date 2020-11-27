@@ -51,45 +51,7 @@ async function _ensureSentDate(email, count) {
 }
 
 async function _sendMail(email, count) {
-  let transporter = null;
-
-  if (WELL_KNOWN_SERVICE == "sendgrid") {
-    transporter = nodemailer.createTransport(sgTransport(
-        {
-          auth: {
-              api_key: EMAIL_PASSWORD
-          }
-      }
-    ));
-
-  }
-  else if(WELL_KNOWN_SERVICE == "test"){
-    const testAccount = await nodemailer.createTestAccount();
-
-    transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-  }
-  else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
-    transporter = nodemailer.createTransport({
-      host: HOST,
-      port: PORT,
-      secureConnection: SECURE_CONNECTION,
-      auth: {
-        user: EMAIL_ADDRESS,
-        pass: EMAIL_PASSWORD
-      }
-    });
-  }
-  else {
-    throw new Error('** Something went wrong when creating a transport using nodemailer. **');
-  }
+  let transporter = nodemailer.createTransport(_generateTransporterConfiguration());
 
   const attachments = (email.attachments || []).map((attachment) => {
     return {
@@ -149,6 +111,58 @@ async function _sendMail(email, count) {
   catch(err) {
     console.dir(err);
   }
+}
+
+/**
+ * helps generating the correct transporter configuration
+ * Assumes some global vaariables
+ */
+async function _generateTransporterConfiguration(){
+  let configuration;
+
+  //Order matters!
+  if (WELL_KNOWN_SERVICE == "sendgrid") {
+    configuration = sgTransport(
+        {
+          auth: {
+              api_key: EMAIL_PASSWORD
+          }
+      }
+    );
+  }
+
+  else if(WELL_KNOWN_SERVICE == "test"){
+    const testAccount = await nodemailer.createTestAccount();
+    const host = "smtp.ethereal.email";
+    configuration = {
+      host: host,
+      port: 587,
+      secure: false,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass
+      }
+    };
+    console.log(`Generated test account on ${host} with ${testAccount.user} and ${testAccount.pass}`);
+  }
+
+  else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
+    configuration = {
+      host: HOST,
+      port: PORT,
+      secureConnection: SECURE_CONNECTION,
+      auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
+      }
+    };
+  }
+
+  else {
+    throw new Error('** Something went wrong when creating a transport using nodemailer. **');
+  }
+
+  return configuration;
 }
 
 export default sendSMTP;
