@@ -3,7 +3,6 @@ import fetchEmails  from '../queries/fetch-emails';
 import moveEmailToFolder from '../queries/move-email-to-folder';
 import incrementRetryAttempt from '../queries/increment-retry-attempt';
 import sendSMTP from './protocols/SMTP';
-import sendTEST from './protocols/TEST';
 import chunkEmails from '../utils/chunk-emails';
 
 /** ENV */
