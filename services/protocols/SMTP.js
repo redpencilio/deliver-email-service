@@ -62,7 +62,7 @@ async function _sendMail(email, count) {
       }
     ));
 
-  } else if (!(NODE_MAILER_SERVICES.indexOf(WELL_KNOWN_SERVICE) == -1)) {
+  } else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
     transporter = nodemailer.createTransport({
       host: HOST,
       port: PORT,
