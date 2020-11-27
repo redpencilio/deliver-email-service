@@ -31,7 +31,7 @@ import {
 async function sendSMTP(email, count){
   try {
     await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sending");
-    await _checkSentDate(email, count);
+    await _ensureSentDate(email, count);
     await _sendMail(email, count);
   } catch (err) {
    console.log(err);
@@ -48,7 +48,7 @@ async function sendSMTP(email, count){
  * @param  {object} email
  * @param  {integer} count
  */
-async function _checkSentDate(email, count) {
+async function _ensureSentDate(email, count) {
   if (!email.sentDate) {
     await updateSentDate(GRAPH, email);
     console.log(` > Email ${count}: No send date found, a send date has been created.`);
