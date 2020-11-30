@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /** IMPORTS */
 import { app, errorHandler } from 'mu';
@@ -10,6 +10,7 @@ const CronJob = require('cron').CronJob;
 import { CRON_FREQUENCY } from './config';
 
 let isTaskRunning = false; //TODO: later save as proper task in DB
+
 /**
  * Cron job that triggers on a timely basis.
  *
