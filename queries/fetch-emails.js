@@ -1,7 +1,7 @@
 /** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
-import sortResults from '../utils/sort-results';
+import parseResults from '../utils/sort-results';
 
 /**
  * TYPE: query
@@ -77,7 +77,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   }
   GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
 `);
-  return sortResults(result);
+  return parseResults(result);
 };
 
 export default fetchEmails;
