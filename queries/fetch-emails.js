@@ -1,7 +1,7 @@
 /** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
-import parseResults from '../utils/sort-results';
+import parseResults from '../utils/parse-results';
 
 /**
  * TYPE: query
