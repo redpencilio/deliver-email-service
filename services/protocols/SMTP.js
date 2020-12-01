@@ -1,6 +1,6 @@
 /** IMPORTS */
 import moveEmailToFolder from "../../queries/move-email-to-folder";
-import updateEmailId from '../../queries/update-email-Id';
+import updateEmailId from '../../queries/update-email-id';
 import updateSentDate from '../../queries/update-sent-date';
 import incrementRetryAttempt from "../../queries/increment-retry-attempt";
 const nodemailer = require("nodemailer");
