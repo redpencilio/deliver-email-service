@@ -150,6 +150,17 @@ async function _generateTransporterConfiguration(){
 
   else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
     configuration = {
+      service: WELL_KNOWN_SERVICE,
+      secureConnection: SECURE_CONNECTION,
+      auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
+      }
+    };
+  }
+
+  else if(HOST && PORT){
+    configuration = {
       host: HOST,
       port: PORT,
       secureConnection: SECURE_CONNECTION,
