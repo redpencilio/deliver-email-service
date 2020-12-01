@@ -83,6 +83,11 @@ async function _sendMail(email, count) {
     console.log(` > Email ${count}: Email message ID updated`);
     console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
     console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(response));
+    if(!response.messageId){
+      console.warn(`No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`);
+    }
+
+    await updateEmailId(GRAPH, email, response.messageId || '');
   }
 
   catch(err) {
