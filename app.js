@@ -4,7 +4,7 @@
 import { app, errorHandler } from 'mu';
 import Axios from 'axios';
 import main from './services/main';
-const CronJob = require('cron').CronJob;
+import { CronJob } from 'cron';
 
 /** ENV */
 import { CRON_FREQUENCY } from './config';
