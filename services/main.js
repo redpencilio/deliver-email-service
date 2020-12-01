@@ -29,7 +29,7 @@ async function main() {
     if (emails.length == 0) {
       console.log("*** No Emails found to be send. ***");
     }
-    console.log(` >>> ${emails.length} Emails found that need to be send. `);
+    console.log(`${emails.length} Emails found that need to be send. `);
     await _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
@@ -52,16 +52,16 @@ async function _checkForLostEmails(){
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= HOURS_SENDING_TIMEOUT;
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
       await moveEmailToFolder(GRAPH, MAILBOX_URI,  email, "failbox");
-      console.log(` > Email still stuck in sending after ${MAX_RETRY_ATTEMPTS} retry attempts. Moving the email to "failbox"`);
-      console.log(` > Email UUID: ${email.uuid}`);
+      console.log(`Email still stuck in sending after ${MAX_RETRY_ATTEMPTS} retry attempts. Moving the email to "failbox"`);
+      console.log(`Email UUID: ${email.uuid}`);
 
     } else if (timeout) {
       await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
       await incrementRetryAttempt(GRAPH, email);
 
-      console.log(' > Found email stuck in sending. Will retry sending email again');
-      console.log(` > Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
-      console.log(` > Email UUID: ${email.uuid}`);
+      console.log('Found email stuck in sending. Will retry sending email again');
+      console.log(`Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
+      console.log(`Email UUID: ${email.uuid}`);
     }
   };
 }
