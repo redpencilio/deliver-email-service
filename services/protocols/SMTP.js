@@ -54,24 +54,6 @@ async function _ensureSentDate(email, count) {
 async function _sendMail(email, count) {
   let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
 
-  const attachments = (email.attachments || []).map((attachment) => {
-    return {
-      filename: attachment.filename,
-      path: attachment.dataSource
-    };
-  });
-
-  const mailProperties = {
-    from: `${email.messageFrom ? email.messageFrom : FROM_NAME}`,
-    to: email.emailTo,
-    cc: email.emailCc,
-    bcc: email.emailBcc,
-    subject: email.messageSubject,
-    text: email.plainTextMessageContent,
-    html: email.htmlMessageContent,
-    attachments: attachments
-  };
-
   try{
     const response = await transporter.sendMail(mailProperties);
 
@@ -172,10 +154,41 @@ async function _generateTransporterConfiguration(){
   }
 
   else {
-    throw new Error('** Something went wrong when creating a transport using nodemailer. **');
+    throw new Error('** Wrong or insufficient connection parameters to connect to the mail server **');
   }
 
   return configuration;
+}
+
+function _generateNodemailerEmailProperties(email){
+  const attachments = (email.attachments || []).map((attachment) => {
+    return {
+      filename: attachment.filename,
+      path: attachment.dataSource
+    };
+  });
+
+  let fromData;
+  if(email.messageFrom){
+    fromData = email.messageFrom;
+  }
+  else {
+    fromData = `${FROM_NAME} <${EMAIL_ADDRESS}>`;
+  }
+
+  const mailProperties = {
+    from: fromData,
+    to: email.emailTo,
+    cc: email.emailCc,
+    bcc: email.emailBcc,
+    subject: email.messageSubject,
+    text: email.plainTextMessageContent,
+    html: email.htmlMessageContent,
+    attachments: attachments
+  };
+
+  return mailProperties;
+
 }
 
 export default sendSMTP;
