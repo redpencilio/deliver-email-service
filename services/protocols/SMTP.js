@@ -47,7 +47,7 @@ async function sendSMTP(email, count){
 async function _ensureSentDate(email, count) {
   if (!email.sentDate) {
     await updateSentDate(GRAPH, email);
-    console.log(` > Email ${count}: No send date found, a send date has been created.`);
+    console.log(`Email ${count}: No send date found, a send date has been created.`);
   }
 }
 
@@ -62,7 +62,7 @@ async function _sendMail(email, count) {
   });
 
   const mailProperties = {
-    from: `${FROM_NAME} ${email.messageFrom}`,
+    from: `${email.messageFrom ? email.messageFrom : FROM_NAME}`,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -76,18 +76,18 @@ async function _sendMail(email, count) {
     const response = await transporter.sendMail(mailProperties);
 
     await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
-    await updateEmailId(GRAPH, email, response.messageId);
 
-    console.log(` > Email ${count}: UUID = ${email.uuid}`);
-    console.log(` > Email ${count}: Email moved to sentbox`);
-    console.log(` > Email ${count}: Email message ID updated`);
-    console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
-    console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(response));
     if(!response.messageId){
       console.warn(`No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`);
     }
 
     await updateEmailId(GRAPH, email, response.messageId || '');
+
+    console.log(`Email ${count}: UUID = ${email.uuid}`);
+    console.log(`Email ${count}: Email moved to sentbox`);
+    console.log(`Email ${count}: Email message ID updated`);
+    console.log(`Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
+    console.log(`Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(response));
   }
 
   catch(err) {
@@ -99,17 +99,17 @@ async function _sendMail(email, count) {
 
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
       await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
-      console.log(` > Email ${count}: The destination server responded with an error.`);
-      console.log(` > Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
-      console.dir(` > Email ${count}: ${err}`);
+      console.log(`Email ${count}: The destination server responded with an error.`);
+      console.log(`Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
+      console.dir(`Email ${count}: ${err}`);
 
     }
     else {
       await incrementRetryAttempt(GRAPH, email);
       await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
-      console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
-      console.log(` > Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
-      console.dir(` > Email ${count}: ${err}`);
+      console.log(`Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+      console.log(`Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
+      console.dir(`Email ${count}: ${err}`);
     }
   }
 }
