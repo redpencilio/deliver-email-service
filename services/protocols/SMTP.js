@@ -53,6 +53,7 @@ async function _ensureSentDate(email, count) {
 
 async function _sendMail(email, count) {
   let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
+  const mailProperties = _generateNodemailerEmailProperties(email);
 
   try{
     const response = await transporter.sendMail(mailProperties);
