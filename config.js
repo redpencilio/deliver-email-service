@@ -1,7 +1,7 @@
 /** CONFIGURATION */
 const GRAPH = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
 const MAILBOX_URI = process.env.MAILBOX_URI || 'http://data.lblod.info/id/mailboxes/1';
-const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL;
+const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
 const FROM_NAME = process.env.FROM_NAME || '';
 const HOURS_DELIVERING_TIMEOUT = process.env.HOURS_DELIVERING_TIMEOUT || 1;
 const HOURS_SENDING_TIMEOUT = process.env.HOURS_SENDING_TIMEOUT || .5;
