@@ -1,4 +1,4 @@
-const MAILBOX_URI = process.env.MAILBOX_URI || 'http://data.lblod.info/id/mailboxes/1';
+const MAILBOX_URI = process.env.MAILBOX_URI;
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
 const FROM_NAME = process.env.FROM_NAME || '';
 const HOURS_DELIVERING_TIMEOUT = process.env.HOURS_DELIVERING_TIMEOUT || 1;
@@ -12,6 +12,10 @@ const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
+
+if(!MAILBOX_URI){
+  throw `Expected a MAILBOX_URI`;
+}
 
 const NODE_MAILER_SERVICES = [
   '126',
