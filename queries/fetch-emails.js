@@ -6,12 +6,11 @@ import parseResults from '../utils/parse-results';
 /**
  * TYPE: query
  * Fetches all mails in the outbox folder.
- * @param  {string} graphName
  * @param  {string} mailboxURI
  * @param  {string} folderName
  * @returns Array of emails
  */
-async function fetchEmails(graphName, mailboxURI, folderName) {
+async function fetchEmails(mailboxURI, folderName) {
   const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -32,7 +31,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
     ?attachments
 
   WHERE {
-    GRAPH ${sparqlEscapeUri(graphName)} {
+    GRAPH ?g {
       ${sparqlEscapeUri(mailboxURI)} fni:hasPart ?mailfolder.
       ?mailfolder nie:title "${folderName}".
       ?email nmo:isPartOf ?mailfolder.

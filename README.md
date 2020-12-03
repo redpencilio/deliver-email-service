@@ -107,7 +107,6 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| GRAPH_NAME | Specify the graph that you want to manipulate  | "http://mu.semte.ch/graphs/system/email"  | |
 | MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | "http://data.lblod.info/id/mailboxes/1"  | |
 
 

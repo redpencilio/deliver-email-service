@@ -9,7 +9,6 @@ import sgTransport  from 'nodemailer-sendgrid-transport';
 /** ENV */
 import {
   FROM_NAME,
-  GRAPH,
   HOURS_DELIVERING_TIMEOUT,
   WELL_KNOWN_SERVICE,
   SECURE_CONNECTION,
@@ -30,7 +29,7 @@ import {
  */
 async function sendSMTP(email, count){
   try {
-    await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sending");
+    await moveEmailToFolder(MAILBOX_URI, email, "sending");
     await _ensureSentDate(email, count);
     await _sendMail(email, count);
   }
@@ -46,7 +45,7 @@ async function sendSMTP(email, count){
  */
 async function _ensureSentDate(email, count) {
   if (!email.sentDate) {
-    await updateSentDate(GRAPH, email);
+    await updateSentDate(email);
     console.log(`Email ${count}: No send date found, a send date has been created.`);
   }
 }
@@ -58,13 +57,13 @@ async function _sendMail(email, count) {
   try{
     const response = await transporter.sendMail(mailProperties);
 
-    await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
+    await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
 
     if(!response.messageId){
       console.warn(`No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`);
     }
 
-    await updateEmailId(GRAPH, email, response.messageId || '');
+    await updateEmailId(email, response.messageId || '');
 
     console.log(`Email ${count}: URI = ${email.email}`);
     console.log(`Email ${count}: Email moved to sentbox`);
@@ -81,15 +80,15 @@ async function _sendMail(email, count) {
     const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
 
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
-      await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
+      await moveEmailToFolder(MAILBOX_URI, email, "failbox");
       console.log(`Email ${count}: The destination server responded with an error.`);
       console.log(`Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
       console.dir(`Email ${count}: ${err}`);
 
     }
     else {
-      await incrementRetryAttempt(GRAPH, email);
-      await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
+      await incrementRetryAttempt(email);
+      await moveEmailToFolder(MAILBOX_URI, email, "outbox");
       console.log(`Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
       console.log(`Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
       console.dir(`Email ${count}: ${err}`);
