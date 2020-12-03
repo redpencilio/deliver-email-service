@@ -4,6 +4,7 @@ import parseResults from '../utils/parse-results';
 
 /**
  * Given emailUri return a list of attachments
+ * TODO: there is no check, if an attachment is specified, but no further data is found
  * @param  {string} emailUri
  * @returns [ { attachment } ]
  */

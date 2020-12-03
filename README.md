@@ -8,6 +8,7 @@
   * [Mailbox](#mailbox)
   * [Folder](#folder)
   * [Email](#email)
+  * [Attachments] (#attachments)
 - [Example Structure](#example-structure)
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
@@ -72,6 +73,12 @@ deliver-email-service:
 ## Email
 
 ![emailStructure](https://user-images.githubusercontent.com/52280338/100217257-8cea9500-2f13-11eb-9180-20fe7cb1a3a6.png)
+
+
+## Attachments
+
+Attachments are linked trough  `nmo:hasAttachment` property on the email. 
+The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service)
 
 # Example Structure
 
@@ -170,7 +177,8 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
       - "logging=true"
     restart: always
     volumes:
-      - /path/to/local/cloned/deliver-email-service/folder/:/app/
+      - ./data/files:/share
+      - /path/to/local/cloned/deliver-email-service/folder/:/app/ (for debugging purposes)
     logging: *default-logging
 
 ```
@@ -221,7 +229,7 @@ Returns 204 No Content if the email-delivery got triggered but no emails where f
 
 Returns 500 Bad Request if something unexpected went wrong while initiating the email-delivery process.
 
-## Usefull
+## Useful
 
 You can use postman to trigger the service or use this command (locally)
 
