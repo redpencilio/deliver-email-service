@@ -277,7 +277,6 @@ INSERT DATA {
 ```
 
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
@@ -295,7 +294,7 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
     WHERE {
       GRAPH <http://mu.semte.ch/graphs/system/email> {
-        <http://data.lblod.info/id/mailboxes/1> fni:hasPart ?mailfolder.
+        <http://data.lblod.info/id/mailboxes/1> nie:hasPart ?mailfolder.
         ?mailfolder nie:title ?folder.
         ?email nmo:isPartOf ?mailfolder.
         ?email nmo:messageSubject ?messageSubject.

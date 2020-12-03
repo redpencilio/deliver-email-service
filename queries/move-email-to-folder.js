@@ -36,7 +36,7 @@ async function moveEmailToFolder(mailboxUri, email, folderName) {
     }
     WHERE {
       GRAPH ?g {
-            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#hasPart> ?newFolder.
+            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#hasPart> ?newFolder.
             ?newFolder nie:title  ${sparqlEscapeString(folderName)}.
         }
     }
