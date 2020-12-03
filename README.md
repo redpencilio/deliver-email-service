@@ -8,7 +8,7 @@
   * [Mailbox](#mailbox)
   * [Folder](#folder)
   * [Email](#email)
-  * [Attachments] (#attachments)
+  * [Attachments](#attachments)
 - [Example Structure](#example-structure)
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
