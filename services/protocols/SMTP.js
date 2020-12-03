@@ -51,10 +51,9 @@ async function _ensureSentDate(email, count) {
 }
 
 async function _sendMail(email, count) {
-  let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
-  const mailProperties = _generateNodemailerEmailProperties(email);
-
   try{
+    let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
+    const mailProperties = await _generateNodemailerEmailProperties(email);
     const response = await transporter.sendMail(mailProperties);
 
     await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
