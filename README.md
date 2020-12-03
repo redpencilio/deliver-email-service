@@ -8,6 +8,7 @@
   * [Mailbox](#mailbox)
   * [Folder](#folder)
   * [Email](#email)
+  * [Attachments] (#attachments)
 - [Example Structure](#example-structure)
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
@@ -25,7 +26,7 @@
 - [Useful Queries](#useful-queries)
   * [Creating a mail](#creating-a-mail)
   * [Tracking mails](#tracking-mails)
-    
+
   <br> <br>
 # Description
 
@@ -73,6 +74,12 @@ deliver-email-service:
 
 ![emailStructure](https://user-images.githubusercontent.com/52280338/100217257-8cea9500-2f13-11eb-9180-20fe7cb1a3a6.png)
 
+
+## Attachments
+
+Attachments are linked trough  `nmo:hasAttachment` property on the email. 
+The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service)
+
 # Example Structure
 
 This service relies on a certain structure. By default it searches for an "outbox" folder to find the emails that need to be send, a "failbox" for the emails that have failed etc.. You can modify the structure in the code as needed but in case you want to use the default, then you can migrate the following file: [Migration file](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
@@ -107,7 +114,6 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| GRAPH_NAME | Specify the graph that you want to manipulate  | "http://mu.semte.ch/graphs/system/email"  | |
 | MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | "http://data.lblod.info/id/mailboxes/1"  | |
 
 
@@ -125,7 +131,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
-| HOST | Is the hostname or IP address to connect to.  | "localhost" | 
+| HOST | Is the hostname or IP address to connect to.  | "localhost" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
 
 ## Debugging
@@ -171,7 +177,8 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
       - "logging=true"
     restart: always
     volumes:
-      - /path/to/local/cloned/deliver-email-service/folder/:/app/
+      - ./data/files:/share
+      - /path/to/local/cloned/deliver-email-service/folder/:/app/ (for debugging purposes)
     logging: *default-logging
 
 ```
@@ -222,7 +229,7 @@ Returns 204 No Content if the email-delivery got triggered but no emails where f
 
 Returns 500 Bad Request if something unexpected went wrong while initiating the email-delivery process.
 
-## Usefull
+## Useful
 
 You can use postman to trigger the service or use this command (locally)
 
@@ -251,7 +258,6 @@ INSERT DATA {
   GRAPH <http://mu.semte.ch/graphs/system/email> {
 
     <http://data.lblod.info/id/emails/1> a <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#Email>;
-       <http://mu.semte.ch/vocabularies/core/uuid> "0cad72fd-4f21-4ea7-af8c-88d24577ee56";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
@@ -276,7 +282,6 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
    SELECT  ?email
-      ?uuid
       ?messageSubject
       ?messageFrom
       ?emailTo
@@ -293,7 +298,6 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
         <http://data.lblod.info/id/mailboxes/1> fni:hasPart ?mailfolder.
         ?mailfolder nie:title ?folder.
         ?email nmo:isPartOf ?mailfolder.
-        ?email <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
         ?email nmo:messageSubject ?messageSubject.
         ?email nmo:messageFrom ?messageFrom.
         ?email nmo:emailTo ?emailTo.
@@ -324,8 +328,5 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
       }
     }
-GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
+GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 ```
-
-
-

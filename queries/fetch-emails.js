@@ -1,17 +1,16 @@
 /** IMPORTS */
 import { querySudo as query } from '@lblod/mu-auth-sudo';
 import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
-import sortResults from '../utils/sort-results';
+import parseResults from '../utils/parse-results';
 
 /**
  * TYPE: query
- * Fetches all mails in the outbox folder. 
- * @param  {string} graphName
+ * Fetches all mails in the outbox folder.
  * @param  {string} mailboxURI
  * @param  {string} folderName
- * @returns Array of emails 
+ * @returns Array of emails
  */
-async function fetchEmails(graphName, mailboxURI, folderName) {
+async function fetchEmails(mailboxURI, folderName) {
   const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
   PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
@@ -19,7 +18,6 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
   SELECT ?email
-    ?uuid
     ?messageSubject
     ?messageFrom
     (group_concat(distinct ?emailTo;separator=",") as ?emailTo)
@@ -30,21 +28,15 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
     ?htmlMessageContent
     ?sentDate
     ?numberOfRetries
-    ?attachments
 
   WHERE {
-    GRAPH ${sparqlEscapeUri(graphName)} {
+    GRAPH ?g {
       ${sparqlEscapeUri(mailboxURI)} fni:hasPart ?mailfolder.
       ?mailfolder nie:title "${folderName}".
       ?email nmo:isPartOf ?mailfolder.
-      ?email <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
-
-      BIND('' as ?defaultAttachments).
-      OPTIONAL {?email nmo:hasAttachment ?optionalAttachments}.
-      BIND(coalesce(?optionalAttachments, ?defaultAttachments) as ?attachments).
 
       BIND(${sparqlEscapeInt(0)} as ?defaultRetries).
       OPTIONAL {?email task:numberOfRetries ?optionalRetries}.
@@ -75,9 +67,9 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       BIND(coalesce(?optionalSentDate, ?defaultSentDate) as ?sentDate).
     }
   }
-  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
+  GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 `);
-  return sortResults(result);
+  return parseResults(result);
 };
 
 export default fetchEmails;

@@ -1,23 +1,23 @@
 /** IMPORTS */
+import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import moveEmailToFolder from "../../queries/move-email-to-folder";
-import updateEmailId from '../../queries/update-email-Id';
+import updateEmailId from '../../queries/update-email-id';
 import updateSentDate from '../../queries/update-sent-date';
 import incrementRetryAttempt from "../../queries/increment-retry-attempt";
-const nodemailer = require("nodemailer");
-const sgTransport = require('nodemailer-sendgrid-transport');
+import  nodemailer from 'nodemailer';
+import sgTransport  from 'nodemailer-sendgrid-transport';
 
 /** ENV */
-import { 
-  FROM_NAME, 
-  GRAPH, 
-  HOURS_DELIVERING_TIMEOUT, 
+import {
+  FROM_NAME,
+  HOURS_DELIVERING_TIMEOUT,
   WELL_KNOWN_SERVICE,
   SECURE_CONNECTION,
   EMAIL_ADDRESS,
   EMAIL_PASSWORD,
   HOST,
   PORT,
-  nodeMailerServices,
+  NODE_MAILER_SERVICES,
   MAX_RETRY_ATTEMPTS,
   MAILBOX_URI
 } from '../../config';
@@ -30,45 +30,120 @@ import {
  */
 async function sendSMTP(email, count){
   try {
-    await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sending");
-    await _checkSentDate(email, count);
+    await moveEmailToFolder(MAILBOX_URI, email, "sending");
+    await _ensureSentDate(email, count);
     await _sendMail(email, count);
-  } catch (err) {
+  }
+  catch (err) {
    console.log(err);
   }
 }
 
 /**
- * TYPE: sub function
- * Responsible for actually setting up and sending the email. 
- * Create transport (sendGrid has its own nodemailer_transporter) > create mail object  > Send the email
- * FAILED: Check if timeout is exceeded, if not send mail back to outbox for retry else move to FAILBOX
- * SUCCESS: move email to sentbox folder, update messageID
- * 
+ * Ensures a sentDate is added to the email.
  * @param  {object} email
  * @param  {integer} count
  */
-async function _checkSentDate(email, count) {
+async function _ensureSentDate(email, count) {
   if (!email.sentDate) {
-    await updateSentDate(GRAPH, email);
-    console.log(` > Email ${count}: No send date found, a send date has been created.`);
+    await updateSentDate(email);
+    console.log(`Email ${count}: No send date found, a send date has been created.`);
   }
 }
 
 async function _sendMail(email, count) {
-  let transporter = null;
+  try{
+    let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
+    const mailProperties = await _generateNodemailerEmailProperties(email);
 
+    const response = await transporter.sendMail(mailProperties);
+
+    await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
+
+    if(!response.messageId){
+      console.warn(`No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`);
+    }
+
+    await updateEmailId(email, response.messageId || '');
+
+    console.log(`Email ${count}: URI = ${email.email}`);
+    console.log(`Email ${count}: Email moved to sentbox`);
+    console.log(`Email ${count}: Email message ID updated`);
+    console.log(`Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
+    console.log(`Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(response));
+  }
+
+  catch(err) {
+    console.dir(err);
+
+    const modifiedDate = new Date(email.sentDate);
+    const currentDate = new Date();
+    const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
+
+    if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
+      await moveEmailToFolder(MAILBOX_URI, email, "failbox");
+      console.log(`Email ${count}: The destination server responded with an error.`);
+      console.log(`Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
+      console.dir(`Email ${count}: ${err}`);
+
+    }
+    else {
+      await incrementRetryAttempt(email);
+      await moveEmailToFolder(MAILBOX_URI, email, "outbox");
+      console.log(`Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
+      console.log(`Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
+      console.dir(`Email ${count}: ${err}`);
+    }
+  }
+}
+
+
+/**
+ * helps generating the correct transporter configuration
+ * Assumes some global variables
+ */
+async function _generateTransporterConfiguration(){
+  let configuration;
+
+  //Order matters!
   if (WELL_KNOWN_SERVICE == "sendgrid") {
-    transporter = nodemailer.createTransport(sgTransport(
+    configuration = sgTransport(
         {
           auth: {
               api_key: EMAIL_PASSWORD
           }
       }
-    ));
-  
-  } else if (!(nodeMailerServices.indexOf(WELL_KNOWN_SERVICE) == -1)) {
-    transporter = nodemailer.createTransport({
+    );
+  }
+
+  else if(WELL_KNOWN_SERVICE == "test"){
+    const testAccount = await nodemailer.createTestAccount();
+    const host = "smtp.ethereal.email";
+    configuration = {
+      host: host,
+      port: 587,
+      secure: false,
+      auth: {
+        user: testAccount.user,
+        pass: testAccount.pass
+      }
+    };
+    console.log(`Generated test account on ${host} with ${testAccount.user} and ${testAccount.pass}`);
+  }
+
+  else if (NODE_MAILER_SERVICES.includes(WELL_KNOWN_SERVICE)) {
+    configuration = {
+      service: WELL_KNOWN_SERVICE,
+      secureConnection: SECURE_CONNECTION,
+      auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASSWORD
+      }
+    };
+  }
+
+  else if(HOST && PORT){
+    configuration = {
       host: HOST,
       port: PORT,
       secureConnection: SECURE_CONNECTION,
@@ -76,20 +151,42 @@ async function _sendMail(email, count) {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASSWORD
       }
-    });
-  } else {
-    throw new Error('** Something went wrong when creating a transport using nodemailer. **')
+    };
   }
 
-  const attachments = (email.attachments || []).map((attachment) => {
-    return {
-      filename: attachment.filename,
-      path: attachment.dataSource
+  else {
+    throw new Error('** Wrong or insufficient connection parameters to connect to the mail server **');
+  }
+
+  return configuration;
+}
+
+async function _generateNodemailerEmailProperties(email){
+  const attachments = [];
+
+  const attachmentsData = await fetchAttachmentsForEmail(email.email);
+
+  for(const attachment of attachmentsData){
+
+    const attachmentData = { path: attachment.path };
+
+    if(attachment.filename){
+      attachmentData.filename = attachment.filename;
     }
-  });
+
+    attachments.push(attachmentData);
+  }
+
+  let fromData;
+  if(email.messageFrom){
+    fromData = email.messageFrom;
+  }
+  else {
+    fromData = `${FROM_NAME} <${EMAIL_ADDRESS}>`;
+  }
 
   const mailProperties = {
-    from: `${FROM_NAME} ${email.messageFrom}`,
+    from: fromData,
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
@@ -99,45 +196,8 @@ async function _sendMail(email, count) {
     attachments: attachments
   };
 
-  try{
+  return mailProperties;
 
-    transporter.sendMail(mailProperties, async (failed, success) => {
-    
-      if (failed) {
-        const modifiedDate = new Date(email.sentDate);
-        const currentDate = new Date();
-        const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
-
-        if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) { 
-          moveEmailToFolder(GRAPH, MAILBOX_URI, email, "failbox");
-          console.log(` > Email ${count}: The destination server responded with an error.`);
-          console.log(` > Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
-          console.dir(` > Email ${count}: ${failed}`);
-    
-        } else {
-          await incrementRetryAttempt(GRAPH, email)
-          await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
-          console.log(` > Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
-          console.log(` > Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
-          console.dir(` > Email ${count}: ${failed}`);
-        }    
-
-      } else {
-        moveEmailToFolder(GRAPH, MAILBOX_URI, email, "sentbox");
-        updateEmailId(graph, email, success.messageId);
-        email.messageId = success.messageId;
-        console.log(` > Email ${count}: UUID = ${email.uuid}`);
-        console.log(` > Email ${count}: Email moved to sentbox`);
-        console.log(` > Email ${count}: Email message ID updated`);
-        console.log(` > Email ${count}: MessageId updated from ${email.messageId} to ${success.messageId}`);
-        console.log(` > Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(success));
-        }
-      });
-    }
-
-  catch(err) {
-    console.dir(err);
-  }
 }
 
 export default sendSMTP;
