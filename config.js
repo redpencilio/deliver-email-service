@@ -62,15 +62,6 @@ const NODE_MAILER_SERVICES = [
   'test'
 ];
 
-
-/**
- * Checks if service passed in environment variables is valid or throws an error early
- */
-if (NODE_MAILER_SERVICES.indexOf(WELL_KNOWN_SERVICE)  == -1) {
-  throw new Error(` *** WELL_KNOWN_SERVICE should be 'smtp' or a known service by Nodemailer *** `);
-};
-
-
 /** EXPORTS */
 export {
   GRAPH,
