@@ -114,7 +114,7 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | "http://data.lblod.info/id/mailboxes/1"  | |
+| MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | None |X |
 
 
 ## Email
