@@ -28,7 +28,6 @@ async function fetchEmails(mailboxURI, folderName) {
     ?htmlMessageContent
     ?sentDate
     ?numberOfRetries
-    ?attachments
 
   WHERE {
     GRAPH ?g {
@@ -38,10 +37,6 @@ async function fetchEmails(mailboxURI, folderName) {
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
-
-      BIND('' as ?defaultAttachments).
-      OPTIONAL {?email nmo:hasAttachment ?optionalAttachments}.
-      BIND(coalesce(?optionalAttachments, ?defaultAttachments) as ?attachments).
 
       BIND(${sparqlEscapeInt(0)} as ?defaultRetries).
       OPTIONAL {?email task:numberOfRetries ?optionalRetries}.
@@ -72,7 +67,7 @@ async function fetchEmails(mailboxURI, folderName) {
       BIND(coalesce(?optionalSentDate, ?defaultSentDate) as ?sentDate).
     }
   }
-  GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
+  GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 `);
   return parseResults(result);
 };

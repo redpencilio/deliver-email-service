@@ -1,4 +1,5 @@
 /** IMPORTS */
+import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-id';
 import updateSentDate from '../../queries/update-sent-date';
@@ -54,6 +55,7 @@ async function _sendMail(email, count) {
   try{
     let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
     const mailProperties = await _generateNodemailerEmailProperties(email);
+
     const response = await transporter.sendMail(mailProperties);
 
     await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
@@ -159,13 +161,21 @@ async function _generateTransporterConfiguration(){
   return configuration;
 }
 
-function _generateNodemailerEmailProperties(email){
-  const attachments = (email.attachments || []).map((attachment) => {
-    return {
-      filename: attachment.filename,
-      path: attachment.dataSource
-    };
-  });
+async function _generateNodemailerEmailProperties(email){
+  const attachments = [];
+
+  const attachmentsData = await fetchAttachmentsForEmail(email.email);
+
+  for(const attachment of attachmentsData){
+
+    const attachmentData = { path: attachment.path };
+
+    if(attachment.filename){
+      attachmentData.filename = attachment.filename;
+    }
+
+    attachments.push(attachmentData);
+  }
 
   let fromData;
   if(email.messageFrom){
