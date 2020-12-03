@@ -53,7 +53,7 @@ async function _checkForLostEmails(){
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
       await moveEmailToFolder(GRAPH, MAILBOX_URI,  email, "failbox");
       console.log(`Email still stuck in sending after ${MAX_RETRY_ATTEMPTS} retry attempts. Moving the email to "failbox"`);
-      console.log(`Email UUID: ${email.uuid}`);
+      console.log(`Email URI: ${email.email}`);
 
     } else if (timeout) {
       await moveEmailToFolder(GRAPH, MAILBOX_URI, email, "outbox");
@@ -61,7 +61,7 @@ async function _checkForLostEmails(){
 
       console.log('Found email stuck in sending. Will retry sending email again');
       console.log(`Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
-      console.log(`Email UUID: ${email.uuid}`);
+      console.log(`Email URI: ${email.email}`);
     }
   };
 }

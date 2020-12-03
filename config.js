@@ -1,4 +1,3 @@
-/** CONFIGURATION */
 const GRAPH = process.env.GRAPH_NAME || 'http://mu.semte.ch/graphs/system/email';
 const MAILBOX_URI = process.env.MAILBOX_URI || 'http://data.lblod.info/id/mailboxes/1';
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
@@ -14,7 +13,6 @@ const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
-
 
 const NODE_MAILER_SERVICES = [
   '126',
@@ -62,7 +60,6 @@ const NODE_MAILER_SERVICES = [
   'test'
 ];
 
-/** EXPORTS */
 export {
   GRAPH,
   MAILBOX_URI,
@@ -80,4 +77,4 @@ export {
   HOST,
   PORT,
   NODE_MAILER_SERVICES
-}
+};

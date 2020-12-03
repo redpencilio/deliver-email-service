@@ -25,7 +25,7 @@
 - [Useful Queries](#useful-queries)
   * [Creating a mail](#creating-a-mail)
   * [Tracking mails](#tracking-mails)
-    
+
   <br> <br>
 # Description
 
@@ -125,7 +125,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | null |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
-| HOST | Is the hostname or IP address to connect to.  | "localhost" | 
+| HOST | Is the hostname or IP address to connect to.  | "localhost" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
 
 ## Debugging
@@ -251,7 +251,6 @@ INSERT DATA {
   GRAPH <http://mu.semte.ch/graphs/system/email> {
 
     <http://data.lblod.info/id/emails/1> a <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#Email>;
-       <http://mu.semte.ch/vocabularies/core/uuid> "0cad72fd-4f21-4ea7-af8c-88d24577ee56";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
        <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
@@ -276,7 +275,6 @@ PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
    SELECT  ?email
-      ?uuid
       ?messageSubject
       ?messageFrom
       ?emailTo
@@ -293,7 +291,6 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
         <http://data.lblod.info/id/mailboxes/1> fni:hasPart ?mailfolder.
         ?mailfolder nie:title ?folder.
         ?email nmo:isPartOf ?mailfolder.
-        ?email <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
         ?email nmo:messageSubject ?messageSubject.
         ?email nmo:messageFrom ?messageFrom.
         ?email nmo:emailTo ?emailTo.
@@ -324,8 +321,5 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
       }
     }
-GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
+GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 ```
-
-
-

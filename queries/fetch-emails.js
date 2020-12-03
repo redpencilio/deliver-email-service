@@ -19,7 +19,6 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
   PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
   SELECT ?email
-    ?uuid
     ?messageSubject
     ?messageFrom
     (group_concat(distinct ?emailTo;separator=",") as ?emailTo)
@@ -37,7 +36,6 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       ${sparqlEscapeUri(mailboxURI)} fni:hasPart ?mailfolder.
       ?mailfolder nie:title "${folderName}".
       ?email nmo:isPartOf ?mailfolder.
-      ?email <http://mu.semte.ch/vocabularies/core/uuid> ?uuid.
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
@@ -75,7 +73,7 @@ async function fetchEmails(graphName, mailboxURI, folderName) {
       BIND(coalesce(?optionalSentDate, ?defaultSentDate) as ?sentDate).
     }
   }
-  GROUP BY ?email ?uuid ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
+  GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?attachments ?numberOfRetries
 `);
   return parseResults(result);
 };

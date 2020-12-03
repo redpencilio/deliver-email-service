@@ -66,7 +66,7 @@ async function _sendMail(email, count) {
 
     await updateEmailId(GRAPH, email, response.messageId || '');
 
-    console.log(`Email ${count}: UUID = ${email.uuid}`);
+    console.log(`Email ${count}: URI = ${email.email}`);
     console.log(`Email ${count}: Email moved to sentbox`);
     console.log(`Email ${count}: Email message ID updated`);
     console.log(`Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
