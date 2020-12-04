@@ -64,7 +64,7 @@ deliver-email-service:
 
 ## Mailbox
 
-![mailboxStructure](https://user-images.githubusercontent.com/52280338/98683577-7f56dc00-2365-11eb-8704-e5f9145e1755.png)
+![mailboxStructure](https://user-images.githubusercontent.com/52280338/101146729-a7abc080-361b-11eb-948a-3ee07351c9ce.png)
 
 ## Folder
 
