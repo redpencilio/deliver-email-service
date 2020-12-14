@@ -161,7 +161,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```yaml
   deliver-email-service:
-    image: aatauil/deliver-email-service:1.0.0
+    image: redpencil/deliver-email-service:1.1.0
     ports:
       - 8888:80
       - 9229:9229
