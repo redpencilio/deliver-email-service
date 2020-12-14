@@ -55,7 +55,7 @@ To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: redpencil/deliver-email-service:1.1.0
+    image: redpencil/deliver-email-service:0.1.1
     labels:
         - "logging=true"
     restart: always
@@ -161,7 +161,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```yaml
   deliver-email-service:
-    image: redpencil/deliver-email-service:1.1.0
+    image: redpencil/deliver-email-service:0.1.1
     ports:
       - 8888:80
       - 9229:9229
@@ -200,7 +200,7 @@ If you already have a backend you want to use for development then you can ignor
 You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
-    image: redpencil/deliver-email-service:1.1.0
+    image: redpencil/deliver-email-service:0.1.1
     environment:
       EMAIL_PROTOCOL: "test"
       FROM_NAME: "RedPencil"
@@ -250,22 +250,21 @@ This only works if you add the following to your dispatcher
 
 ```
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-PREFIX fni: <http://www.semanticdesktop.org/ontologies/2007/03/22/fni#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
 PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 INSERT DATA {
   GRAPH <http://mu.semte.ch/graphs/system/email> {
 
-    <http://data.lblod.info/id/emails/1> a <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#Email>;
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageFrom> "johan@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailTo> "niels@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailCc> "erika@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#emailBcc> "aad@redpencil.io";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#messageSubject> "Email deliver service";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#plainTextMessageContent> "I really like this service! But when encountering bugs, its important           to create an issue in the repo so it can get resolved";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#sentDate> "";
-       <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#isPartOf> <http://data.lblod.info/id/mail-folders/2>.
+    <http://data.lblod.info/id/emails/1> a nmo:Email;
+        nmo:messageFrom "johan@redpencil.io";
+        nmo:emailTo "niels@redpencil.io";
+        nmo:emailCc "erika@redpencil.io";
+        nmo:emailBcc "aad@redpencil.io";
+        nmo:messageSubject "Email deliver service";
+        nmo:plainTextMessageContent "I really like this service! But when encountering bugs, its important           to create an issue in the repo so it can get resolved";
+        nmo:sentDate "";
+        nmo:isPartOf <http://data.lblod.info/id/mail-folders/2>.
  }
 }
 ```
