@@ -207,6 +207,7 @@ You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your dock
   deliver-email-service:
     image: redpencil/deliver-email-service:0.1.1
     environment:
+      MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
       WELL_KNOWN_SERVICE: "test"
       FROM_NAME: "RedPencil"
     labels:
