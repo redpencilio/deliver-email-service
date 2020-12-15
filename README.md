@@ -56,6 +56,8 @@ To use the service add the following to your docker-compose.yml file
 ```yaml
 deliver-email-service:
     image: redpencil/deliver-email-service:0.1.1
+    environment: 
+      MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
     labels:
         - "logging=true"
     restart: always
@@ -169,6 +171,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
       - 8888:80
       - 9229:9229
     environment:
+      MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
       SECURE_CONNECTION: "true"
       NODE_ENV: "development"
       WELL_KNOWN_SERVICE: "myservice"
