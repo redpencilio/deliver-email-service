@@ -121,6 +121,7 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
+| CRON_FREQUENCY | Pattern describing when a new cron job should trigger. usefull: (cron-pattern-generator)[https://crontab.guru/#*/2_*_*_*_*]  | * * 1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
 | EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
@@ -133,6 +134,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
 | HOST | Is the hostname or IP address to connect to.  | "localhost" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | 587 |
+
 
 ## Debugging
 
