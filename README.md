@@ -256,7 +256,7 @@ This only works if you add the following to your dispatcher
 
 ```
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
 PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
 INSERT DATA {
@@ -282,7 +282,7 @@ INSERT DATA {
 ```
 
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
 PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
    SELECT  ?email

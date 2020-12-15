@@ -13,7 +13,7 @@ import parseResults from '../utils/parse-results';
 async function fetchEmails(mailboxURI, folderName) {
   const result = await query(`
   PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-  PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+  PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
   PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
   SELECT ?email

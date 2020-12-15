@@ -13,7 +13,7 @@ import { sparqlEscapeString, sparqlEscapeUri } from 'mu';
 async function moveEmailToFolder(mailboxUri, email, folderName) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
-    PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#>
+    PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
     PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
     DELETE {
@@ -36,7 +36,7 @@ async function moveEmailToFolder(mailboxUri, email, folderName) {
     }
     WHERE {
       GRAPH ?g {
-            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/03/22/nie#hasPart> ?newFolder.
+            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasPart> ?newFolder.
             ?newFolder nie:title  ${sparqlEscapeString(folderName)}.
         }
     }
