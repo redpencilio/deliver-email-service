@@ -124,7 +124,7 @@ The following environment variables can be added to your docker-compose file. Yo
 |---|---|---|---|
 | EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. usefull: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | * * 1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
-| EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
+| EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Options: "smtp" or "test"   | "smtp" |  |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
 | HOURS_SENDING_TIMEOUT | Timeout after which emails in the sending box will be either retried or moved to the failbox  | .5 |
 | MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Its recommended not to set this number too high as it can overload the database.  | 200 |
