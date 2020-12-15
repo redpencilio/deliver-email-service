@@ -129,7 +129,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | HOURS_SENDING_TIMEOUT | Timeout after which emails in the sending box will be either retried or moved to the failbox  | .5 |
 | MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Its recommended not to set this number too high as it can overload the database.  | 10 |
 | MAX_RETRY_ATTEMPTS | Max amount of times an email will be tried to resend after it fails  | 5 |
-| WELL_KNOWN_SERVICE | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "server"  | " " | For smtp |
+| WELL_KNOWN_SERVICE | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) | " " | For smtp |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | " " |
 | EMAIL_ADDRESS | E-mail address from sender  | null | For smtp  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | For smtp  |
