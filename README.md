@@ -199,7 +199,7 @@ If you already have a backend you want to use for development then you can ignor
 
 ## Docker-compose
 
-You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-compose file to "test"
+You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
     image: redpencil/deliver-email-service:0.1.1
@@ -211,7 +211,7 @@ You can easily inspect the mails by changing the EMAIL_PROTOCOL in your docker-c
     restart: always
     logging: *default-logging
 ```
-When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using SMTP or any other service. The main difference being that the service will create a temporary generated ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
+When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using any other smtp service. The main difference being that the service will create a temporary generated ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
 
 ```
 > EMAIL 3: Preview url https://ethereal.email/message/123456788abcdefg
