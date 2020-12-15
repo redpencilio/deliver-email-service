@@ -104,6 +104,7 @@ This deliver-email-service is build around the [Nepomuk Message Ontology](http:/
 | nie | http://www.semanticdesktop.org/ontologies/2007/01/19/nie# |
 | dct | http://purl.org/dc/terms/ |
 | dbpedia | http://dbpedia.org/ontology/ |
+| task | http://redpencil.data.gift/vocabularies/tasks/ |
 
 <br> <br>
 # Environment Variables
@@ -121,7 +122,7 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| CRON_FREQUENCY | Pattern describing when a new cron job should trigger. usefull: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | * * 1 * * * |
+| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. usefull: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | * * 1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
 | EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Options: "smtp", "rest" or "test"   | null | X |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
