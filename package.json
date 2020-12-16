@@ -1,8 +1,8 @@
 {
   "name": "deliver-email-service",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "deliver-email-service",
-  "main": "app.ts",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
