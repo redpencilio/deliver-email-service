@@ -14,30 +14,22 @@ async function moveEmailToFolder(mailboxUri, email, folderName) {
   const result = await query(`
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
-    PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
 
     DELETE {
       GRAPH ?g {
-          ?email nmo:isPartOf ?oldFolder.
+            ${sparqlEscapeUri(email.email)}  nmo:isPartOf ?oldFolder.
         }
     }
-    WHERE {
-      GRAPH ?g {
-          BIND(${sparqlEscapeUri(email.email)} as ?email)
-          ?email a nmo:Email.
-          ?email nmo:isPartOf ?oldFolder.
-        }
-    }
-    ;
     INSERT {
       GRAPH ?g {
-          ${sparqlEscapeUri(email.email)} nmo:isPartOf ?newFolder.
+            ${sparqlEscapeUri(email.email)} nmo:isPartOf ?newFolder.
         }
     }
     WHERE {
       GRAPH ?g {
-            ${sparqlEscapeUri(mailboxUri)} <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#hasPart> ?newFolder.
-            ?newFolder nie:title  ${sparqlEscapeString(folderName)}.
+            ${sparqlEscapeUri(email.email)} nmo:isPartOf ?oldFolder.
+            ${sparqlEscapeUri(mailboxUri)} nie:hasPart ?newFolder.
+            ?newFolder nie:title ${sparqlEscapeString(folderName)}.
         }
     }
   `);
