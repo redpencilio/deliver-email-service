@@ -30,8 +30,8 @@ import {
  */
 async function sendSMTP(email, count){
   try {
-    await moveEmailToFolder(MAILBOX_URI, email, "sending");
     await _ensureSentDate(email, count);
+    await moveEmailToFolder(MAILBOX_URI, email, "sending");
     await _sendMail(email, count);
   }
   catch (err) {
