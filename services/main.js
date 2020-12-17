@@ -25,9 +25,6 @@ async function main() {
   try{
     await _checkForLostEmails();
     const emails = await fetchEmails(MAILBOX_URI, "outbox");
-    if (emails.length == 0) {
-      console.log("*** No Emails found to be send. ***");
-    }
     console.log(`${emails.length} Emails found that need to be send. `);
     await _processEmails(emails, EMAIL_PROTOCOL);
   }
@@ -81,7 +78,7 @@ async function _processEmails(emails, protocol) {
   //Later this will be extended to other protocols
   case "smtp":
     for (const batch of emailBatches) {
-      await Promise.all(batch.map((email, index) => sendSMTP(email, index)));
+      await Promise.all(batch.map((email, index) => sendSMTP(email, index + 1)));
     }
     break;
   default:
