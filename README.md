@@ -55,7 +55,7 @@ To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: redpencil/deliver-email-service:0.1.1
+    image: redpencil/deliver-email-service:0.1.3
     environment: 
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
     labels:
@@ -166,7 +166,7 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```yaml
   deliver-email-service:
-    image: redpencil/deliver-email-service:0.1.1
+    image: redpencil/deliver-email-service:0.1.3
     ports:
       - 8888:80
       - 9229:9229
@@ -205,7 +205,7 @@ If you already have a backend you want to use for development then you can ignor
 You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
-    image: redpencil/deliver-email-service:0.1.1
+    image: redpencil/deliver-email-service:0.1.3
     environment:
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
       WELL_KNOWN_SERVICE: "test"
