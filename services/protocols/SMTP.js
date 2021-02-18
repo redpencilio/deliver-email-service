@@ -4,7 +4,8 @@ import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-id';
 import updateSentDate from '../../queries/update-sent-date';
 import incrementRetryAttempt from "../../queries/increment-retry-attempt";
-import  nodemailer from 'nodemailer';
+import createLog from "../../queries/create-log";
+import nodemailer from 'nodemailer';
 import sgTransport  from 'nodemailer-sendgrid-transport';
 
 /** ENV */
@@ -19,7 +20,9 @@ import {
   PORT,
   NODE_MAILER_SERVICES,
   MAX_RETRY_ATTEMPTS,
-  MAILBOX_URI
+  MAILBOX_URI,
+  LOGS_GRAPH,
+  LOG_ERRORS
 } from '../../config';
 
 /**
@@ -86,6 +89,9 @@ async function _sendMail(email, count) {
       console.log(`Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
       console.dir(`Email ${count}: ${err}`);
 
+      if(LOG_ERRORS){
+        await createLog(LOGS_GRAPH, email.email, `${err}`)
+      }
     }
     else {
       await incrementRetryAttempt(email);
@@ -163,21 +169,17 @@ async function _generateTransporterConfiguration(){
 
 async function _generateNodemailerEmailProperties(email){
   const attachments = [];
-
   const attachmentsData = await fetchAttachmentsForEmail(email.email);
+  let fromData;
 
   for(const attachment of attachmentsData){
-
     const attachmentData = { path: attachment.path };
-
     if(attachment.filename){
       attachmentData.filename = attachment.filename;
     }
-
     attachments.push(attachmentData);
   }
 
-  let fromData;
   if(email.messageFrom){
     fromData = email.messageFrom;
   }
@@ -197,7 +199,6 @@ async function _generateNodemailerEmailProperties(email){
   };
 
   return mailProperties;
-
 }
 
 export default sendSMTP;
