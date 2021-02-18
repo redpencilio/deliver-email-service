@@ -11,11 +11,7 @@
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
 - [Development](#development)
-  * [Backend](#backend)
-  * [Docker-compose](#docker-compose-1)
 - [Testing](#testing)
-  * [Backend](#backend-1)
-  * [Docker-compose](#docker-compose-2)
 - [REST API](#rest-api)
 - [Useful Queries](#useful-queries)
 
@@ -142,13 +138,17 @@ This will show you how to setup a development environment so you can take advant
    You might want to go through the [testing](#testing) section first if you want to test your mails using a temporary mailbox
 <br>
 
-## Backend
+<details>
+ <summary>Backend</summary>
+ 
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
+</details>
 
-## Docker-compose
-
+<details>
+ <summary>Docker-compose</summary>
+ 
 As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
 ```yaml
@@ -176,19 +176,26 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 ```
 
 <sup><b>Don't forget to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
+
+</details>
+
 <br> <br>
 # Testing
 
 Testing environment will send create a temporary ethereal mailbox where you can inspect the email. <br>
 <sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from. In reality you can enter any (random) sender email address and (random) receiver address.</sup>
 
-## Backend
+<details>
+ <summary>Backend</summary>
+ 
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
+</details>
 
-## Docker-compose
-
+<details>
+ <summary>Docker-compose</summary>
+ 
 You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
@@ -209,7 +216,9 @@ When creating an email in the database (see [useful queries](#useful-queries)) t
 ```
 When clicking on the link you will be redirected to the temporary generated mailbox where you can inspect the contents of the mail.
 You do not have to worry about it spamming your own or any other mailbox when the test protocol is set.
+</details>
 <br> <br>
+
 
 # REST API
 
