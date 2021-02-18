@@ -1,9 +1,7 @@
 # Table of content
 
 - [Description](#description)
-- [Basic Usage](#basic-usage)
-  * [Prerequisites](#prerequisites)
-  * [Docker-compose](#docker-compose)
+- [Docker-compose](#docker-compose)
 - [Models](#models)
   * [Mailbox](#mailbox)
   * [Folder](#folder)
@@ -28,34 +26,20 @@ Service used for processing emails. It uses a cron job to periodically look for 
 
 **Docker-image:** https://hub.docker.com/repository/docker/redpencil/deliver-email-service
 
-# Basic Usage
-
-The minimum to get the email service up and running.
-
-## Prerequisites
-
-- You will need to have a mu-semtech stack running in the backend with at least the following services:
-
-| Service  | Repository
-|---|---|
-| mu-identifier  | https://github.com/mu-semtech/mu-identifier  |
-| mu-dispatcher  | https://github.com/mu-semtech/mu-dispatcher  |
-| virtuoso  | https://hub.docker.com/r/tenforce/virtuoso/  |
-| mu-cl-resources  | https://github.com/mu-semtech/mu-cl-resources  |
-
-## Docker-compose
+# Docker-compose
 
 To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: redpencil/deliver-email-service:0.1.3
+    image: redpencil/deliver-email-service:latest
     environment: 
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
     labels:
         - "logging=true"
     restart: always
 ```
+
 # Models
 
 ## Mailbox
