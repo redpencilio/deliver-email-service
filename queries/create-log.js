@@ -28,7 +28,5 @@ export default async function createLog(logsGraph, source, errorMessage) {
     }
   `);
 
-  debugger;
-
   return result
 }
