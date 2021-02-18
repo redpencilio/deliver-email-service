@@ -40,7 +40,7 @@ app.post('/email-delivery/', async function(_, res, next) {
       return res.status(202).send().end();
     }
     catch(err){
-      console.log('ERROR: something went wrong while initiating the email delivery.');
+      console.log('ERROR: something went wrong while initiating the email delivery service.');
       console.log(err);
       return next(new Error(err));
     }
