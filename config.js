@@ -10,6 +10,8 @@ const CRON_FREQUENCY = process.env.EMAIL_CRON_PATTERN || '* * 1 * * *';
 const SECURE_CONNECTION = process.env.SECURE_CONNECTION == "true" || false;
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const LOG_ERRORS = process.env.LOG_ERRORS || false;
+const LOGS_GRAPH = process.env.LOGS_GRAPH || "http://mu.semte.ch/graphs/public";
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
@@ -76,6 +78,8 @@ export {
   SECURE_CONNECTION,
   EMAIL_ADDRESS,
   EMAIL_PASSWORD,
+  LOG_ERRORS,
+  LOGS_GRAPH,
   HOST,
   PORT,
   NODE_MAILER_SERVICES
