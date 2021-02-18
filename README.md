@@ -12,9 +12,6 @@
 - [Example Structure](#example-structure)
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
-  * [Database](#database)
-  * [Email](#email-1)
-  * [Debugging](#debugging)
 - [Development](#development)
   * [Backend](#backend)
   * [Docker-compose](#docker-compose-1)
@@ -22,10 +19,7 @@
   * [Backend](#backend-1)
   * [Docker-compose](#docker-compose-2)
 - [REST API](#rest-api)
-  * [Usefull](#usefull)
 - [Useful Queries](#useful-queries)
-  * [Creating a mail](#creating-a-mail)
-  * [Tracking mails](#tracking-mails)
 
   <br> <br>
 # Description
@@ -113,14 +107,17 @@ This deliver-email-service is build around the [Nepomuk Message Ontology](http:/
 
 The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
-## Database
+<details>
+ <summary>Database</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
 | MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | null |X |
 
+</details>
 
-## Email
+<details>
+ <summary>Emails</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
@@ -135,15 +132,21 @@ The following environment variables can be added to your docker-compose file. Yo
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | " " |
 | EMAIL_ADDRESS | E-mail address from sender  | null | unless "test"  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | unless "test"  |
+| LOGS_GRAPH | Graph where your error logs will be stored | "http://mu.semte.ch/graphs/public" | |
+| LOG_ERRORS | If true, will log the error message in the database when an email was send but returned an error | false | |
 | HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
 
+</details>
 
-## Debugging
+<details>
+ <summary>debugging</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
 | NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" | |
+
+</details>
 
 <br> <br>
 # Development
@@ -237,6 +240,9 @@ Returns 500 Bad Request if something unexpected went wrong while initiating the 
 
 ## Useful
 
+<details>
+ <summary>Manually triggering the service</summary>
+
 You can use postman to trigger the service or use this command (locally)
 
 `wget --post-data='' http://localhost/email-delivery/`
@@ -248,11 +254,12 @@ This only works if you add the following to your dispatcher
     Proxy.forward conn, path, "http://deliver-email-service/email-delivery/"
   end
 ```
-
+</details>
 
 # Useful Queries
 
-## Creating a mail
+<details>
+ <summary>Creating an email</summary>
 
 ```
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
@@ -277,9 +284,13 @@ INSERT DATA {
 
 <sup>You will want to modify <http://data.lblod.info/id/emails/1> after each inserted mail otherwise you will create duplicates. e.g.  <http://data.lblod.info/id/emails/2>,  <http://data.lblod.info/id/emails/3> etc..</sup>
 
-## Tracking mails
+</details>
 
-```
+
+<details>
+ <summary>Tracking mails</summary>
+ 
+ ```
 
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
@@ -334,3 +345,5 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
     }
 GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 ```
+ </details>
+
