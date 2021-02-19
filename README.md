@@ -1,9 +1,7 @@
 # Table of content
 
 - [Description](#description)
-- [Basic Usage](#basic-usage)
-  * [Prerequisites](#prerequisites)
-  * [Docker-compose](#docker-compose)
+- [Docker-compose](#docker-compose)
 - [Models](#models)
   * [Mailbox](#mailbox)
   * [Folder](#folder)
@@ -12,20 +10,10 @@
 - [Example Structure](#example-structure)
 - [Ontology & Prefixes](#ontology--prefixes)
 - [Environment Variables](#environment-variables)
-  * [Database](#database)
-  * [Email](#email-1)
-  * [Debugging](#debugging)
 - [Development](#development)
-  * [Backend](#backend)
-  * [Docker-compose](#docker-compose-1)
 - [Testing](#testing)
-  * [Backend](#backend-1)
-  * [Docker-compose](#docker-compose-2)
 - [REST API](#rest-api)
-  * [Usefull](#usefull)
 - [Useful Queries](#useful-queries)
-  * [Creating a mail](#creating-a-mail)
-  * [Tracking mails](#tracking-mails)
 
   <br> <br>
 # Description
@@ -34,34 +22,20 @@ Service used for processing emails. It uses a cron job to periodically look for 
 
 **Docker-image:** https://hub.docker.com/repository/docker/redpencil/deliver-email-service
 
-# Basic Usage
-
-The minimum to get the email service up and running.
-
-## Prerequisites
-
-- You will need to have a mu-semtech stack running in the backend with at least the following services:
-
-| Service  | Repository
-|---|---|
-| mu-identifier  | https://github.com/mu-semtech/mu-identifier  |
-| mu-dispatcher  | https://github.com/mu-semtech/mu-dispatcher  |
-| virtuoso  | https://hub.docker.com/r/tenforce/virtuoso/  |
-| mu-cl-resources  | https://github.com/mu-semtech/mu-cl-resources  |
-
-## Docker-compose
+# Docker-compose
 
 To use the service add the following to your docker-compose.yml file
 
 ```yaml
 deliver-email-service:
-    image: redpencil/deliver-email-service:0.1.3
+    image: redpencil/deliver-email-service:latest
     environment: 
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
     labels:
         - "logging=true"
     restart: always
 ```
+
 # Models
 
 ## Mailbox
@@ -113,14 +87,17 @@ This deliver-email-service is build around the [Nepomuk Message Ontology](http:/
 
 The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
 
-## Database
+<details>
+ <summary>Database</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
 | MAILBOX_URI | Specify the uri of the mailbox that you want to manipulate  | null |X |
 
+</details>
 
-## Email
+<details>
+ <summary>Emails</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
@@ -135,15 +112,21 @@ The following environment variables can be added to your docker-compose file. Yo
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | " " |
 | EMAIL_ADDRESS | E-mail address from sender  | null | unless "test"  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | unless "test"  |
+| ERROR_LOGS_GRAPH | Graph where your error logs will be stored | "http://mu.semte.ch/graphs/public" | |
+| LOG_ERRORS | If true, will log the error message in the database when an email was send but returned an error | false | |
 | HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
 
+</details>
 
-## Debugging
+<details>
+ <summary>debugging</summary>
 
 | ENV  | Description | default | required |
 |---|---|---|---|
 | NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" | |
+
+</details>
 
 <br> <br>
 # Development
@@ -155,13 +138,17 @@ This will show you how to setup a development environment so you can take advant
    You might want to go through the [testing](#testing) section first if you want to test your mails using a temporary mailbox
 <br>
 
-## Backend
+<details>
+ <summary>Backend</summary>
+ 
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
+</details>
 
-## Docker-compose
-
+<details>
+ <summary>Docker-compose</summary>
+ 
 As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
 ```yaml
@@ -189,19 +176,26 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 ```
 
 <sup><b>Don't forget to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
+
+</details>
+
 <br> <br>
 # Testing
 
 Testing environment will send create a temporary ethereal mailbox where you can inspect the email. <br>
 <sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from. In reality you can enter any (random) sender email address and (random) receiver address.</sup>
 
-## Backend
+<details>
+ <summary>Backend</summary>
+ 
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
+</details>
 
-## Docker-compose
-
+<details>
+ <summary>Docker-compose</summary>
+ 
 You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
@@ -222,7 +216,9 @@ When creating an email in the database (see [useful queries](#useful-queries)) t
 ```
 When clicking on the link you will be redirected to the temporary generated mailbox where you can inspect the contents of the mail.
 You do not have to worry about it spamming your own or any other mailbox when the test protocol is set.
+</details>
 <br> <br>
+
 
 # REST API
 
@@ -237,6 +233,9 @@ Returns 500 Bad Request if something unexpected went wrong while initiating the 
 
 ## Useful
 
+<details>
+ <summary>Manually triggering the service</summary>
+
 You can use postman to trigger the service or use this command (locally)
 
 `wget --post-data='' http://localhost/email-delivery/`
@@ -248,11 +247,12 @@ This only works if you add the following to your dispatcher
     Proxy.forward conn, path, "http://deliver-email-service/email-delivery/"
   end
 ```
-
+</details>
 
 # Useful Queries
 
-## Creating a mail
+<details>
+ <summary>Creating an email</summary>
 
 ```
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
@@ -277,9 +277,13 @@ INSERT DATA {
 
 <sup>You will want to modify <http://data.lblod.info/id/emails/1> after each inserted mail otherwise you will create duplicates. e.g.  <http://data.lblod.info/id/emails/2>,  <http://data.lblod.info/id/emails/3> etc..</sup>
 
-## Tracking mails
+</details>
 
-```
+
+<details>
+ <summary>Tracking mails</summary>
+ 
+ ```
 
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
@@ -334,3 +338,5 @@ PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
     }
 GROUP BY ?email ?messageSubject ?messageFrom ?messageId ?plainTextMessageContent ?htmlMessageContent ?sentDate ?numberOfRetries
 ```
+ </details>
+
