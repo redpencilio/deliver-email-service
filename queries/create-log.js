@@ -5,7 +5,7 @@ import { sparqlEscapeString, sparqlEscapeUri, sparqlEscapeDateTime, uuid } from 
 /**
  * TYPE: query
  * Save error log to database
- * Happends when a send a send mail does not arrive and returns an error
+ * Happends when a send mail does not arrive and returns an error
  * @param  {string} logsGraph
  * @param  {string} errorMessage
  */
