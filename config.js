@@ -11,7 +11,7 @@ const SECURE_CONNECTION = process.env.SECURE_CONNECTION == "true" || false;
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const LOG_ERRORS = process.env.LOG_ERRORS || false;
-const LOGS_GRAPH = process.env.LOGS_GRAPH || "http://mu.semte.ch/graphs/public";
+const ERROR_LOGS_GRAPH = process.env.ERROR_LOGS_GRAPH || "http://mu.semte.ch/graphs/public";
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
@@ -79,7 +79,7 @@ export {
   EMAIL_ADDRESS,
   EMAIL_PASSWORD,
   LOG_ERRORS,
-  LOGS_GRAPH,
+  ERROR_LOGS_GRAPH,
   HOST,
   PORT,
   NODE_MAILER_SERVICES

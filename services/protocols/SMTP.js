@@ -21,7 +21,7 @@ import {
   NODE_MAILER_SERVICES,
   MAX_RETRY_ATTEMPTS,
   MAILBOX_URI,
-  LOGS_GRAPH,
+  ERROR_LOGS_GRAPH,
   LOG_ERRORS
 } from '../../config';
 
@@ -90,7 +90,7 @@ async function _sendMail(email, count) {
       console.dir(`Email ${count}: ${err}`);
 
       if(LOG_ERRORS){
-        await createLog(LOGS_GRAPH, email.email, `${err}`)
+        await createLog(ERROR_LOGS_GRAPH, email.email, `${err}`)
       }
     }
     else {

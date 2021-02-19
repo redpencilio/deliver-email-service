@@ -112,7 +112,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | " " |
 | EMAIL_ADDRESS | E-mail address from sender  | null | unless "test"  |
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | unless "test"  |
-| LOGS_GRAPH | Graph where your error logs will be stored | "http://mu.semte.ch/graphs/public" | |
+| ERROR_LOGS_GRAPH | Graph where your error logs will be stored | "http://mu.semte.ch/graphs/public" | |
 | LOG_ERRORS | If true, will log the error message in the database when an email was send but returned an error | false | |
 | HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
