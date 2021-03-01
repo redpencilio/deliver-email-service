@@ -31,9 +31,6 @@ deliver-email-service:
     image: redpencil/deliver-email-service:latest
     environment: 
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
-    labels:
-        - "logging=true"
-    restart: always
 ```
 
 # Models
@@ -53,21 +50,21 @@ deliver-email-service:
 
 ## Attachments
 
-Attachments are linked trough  `nmo:hasAttachment` property on the email. 
+Attachments are linked through  `nmo:hasAttachment` property on the email. 
 The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service)
 
 # Example Structure
 
-This service relies on a certain structure. By default it searches for an "outbox" folder to find the emails that need to be send, a "failbox" for the emails that have failed etc.. You can modify the structure in the code as needed but in case you want to use the default, then you can migrate the following file: [Migration file](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
+This service expects a certain structure in the database to exist. By default it searches for an "outbox" folder to find the emails that need to be send, when mails fail to send the service will move them to the "failbox" folder... You can modify this structure in the code as needed but in case you want to use the default, then you can migrate the following file to the database: [Migration file](https://github.com/aatauil/app-deliver-email/blob/master/config/migrations/20190122110800-mailbox-folders.sparql)
 
 If you havent yet worked with the migration service then you can find a detailed explanation on how to migrate a file to your database [HERE](https://github.com/mu-semtech/mu-migrations-service).
 
-The migration file is included by default when using the example app: (app-deliver-email)[https://github.com/aatauil/app-deliver-email]
+The migration file is included by default when using the example/test app: [app-deliver-email](https://github.com/aatauil/app-deliver-email)
 When the file has succesfully migrated to your database, then the mailbox & folder structure in the backend should look like this:
 
 ![exampleStructure](https://user-images.githubusercontent.com/52280338/98683867-d361c080-2365-11eb-9c4d-7a800f393106.png)
 
-<sup><b>Emails & header boxes are displayed only for illustration purposes. They are NOT included in the migrations file by default</b></sup>
+<sup><b>Emails & header boxes are displayed only for illustration purposes. They dont come included in the migration file. There is a usefull query at the bottom of this readme to create (test) emails.</b></sup>
 
 <br> <br>
 # Ontology & Prefixes
@@ -76,16 +73,17 @@ This deliver-email-service is build around the [Nepomuk Message Ontology](http:/
 
 | Prefix  | URI |
 |---|---|
+| nmo | http://www.semanticdesktop.org/ontologies/2007/03/22/nmo# |
 | nfo | http://www.semanticdesktop.org/ontologies/2007/03/22/nfo# |
 | nie | http://www.semanticdesktop.org/ontologies/2007/01/19/nie# |
 | dct | http://purl.org/dc/terms/ |
-| dbpedia | http://dbpedia.org/ontology/ |
+| rlog | http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog# |
 | task | http://redpencil.data.gift/vocabularies/tasks/ |
 
 <br> <br>
 # Environment Variables
 
-The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to. All the environment variables are meant to be added under the email-delivery-service environment section in your docker-compose file.
+The following environment variables can be added to your docker-compose file. You can find the list below sorted by which subject they are closest related to.
 
 <details>
  <summary>Database</summary>
@@ -175,15 +173,15 @@ As the image has been build using the [mu-javascript-template](https://hub.docke
 
 ```
 
-<sup><b>Don't forget to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own.</b></sup>
+<sup><b>Don't forget to change WELL_KNOW_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD & FROM_NAME to your own + volume paths.</b></sup>
 
 </details>
 
 <br> <br>
 # Testing
 
-Testing environment will send create a temporary ethereal mailbox where you can inspect the email. <br>
-<sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from. In reality you can enter any (random) sender email address and (random) receiver address.</sup>
+Testing environment will create a temporary ethereal mailbox where you can inspect the email. <br>
+<sup><strong>important to know</strong>: This will not ACTUALLY send the emails. This will only act <strong>as if</strong> the email has been send and received. The specified receiver will not receive the emails nor will the sender actually send the email from their own email address. In reality you can enter any (random) sender email address and (random) receiver address and it will still work.</sup>
 
 <details>
  <summary>Backend</summary>
@@ -204,12 +202,8 @@ You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your dock
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
       WELL_KNOWN_SERVICE: "test"
       FROM_NAME: "RedPencil"
-    labels:
-      - "logging=true"
-    restart: always
-    logging: *default-logging
 ```
-When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email using any other smtp service. The main difference being that the service will create a temporary generated ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
+When creating an email in the database (see [useful queries](#useful-queries)) the email will go through the same process as it would when sending an email in the non-testing environment. The main difference being that the service will create a temporary generated ethereal mailbox for you where you can view your send emails. At the end of each send email, the logs will display a preview url:
 
 ```
 > EMAIL 3: Preview url https://ethereal.email/message/123456788abcdefg
@@ -225,28 +219,32 @@ You do not have to worry about it spamming your own or any other mailbox when th
 **POST /email-delivery**
 Initiate a new email-delivery cycle asynchronously.
 
-Returns 202 Accepted if the email-delivery process started successfully.
+Returns **202 Accepted** if the email-delivery process started successfully.
 
-Returns 204 No Content if the email-delivery got triggered but no emails where found that need to be send.
+Returns **204 No Content** if the email-delivery got triggered but no emails where found that need to be send.
 
-Returns 500 Bad Request if something unexpected went wrong while initiating the email-delivery process.
+Returns **500 Bad Request** if something unexpected went wrong while initiating the email-delivery process.
 
 ## Useful
 
 <details>
  <summary>Manually triggering the service</summary>
-
-You can use postman to trigger the service or use this command (locally)
-
-`wget --post-data='' http://localhost/email-delivery/`
-
-This only works if you add the following to your dispatcher
-
-```ruby
+ 
+ Add the following snippet to your dispatcher file.
+ 
+ ```ruby
   post "/email-delivery/*path" do
     Proxy.forward conn, path, "http://deliver-email-service/email-delivery/"
   end
 ```
+
+You can now use postman to send a post request to the '/email-delivery' endpoint or you can run the following command in your terminal.
+
+`wget --post-data='' http://localhost/email-delivery/`
+
+<small> Do not forget to remove this before deploying to production </small>
+
+
 </details>
 
 # Useful Queries
