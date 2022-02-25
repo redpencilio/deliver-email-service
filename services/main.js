@@ -17,7 +17,7 @@ import {
 
 /**
  * TYPE: main function
- * Fetches the mail and checks for existing mails, and calles processEmails when emails are found
+ * Fetches the mail and checks for existing mails, and calls processEmails when emails are found
  *
  * @param  {object} res
  */
@@ -25,7 +25,7 @@ async function main() {
   try{
     await _checkForLostEmails();
     const emails = await fetchEmails(MAILBOX_URI, "outbox");
-    console.log(`${emails.length} Emails found that need to be send. `);
+    console.log(`${emails.length} Emails found that need to be sent.`);
     await _processEmails(emails, EMAIL_PROTOCOL);
   }
   catch(err){
@@ -80,6 +80,8 @@ async function _processEmails(emails, protocol) {
     for (const batch of emailBatches) {
       await Promise.all(batch.map((email, index) => sendSMTP(email, index + 1)));
     }
+    break;
+  case "MS_Graph_API":
     break;
   default:
     throw new Error( "*** Unsupported or no protocol defined. Available options: 'smtp' or 'test' ***");
