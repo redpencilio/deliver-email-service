@@ -1,4 +1,4 @@
-import updateSentDate from "../../queries/update-sent-date";
+import updateSentDate from "../queries/update-sent-date";
 
 /**
  * Ensures a sentDate is added to the email.
