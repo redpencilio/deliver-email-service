@@ -1,3 +1,6 @@
+import { ClientSecretCredential } from "@azure/identity";
+import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials";
+
 const MAILBOX_URI = process.env.MAILBOX_URI;
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
 const FROM_NAME = process.env.FROM_NAME || '';
@@ -14,9 +17,43 @@ const LOG_ERRORS = process.env.LOG_ERRORS || false;
 const ERROR_LOGS_GRAPH = process.env.ERROR_LOGS_GRAPH || "http://mu.semte.ch/graphs/public";
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
+const MS_GRAPH_API_CLIENT_ID = process.env.MS_GRAPH_API_CLIENT_ID;
+const MS_GRAPH_API_TENANT_ID = process.env.MS_GRAPH_API_TENANT_ID;
+const MS_GRAPH_API_CLIENT_SECRET = process.env.MS_GRAPH_API_CLIENT_SECRET;
+const MS_GRAPH_API_USER_PRINCIPAL_NAME = process.env.MS_GRAPH_API_USER_PRINCIPAL_NAME;
+
+let MS_GRAPH_API_CREDENTIAL;
+let MS_GRAPH_API_AUTH_PROVIDER;
 
 if(!MAILBOX_URI){
   throw `Expected a MAILBOX_URI`;
+}
+
+if (EMAIL_PROTOCOL === "MS_Graph_API") {
+  if (!MS_GRAPH_API_CLIENT_ID) {
+    throw "Expected a MS_GRAPH_API_CLIENT_ID";
+  }
+  if (!MS_GRAPH_API_TENANT_ID) {
+    throw "Expected a MS_GRAPH_API_TENANT_ID";
+  }
+  if (!MS_GRAPH_API_CLIENT_SECRET) {
+    throw "Expected a MS_GRAPH_API_CLIENT_SECRET";
+  }
+  if (!MS_GRAPH_API_USER_PRINCIPAL_NAME) {
+    throw "Expected a MS_GRAPH_USER_PRINCIPAL_NAME";
+  }
+
+  MS_GRAPH_API_CREDENTIAL = new ClientSecretCredential(
+    MS_GRAPH_API_TENANT_ID,
+    MS_GRAPH_API_CLIENT_ID,
+    MS_GRAPH_API_CLIENT_SECRET
+  );
+  MS_GRAPH_API_AUTH_PROVIDER = new TokenCredentialAuthenticationProvider(
+    MS_GRAPH_API_CREDENTIAL,
+    {
+      scopes: ["https://graph.microsoft.com/.default"],
+    }
+  );
 }
 
 const NODE_MAILER_SERVICES = [
@@ -82,5 +119,7 @@ export {
   ERROR_LOGS_GRAPH,
   HOST,
   PORT,
-  NODE_MAILER_SERVICES
+  NODE_MAILER_SERVICES,
+  MS_GRAPH_API_AUTH_PROVIDER,
+  MS_GRAPH_API_USER_PRINCIPAL_NAME,
 };
