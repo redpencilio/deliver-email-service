@@ -2,7 +2,7 @@
 import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-id';
-import updateSentDate from '../../queries/update-sent-date';
+import ensureSentDate from "../../utils/ensure-sent-date";
 import incrementRetryAttempt from "../../queries/increment-retry-attempt";
 import createLog from "../../queries/create-log";
 import nodemailer from 'nodemailer';
@@ -31,9 +31,9 @@ import {
  * @param  {boolean} email
  * @param  {integer} count
  */
-async function sendSMTP(email, count){
+async function sendSMTP(email, count) {
   try {
-    await _ensureSentDate(email, count);
+    await ensureSentDate(email, count);
     await moveEmailToFolder(MAILBOX_URI, email, "sending");
     await _sendMail(email, count);
   }
@@ -42,17 +42,6 @@ async function sendSMTP(email, count){
   }
 }
 
-/**
- * Ensures a sentDate is added to the email.
- * @param  {object} email
- * @param  {integer} count
- */
-async function _ensureSentDate(email, count) {
-  if (!email.sentDate) {
-    await updateSentDate(email);
-    console.log(`Email ${count}: No send date found, a send date has been created.`);
-  }
-}
 
 async function _sendMail(email, count) {
   try{
