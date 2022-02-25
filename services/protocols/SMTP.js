@@ -24,6 +24,7 @@ import {
   ERROR_LOGS_GRAPH,
   LOG_ERRORS
 } from '../../config';
+import sendOrRetry from "../../utils/send-or-retry";
 
 /**
  * TYPE: main function
@@ -44,52 +45,35 @@ async function sendSMTP(email, count) {
 
 
 async function _sendMail(email, count) {
-  try{
-    let transporter = nodemailer.createTransport(await _generateTransporterConfiguration());
+  sendOrRetry(async () => {
+    let transporter = nodemailer.createTransport(
+      await _generateTransporterConfiguration()
+    );
     const mailProperties = await _generateNodemailerEmailProperties(email);
 
     const response = await transporter.sendMail(mailProperties);
 
     await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
 
-    if(!response.messageId){
-      console.warn(`No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`);
+    if (!response.messageId) {
+      console.warn(
+        `No messageId returned for ${email.email} and ${WELL_KNOWN_SERVICE}`
+      );
     }
 
-    await updateEmailId(email, response.messageId || '');
+    await updateEmailId(email, response.messageId || "");
 
     console.log(`Email ${count}: URI = ${email.email}`);
     console.log(`Email ${count}: Email moved to sentbox`);
     console.log(`Email ${count}: Email message ID updated`);
-    console.log(`Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`);
-    console.log(`Email ${count}: Preview URL %s`, nodemailer.getTestMessageUrl(response));
-  }
-
-  catch(err) {
-    console.dir(err);
-
-    const modifiedDate = new Date(email.sentDate);
-    const currentDate = new Date();
-    const timeout = ((currentDate - modifiedDate) / (1000 * 60 * 60)) <= parseInt(HOURS_DELIVERING_TIMEOUT);
-
-    if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
-      await moveEmailToFolder(MAILBOX_URI, email, "failbox");
-      console.log(`Email ${count}: The destination server responded with an error.`);
-      console.log(`Email ${count}: Max retries ${MAX_RETRY_ATTEMPTS} exceeded. Emails had been moved to failbox`);
-      console.dir(`Email ${count}: ${err}`);
-
-      if(LOG_ERRORS){
-        await createLog(ERROR_LOGS_GRAPH, email.email, `${err}`)
-      }
-    }
-    else {
-      await incrementRetryAttempt(email);
-      await moveEmailToFolder(MAILBOX_URI, email, "outbox");
-      console.log(`Email ${count}: The destination server responded with an error. Email set to be retried at next cronjob.`);
-      console.log(`Email ${count}: Attempt ${email.numberOfRetries} out of ${MAX_RETRY_ATTEMPTS}`);
-      console.dir(`Email ${count}: ${err}`);
-    }
-  }
+    console.log(
+      `Email ${count}: MessageId updated from ${email.messageId} to ${response.messageId}`
+    );
+    console.log(
+      `Email ${count}: Preview URL %s`,
+      nodemailer.getTestMessageUrl(response)
+    );
+  });
 }
 
 
