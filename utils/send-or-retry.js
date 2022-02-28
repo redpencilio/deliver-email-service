@@ -11,7 +11,11 @@ import {
 
 async function sendOrRetry(sendFunction) {
   try {
-    sendFunction();
+    if (typeof sendFunction.then === 'function') {
+      await sendFunction();
+    } else {
+      sendFunction();
+    }
   } catch (err) {
     console.dir(err);
 

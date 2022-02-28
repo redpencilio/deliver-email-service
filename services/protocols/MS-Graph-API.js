@@ -48,7 +48,7 @@ async function sendMSGraphAPI(email, count) {
  * @param {number} count
  */
 async function _sendMail(email, count) {
-  sendOrRetry(async () => {
+  await sendOrRetry(async () => {
     const client = Client.initWithMiddleware({
       authProvider: MS_GRAPH_API_AUTH_PROVIDER,
     });
@@ -57,11 +57,9 @@ async function _sendMail(email, count) {
 
     let userPrincipalName = MS_GRAPH_API_USER_PRINCIPAL_NAME;
     if (email.messageFrom) {
-      const regex = /^[\w ]+? <(.*)>$/;
-      const [fromAddress] = email.messageFrom.match(regex);
       const response = await client
         .api("/users")
-        .filter(`eq(mail,'${fromAddress}')`)
+        .filter(`mail eq '${email.messageFrom}'`)
         .select("userPrincipalName")
         .get();
 
@@ -87,6 +85,8 @@ async function _sendMail(email, count) {
       userPrincipalName,
       immutableId
     );
+
+    await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
 
     if (!response.internetMessageId) {
       console.warn(`No messageId returned for ${email.email} and MS_GRAPH_API`);

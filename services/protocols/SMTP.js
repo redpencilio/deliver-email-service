@@ -45,7 +45,7 @@ async function sendSMTP(email, count) {
 
 
 async function _sendMail(email, count) {
-  sendOrRetry(async () => {
+  await sendOrRetry(async () => {
     let transporter = nodemailer.createTransport(
       await _generateTransporterConfiguration()
     );
