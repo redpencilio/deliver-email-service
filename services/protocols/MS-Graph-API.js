@@ -7,6 +7,7 @@ import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email"
 import {
   MAILBOX_URI,
   MS_GRAPH_API_AUTH_PROVIDER,
+  MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME,
   MS_GRAPH_API_USER_PRINCIPAL_NAME,
 } from "../../config";
 import updateEmailId from "../../queries/update-email-id";
@@ -172,7 +173,7 @@ async function _getSentEmail(
       console.warn(
         `Fetching message with id ${immutableId} failed with an error 404, retrying once.`
       );
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME));
       return _getSentEmail(client, userPrincipalName, immutableId, true);
     } else {
       throw err;
