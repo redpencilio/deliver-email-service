@@ -18,7 +18,7 @@
   <br> <br>
 # Description
 
-Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. Emails are send using [Nodemailer](https://nodemailer.com/).
+Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. Emails are send using [Nodemailer](https://nodemailer.com/) or [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/outlook-mail-concept-overview).
 
 **Docker-image:** https://hub.docker.com/repository/docker/redpencil/deliver-email-service
 
@@ -99,7 +99,7 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. usefull: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | * * 1 * * * |
+| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. Default: once every hour. Useful: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | 0 */1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
 | EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Available options are "smtp" "MS_Graph_API"  | "smtp" |  |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
