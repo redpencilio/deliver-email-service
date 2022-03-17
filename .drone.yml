@@ -68,3 +68,11 @@ steps:
 trigger:
   event:
   - pull_request
+---
+kind: secret
+name: docker_username
+data: k0in0SwDFnCTg3muivp3CLHhQxlCxbJulLDEtFv/4PKXLn3XmDU9
+---
+kind: secret
+name: docker_password
+data: 3LWl68TZ2gKtbVqeEN8FTmkuEe/7OMf6vJto+zn2ohAJcLxsjxbfcxjrC6X9CSv7bMx1Ew8f2sNfxLZy3t1yWA==
