@@ -173,7 +173,9 @@ async function _getSentEmail(
       console.warn(
         `Fetching message with id ${immutableId} failed with an error 404, retrying once.`
       );
-      await new Promise((resolve) => setTimeout(resolve, MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME));
+      await new Promise((resolve) =>
+        setTimeout(resolve, MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME)
+      );
       return _getSentEmail(client, userPrincipalName, immutableId, true);
     } else {
       throw err;
@@ -214,37 +216,34 @@ async function _generateMsGraphApiEmailProperties(email) {
     body.content = "";
   }
 
-  const toRecipients = [];
-  for (const address of email.emailTo.split(",")) {
-    toRecipients.push({
+  const emailToMSApiRecipient = (email) => {
+    if (email === undefined || email === null) {
+      return null;
+    }
+    return {
       emailAddress: {
-        address: address,
+        address: email,
       },
-    });
-  }
-  const ccRecipients = [];
-  for (const address of email.emailCc.split(",")) {
-    toRecipients.push({
-      emailAddress: {
-        address: address,
-      },
-    });
-  }
-  const bccRecipients = [];
-  for (const address of email.emailBcc.split(",")) {
-    bccRecipients.push({
-      emailAddress: {
-        address: address,
-      },
-    });
-  }
+    };
+  };
+  const splitEmailString = (emails) => {
+    if (emails === undefined || emails === null) {
+      return null;
+    }
+    const array = [];
+    for (const email of emails.split(",")) {
+      array.push(emailToMSApiRecipient(email));
+    }
+    return array;
+  };
 
   const mailProperties = {
+    toRecipients: splitEmailString(email.emailTo),
+    ccRecipients: splitEmailString(email.emailCc),
+    bccRecipients: splitEmailString(email.emailBcc),
+    replyTo: splitEmailString(email.replyTo),
     subject: email.messageSubject,
     body: body,
-    toRecipients: toRecipients,
-    ccRecipients: ccRecipients,
-    bccRecipients: bccRecipients,
     attachments: attachments,
   };
 
