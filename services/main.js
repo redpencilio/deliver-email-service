@@ -12,6 +12,7 @@ import {
   MAILBOX_URI,
   HOURS_SENDING_TIMEOUT,
   MAX_BATCH_SIZE,
+  MAX_BATCH_WAIT_TIME,
   MAX_RETRY_ATTEMPTS,
 } from "../config";
 
