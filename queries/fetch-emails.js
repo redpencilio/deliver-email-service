@@ -19,7 +19,7 @@ async function fetchEmails(mailboxURI, folderName) {
   SELECT ?email
     ?messageSubject
     ?messageFrom
-    ?replyTo
+    (group_concat(distinct ?replyTo;separator=",") as ?replyTo)
     (group_concat(distinct ?emailTo;separator=",") as ?emailTo)
     (group_concat(distinct ?emailCc;separator=",") as ?emailCc)
     (group_concat(distinct ?emailBcc;separator=",") as ?emailBcc)
