@@ -28,14 +28,6 @@ async function main() {
     const emails = await fetchEmails(MAILBOX_URI, "outbox");
     console.log(`${emails.length} Emails found that need to be sent.`);
     await _processEmails(emails, EMAIL_PROTOCOL);
-    // await sendMSGraphAPI({
-    //   email: "http://this.uri.does.not.exist",
-    //   messageSubject: "A very good message",
-    //   plainTextMessageContent: "Hehe you silly rascal",
-    //   emailTo: "sergio@fenoll.be",
-    //   emailCc: "",
-    //   emailBcc: "",
-    // }, 1);
   } catch (err) {
     console.error(err);
     throw `Error while processing emails: ${err}`;
