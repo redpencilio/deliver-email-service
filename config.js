@@ -10,7 +10,7 @@ const MAX_BATCH_SIZE = process.env.MAX_BATCH_SIZE || 10;
 const MAX_BATCH_WAIT_TIME = process.env.MAX_BATCH_WAIT_TIME || 1000;
 const MAX_RETRY_ATTEMPTS = process.env.MAX_RETRY_ATTEMPTS || 5;
 const WELL_KNOWN_SERVICE = (process.env.WELL_KNOWN_SERVICE || '').toLowerCase();
-const CRON_FREQUENCY = process.env.EMAIL_CRON_PATTERN || '0 */1 * * *';
+const CRON_FREQUENCY = process.env.EMAIL_CRON_PATTERN || '* * 1 * * *';
 const SECURE_CONNECTION = process.env.SECURE_CONNECTION == "true" || false;
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;

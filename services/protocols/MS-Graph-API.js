@@ -158,7 +158,7 @@ async function _getSentEmail(
   client,
   userPrincipalName,
   immutableId,
-  retry = false
+  mustRetry = true
 ) {
   try {
     const response = await client
@@ -169,12 +169,12 @@ async function _getSentEmail(
       .get();
     return response;
   } catch (err) {
-    if (err.statusCode === 404 && !retry) {
+    if (err.statusCode === 404 && mustRetry) {
       console.warn(
         `Fetching message with id ${immutableId} failed with an error 404, retrying once.`
       );
       await new Promise((resolve) => setTimeout(resolve, MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME));
-      return _getSentEmail(client, userPrincipalName, immutableId, true);
+      return _getSentEmail(client, userPrincipalName, immutableId, false);
     } else {
       throw err;
     }
@@ -224,7 +224,7 @@ async function _generateMsGraphApiEmailProperties(email) {
   }
   const ccRecipients = [];
   for (const address of email.emailCc.split(",")) {
-    toRecipients.push({
+    ccRecipients.push({
       emailAddress: {
         address: address,
       },

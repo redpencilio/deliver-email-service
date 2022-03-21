@@ -20,7 +20,7 @@ new CronJob(CRON_FREQUENCY, function() {
   console.log(`*************************************************************************`);
   console.log(`***  Email delivery triggered by cron job at ${new Date().toISOString()} ***`);
   console.log(`*************************************************************************`);
-  fetch('http://localhost/email-delivery/', {method: 'POST'})
+  fetch('http://localhost/email-delivery/', {method: 'POST'});
 
 }, null, true);
 
