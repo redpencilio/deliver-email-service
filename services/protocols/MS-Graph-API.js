@@ -5,10 +5,10 @@ import moveEmailToFolder from "../../queries/move-email-to-folder";
 import ensureSentDate from "../../utils/ensure-sent-date";
 import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import {
+  EMAIL_ADDRESS,
   MAILBOX_URI,
   MS_GRAPH_API_AUTH_PROVIDER,
   MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME,
-  MS_GRAPH_API_USER_PRINCIPAL_NAME,
 } from "../../config";
 import updateEmailId from "../../queries/update-email-id";
 import sendOrRetry from "../../utils/send-or-retry";
@@ -55,19 +55,16 @@ async function _sendMail(email, count) {
 
     const mailProperties = await _generateMsGraphApiEmailProperties(email);
 
-    let userPrincipalName = MS_GRAPH_API_USER_PRINCIPAL_NAME;
-    if (email.messageFrom) {
-      const response = await client
-        .api("/users")
-        .filter(`mail eq '${email.messageFrom}'`)
-        .select("userPrincipalName")
-        .get();
+    let emailFrom = email.messageFrom || EMAIL_ADDRESS;
+    const response = await client
+      .api("/users")
+      .filter(`mail eq '${emailFrom}'`)
+      .select("userPrincipalName")
+      .get();
 
-      const [fetchedUserPrincipalName] = response.value.map(
-        (user) => user.userPrincipalName
-      );
-      userPrincipalName = fetchedUserPrincipalName ?? userPrincipalName;
-    }
+    const [userPrincipalName] = response.value.map(
+      (user) => user.userPrincipalName
+    );
 
     // Create draft
     const immutableId = await _createDraftEmail(
@@ -80,7 +77,7 @@ async function _sendMail(email, count) {
     await _sendDraftEmail(client, userPrincipalName, immutableId);
 
     // Get sent email
-    const response = await _getSentEmail(
+    const sentEmail = await _getSentEmail(
       client,
       userPrincipalName,
       immutableId
@@ -88,17 +85,17 @@ async function _sendMail(email, count) {
 
     await moveEmailToFolder(MAILBOX_URI, email, "sentbox");
 
-    if (!response.internetMessageId) {
+    if (!sentEmail.internetMessageId) {
       console.warn(`No messageId returned for ${email.email} and MS_GRAPH_API`);
     }
 
-    await updateEmailId(email, response.internetMessageId || "");
+    await updateEmailId(email, sentEmail.internetMessageId || "");
 
     console.log(`Email ${count}: URI = ${email.email}`);
     console.log(`Email ${count}: Email moved to sentbox`);
     console.log(`Email ${count}: Email message ID updated`);
     console.log(
-      `Email ${count}: MessageId updated from ${email.messageId} to ${response.internetMessageId}`
+      `Email ${count}: MessageId updated from ${email.messageId} to ${sentEmail.internetMessageId}`
     );
   });
 }
