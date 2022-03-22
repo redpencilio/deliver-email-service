@@ -217,9 +217,6 @@ async function _generateMsGraphApiEmailProperties(email) {
   }
 
   const emailToMSApiRecipient = (email) => {
-    if (email === undefined || email === null) {
-      return null;
-    }
     return {
       emailAddress: {
         address: email,
@@ -227,9 +224,10 @@ async function _generateMsGraphApiEmailProperties(email) {
     };
   };
   const splitEmailString = (emails) => {
-    if (emails === undefined || emails === null) {
-      return null;
+    if (emails === '') {
+      return [];
     }
+
     const array = [];
     for (const email of emails.split(",")) {
       array.push(emailToMSApiRecipient(email));
