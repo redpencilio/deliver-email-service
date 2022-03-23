@@ -6,14 +6,14 @@ steps:
 - name: build-and-push
   image: plugins/docker
   settings:
-    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME%-service}
+    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME}
     username:
       from_secret: docker_username
     password:
       from_secret: docker_password
 trigger:
   branch:
-  - master
+  - main
   event:
     exclude:
     - pull_request
@@ -25,7 +25,7 @@ steps:
 - name: push-feature-build
   image: plugins/docker
   settings:
-    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME%-service}
+    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME}
     tags: ${DRONE_BRANCH/\//-}
     username:
       from_secret: docker_username
@@ -46,7 +46,7 @@ steps:
 - name: build-and-push-tag
   image: plugins/docker
   settings:
-    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME%-service}
+    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME}
     tags: ${DRONE_TAG##v} # strips v from the tag
     username:
       from_secret: docker_username
@@ -63,7 +63,7 @@ steps:
 - name: dry-run
   image: plugins/docker
   settings:
-    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME%-service}
+    repo: ${DRONE_REPO_NAMESPACE/redpencilio/redpencil}/${DRONE_REPO_NAME}
     dry_run: true
 trigger:
   event:
