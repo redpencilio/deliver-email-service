@@ -18,7 +18,7 @@
   <br> <br>
 # Description
 
-Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. Emails are send using [Nodemailer](https://nodemailer.com/).
+Service used for processing emails. It uses a cron job to periodically look for emails that need to be send. Emails are send using [Nodemailer](https://nodemailer.com/) or [Microsoft Graph API](https://docs.microsoft.com/en-us/graph/outlook-mail-concept-overview).
 
 **Docker-image:** https://hub.docker.com/repository/docker/redpencil/deliver-email-service
 
@@ -99,12 +99,13 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. usefull: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | * * 1 * * * |
+| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. Default: every second of every minute of every first hour of the day. Useful: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*) & [used cron library](https://www.npmjs.com/package/cron#available-cron-patterns). Note that this library uses **6 fields** as opposed to 5, i.e. it has granularity up to 1 second. | * * 1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
-| EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Only available option is "smtp"   | "smtp" |  |
+| EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Available options are "smtp" "MS_Graph_API"  | "smtp" |  |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
 | HOURS_SENDING_TIMEOUT | Timeout after which emails in the sending box will be either retried or moved to the failbox  | .5 |
-| MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Its recommended not to set this number too high as it can overload the database.  | 10 |
+| MAX_BATCH_SIZE | Max amount of emails allowed to be send in parallel. Emails in a batch are sent sequentially, there's a wait time between batches | 10 |
+| MAX_BATCH_WAIT_TIME | Amount of time (in milliseconds) to wait between batches | 1000 |
 | MAX_RETRY_ATTEMPTS | Max amount of times an email will be tried to resend after it fails  | 5 |
 | WELL_KNOWN_SERVICE | Specify the email service you will be using to send the emails. Options: [list](https://github.com/redpencilio/deliver-email-service/blob/main/data/node-mailer-services.js) or "test" | " " | x |
 | FROM_NAME  | Name that will be displayed to receiver of the e-mail  | " " |
@@ -114,6 +115,10 @@ The following environment variables can be added to your docker-compose file. Yo
 | LOG_ERRORS | If true, will log the error message in the database when an email was send but returned an error | false | |
 | HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
 | PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
+| MS_GRAPH_API_CLIENT_ID | Client (or Application) ID of the Microsoft App that will be used to connect with the Graph API | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
+| MS_GRAPH_API_TENANT_ID | Tenant (or Directory) ID of the tenant/Active Directory that hosts the email accounts we will use for sending | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
+| MS_GRAPH_API_CLIENT_SECRET | Client secret value of the Microsoft App | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
+| MS_GRAPH_API_RETRIEVE_WAIT_TIME | the amount of time (in milliseconds) to wait when retrying the fetching of an email | 10000 |
 
 </details>
 

@@ -13,8 +13,9 @@ export default async function fetchAttachmentsForEmail(emailUri){
     PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
     PREFIX nfo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#>
     PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+    PREFIX dct: <http://purl.org/dc/terms/>
 
-    SELECT DISTINCT ?physicalFile ?filename ?attachment ?email
+    SELECT DISTINCT ?physicalFile ?filename ?contentType ?attachment ?email
     WHERE {
        BIND(${sparqlEscapeUri(emailUri)} as ?email)
        ?email nmo:hasAttachment ?attachment.
@@ -22,6 +23,7 @@ export default async function fetchAttachmentsForEmail(emailUri){
       GRAPH ?g {
         ?attachment a nfo:FileDataObject.
         OPTIONAL { ?attachment nfo:fileName ?filename. }
+        OPTIONAL { ?attachment dct:format ?contentType. }
         ?physicalFile nie:dataSource ?attachment.
       }
     }
