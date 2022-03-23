@@ -99,7 +99,7 @@ The following environment variables can be added to your docker-compose file. Yo
 
 | ENV  | Description | default | required |
 |---|---|---|---|
-| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. Default: once every hour. Useful: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*)  | 0 */1 * * * |
+| EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. Default: every second of every minute of every first hour of the day. Useful: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*) & [used cron library](https://www.npmjs.com/package/cron#available-cron-patterns). Note that this library uses **6 fields** as opposed to 5, i.e. it has granularity up to 1 second. | * * 1 * * * |
 | SECURE_CONNECTION | if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false  | false |   |
 | EMAIL_PROTOCOL | Choose which protocol you want te use to send the e-mails. Available options are "smtp" "MS_Graph_API"  | "smtp" |  |
 | HOURS_DELIVERING_TIMEOUT | Timeout after which the service will stop retrying to send the e-mail after it has failed  | 1 |
@@ -118,7 +118,6 @@ The following environment variables can be added to your docker-compose file. Yo
 | MS_GRAPH_API_CLIENT_ID | Client (or Application) ID of the Microsoft App that will be used to connect with the Graph API | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
 | MS_GRAPH_API_TENANT_ID | Tenant (or Directory) ID of the tenant/Active Directory that hosts the email accounts we will use for sending | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
 | MS_GRAPH_API_CLIENT_SECRET | Client secret value of the Microsoft App | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
-| MS_GRAPH_API_USER_PRINCIPAL_NAME | The User Principal Name of the sender. Can be retrieved from the [Admin Portal](https://admin.microsoft.com/) | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
 | MS_GRAPH_API_RETRIEVE_WAIT_TIME | the amount of time (in milliseconds) to wait when retrying the fetching of an email | 10000 |
 
 </details>

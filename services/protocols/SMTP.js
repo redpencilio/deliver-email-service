@@ -3,6 +3,8 @@ import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email"
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import updateEmailId from '../../queries/update-email-id';
 import ensureSentDate from "../../utils/ensure-sent-date";
+import incrementRetryAttempt from "../../queries/increment-retry-attempt";
+import createLog from "../../queries/create-log";
 import nodemailer from 'nodemailer';
 import sgTransport  from 'nodemailer-sendgrid-transport';
 
