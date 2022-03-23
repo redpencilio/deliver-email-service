@@ -220,15 +220,11 @@ async function _generateMsGraphApiEmailProperties(email) {
   };
 
   const splitEmailString = (emails) => {
-    if (emails === '') {
+    if (emails && emails.length) {
+      return emails.split(",").map((email) => emailToMSApiRecipient(email));
+    } else {
       return [];
     }
-
-    const array = [];
-    for (const email of emails.split(",")) {
-      array.push(emailToMSApiRecipient(email));
-    }
-    return array;
   };
 
   const mailProperties = {
