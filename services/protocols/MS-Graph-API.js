@@ -211,37 +211,29 @@ async function _generateMsGraphApiEmailProperties(email) {
     body.content = "";
   }
 
-  const toRecipients = [];
-  for (const address of email.emailTo.split(",")) {
-    toRecipients.push({
+  const emailToMSApiRecipient = (email) => {
+    return {
       emailAddress: {
-        address: address,
+        address: email,
       },
-    });
-  }
-  const ccRecipients = [];
-  for (const address of email.emailCc.split(",")) {
-    ccRecipients.push({
-      emailAddress: {
-        address: address,
-      },
-    });
-  }
-  const bccRecipients = [];
-  for (const address of email.emailBcc.split(",")) {
-    bccRecipients.push({
-      emailAddress: {
-        address: address,
-      },
-    });
-  }
+    };
+  };
+
+  const splitEmailString = (emails) => {
+    if (emails && emails.length) {
+      return emails.split(",").map((email) => emailToMSApiRecipient(email));
+    } else {
+      return [];
+    }
+  };
 
   const mailProperties = {
+    toRecipients: splitEmailString(email.emailTo),
+    ccRecipients: splitEmailString(email.emailCc),
+    bccRecipients: splitEmailString(email.emailBcc),
+    replyTo: splitEmailString(email.replyTo),
     subject: email.messageSubject,
     body: body,
-    toRecipients: toRecipients,
-    ccRecipients: ccRecipients,
-    bccRecipients: bccRecipients,
     attachments: attachments,
   };
 

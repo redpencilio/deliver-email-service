@@ -45,7 +45,7 @@ deliver-email-service:
 
 ## Email
 
-![emailStructure](https://user-images.githubusercontent.com/52280338/100217257-8cea9500-2f13-11eb-9180-20fe7cb1a3a6.png)
+![emailStructure](https://user-images.githubusercontent.com/22411874/158777581-af48f4ad-af0c-40fc-96ea-f87634d34ce5.png)
 
 
 ## Attachments

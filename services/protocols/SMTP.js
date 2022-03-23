@@ -11,7 +11,6 @@ import sgTransport  from 'nodemailer-sendgrid-transport';
 /** ENV */
 import {
   FROM_NAME,
-  HOURS_DELIVERING_TIMEOUT,
   WELL_KNOWN_SERVICE,
   SECURE_CONNECTION,
   EMAIL_ADDRESS,
@@ -19,10 +18,7 @@ import {
   HOST,
   PORT,
   NODE_MAILER_SERVICES,
-  MAX_RETRY_ATTEMPTS,
   MAILBOX_URI,
-  ERROR_LOGS_GRAPH,
-  LOG_ERRORS
 } from '../../config';
 import sendOrRetry from "../../utils/send-or-retry";
 
@@ -165,6 +161,7 @@ async function _generateNodemailerEmailProperties(email){
     to: email.emailTo,
     cc: email.emailCc,
     bcc: email.emailBcc,
+    replyTo: email.replyTo,
     subject: email.messageSubject,
     text: email.plainTextMessageContent,
     html: email.htmlMessageContent,

@@ -19,6 +19,7 @@ async function fetchEmails(mailboxURI, folderName) {
   SELECT ?email
     ?messageSubject
     ?messageFrom
+    (group_concat(distinct ?replyTo;separator=",") as ?replyTo)
     (group_concat(distinct ?emailTo;separator=",") as ?emailTo)
     (group_concat(distinct ?emailCc;separator=",") as ?emailCc)
     (group_concat(distinct ?emailBcc;separator=",") as ?emailBcc)
@@ -36,6 +37,10 @@ async function fetchEmails(mailboxURI, folderName) {
       ?email nmo:messageSubject ?messageSubject.
       ?email nmo:messageFrom ?messageFrom.
       ?email nmo:emailTo ?emailTo.
+
+      BIND('' as ?defaultReplyTo)
+      OPTIONAL {?email nmo:messageReplyTo ?optionalReplyTo}.
+      BIND(coalesce(?optionalReplyTo, ?defaultReplyTo) as ?replyTo).
 
       BIND(${sparqlEscapeInt(0)} as ?defaultRetries).
       OPTIONAL {?email task:numberOfRetries ?optionalRetries}.
