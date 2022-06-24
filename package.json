@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "@azure/identity": "^2.0.4",
-    "@lblod/mu-auth-sudo": "^0.2.0",
+    "@lblod/mu-auth-sudo": "^0.6.0-rc.1",
     "@microsoft/microsoft-graph-client": "^3.0.2",
     "cron": "^1.8.2",
     "isomorphic-fetch": "^3.0.0",
