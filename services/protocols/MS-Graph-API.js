@@ -183,10 +183,11 @@ async function _generateMsGraphApiEmailProperties(email) {
   const attachmentsData = await fetchAttachmentsForEmail(email.email);
   for (const attachment of attachmentsData) {
     const contentBytes = fs.readFileSync(attachment.path);
+    const base64Encoded = contentBytes.toString('base64');
 
     const attachmentData = {
       "@odata.type": "#microsoft.graph.fileAttachment",
-      contentBytes: contentBytes,
+      contentBytes: base64Encoded,
     };
 
     if (attachment.filename) {
