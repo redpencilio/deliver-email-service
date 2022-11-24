@@ -3,7 +3,7 @@ pipeline:
     image: plugins/docker
     settings:
       repo: "${CI_REPO_OWNER%%io}/${CI_REPO_NAME}"
-      tags: ${CI_REPO_TAG##v} # strips v from the tag
+      tags: "${CI_COMMIT_TAG##v}"
     secrets: [docker_username, docker_password]
     when:
       event: tag
