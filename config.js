@@ -1,6 +1,7 @@
 import { ClientSecretCredential } from "@azure/identity";
 import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials";
 
+const NODE_ENV = process.env.NODE_ENV;
 const MAILBOX_URI = process.env.MAILBOX_URI;
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
 const FROM_NAME = process.env.FROM_NAME || '';
@@ -120,5 +121,6 @@ export {
   PORT,
   NODE_MAILER_SERVICES,
   MS_GRAPH_API_AUTH_PROVIDER,
-  MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME
+  MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME,
+  NODE_ENV,
 };
