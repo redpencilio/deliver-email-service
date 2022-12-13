@@ -1,10 +1,11 @@
 import fs from "fs";
-import { Client } from "@microsoft/microsoft-graph-client";
+import { Client, StreamUpload, LargeFileUploadTask } from "@microsoft/microsoft-graph-client";
 import "isomorphic-fetch";
 import moveEmailToFolder from "../../queries/move-email-to-folder";
 import ensureSentDate from "../../utils/ensure-sent-date";
 import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import {
+  LOG_MS_GRAPH_API_REQUESTS,
   EMAIL_ADDRESS,
   MAILBOX_URI,
   MS_GRAPH_API_AUTH_PROVIDER,
@@ -51,7 +52,9 @@ async function _sendMail(email, count) {
   await sendOrRetry(async () => {
     const client = Client.initWithMiddleware({
       authProvider: MS_GRAPH_API_AUTH_PROVIDER,
+      debugLogging: LOG_MS_GRAPH_API_REQUESTS,
     });
+
 
     const mailProperties = await _generateMsGraphApiEmailProperties(email);
 
@@ -72,6 +75,9 @@ async function _sendMail(email, count) {
       userPrincipalName,
       mailProperties
     );
+
+    // Add attachments
+    await _addAttachmentsToEmail(client, userPrincipalName, immutableId, email.email);
 
     // Send draft
     await _sendDraftEmail(client, userPrincipalName, immutableId);
@@ -179,27 +185,6 @@ async function _getSentEmail(
 }
 
 async function _generateMsGraphApiEmailProperties(email) {
-  const attachments = [];
-  const attachmentsData = await fetchAttachmentsForEmail(email.email);
-  for (const attachment of attachmentsData) {
-    const contentBytes = fs.readFileSync(attachment.path);
-    const base64Encoded = contentBytes.toString('base64');
-
-    const attachmentData = {
-      "@odata.type": "#microsoft.graph.fileAttachment",
-      contentBytes: base64Encoded,
-    };
-
-    if (attachment.filename) {
-      attachmentData.name = attachment.filename;
-    }
-    if (attachment.contentType) {
-      attachmentData.contentType = attachment.contentType;
-    }
-
-    attachments.push(attachmentData);
-  }
-
   const body = {};
   if (email.htmlMessageContent) {
     body.contentType = "HTML";
@@ -235,10 +220,68 @@ async function _generateMsGraphApiEmailProperties(email) {
     replyTo: splitEmailString(email.replyTo),
     subject: email.messageSubject,
     body: body,
-    attachments: attachments,
   };
 
   return mailProperties;
+}
+
+async function _addAttachmentsToEmail(client, userPrincipalName, immutableId, emailUri) {
+  const ATTACHMENT_CUTOFF_SIZE = 3 * 1000000;
+  const ATTACHMENT_MAX_SIZE = 150 * 1000000;
+
+  const attachments = await fetchAttachmentsForEmail(emailUri);
+  for (const attachment of attachments) {
+    const fileStats = fs.statSync(attachment.path);
+    const fileSize = fileStats.size;
+    const fileName = attachment.filename ?? 'Attachment';
+
+    // Files smaller than 3MB in size can be attached directly to a message
+    // Larger files must be uploaded via an uploadSession
+    if (fileSize < ATTACHMENT_CUTOFF_SIZE) {
+      const contentBytes = fs.readFileSync(attachment.path);
+      const base64Encoded = contentBytes.toString('base64');
+      const attachmentData = {
+        "@odata.type": "#microsoft.graph.fileAttachment",
+        contentBytes: base64Encoded,
+        name: fileName,
+      };
+      if (attachment.contentType) {
+        attachmentData.contentType = attachment.contentType;
+      }
+      await client
+        .api(`/users/${userPrincipalName}/mailFolders/sentitems/messages/${immutableId}/attachments`)
+        .post(attachmentData);
+    } else if (fileSize < ATTACHMENT_MAX_SIZE) {
+      const uploadSessionPayload = {
+        AttachmentItem: {
+          attachmentType: 'file',
+          name: fileName,
+          size: fileSize,
+        }
+      }
+      if (attachment.contentType) {
+        uploadSessionPayload.AttachmentItem.contentType = attachment.contentType;
+      }
+      const uploadSession = await LargeFileUploadTask.createUploadSession(
+        client,
+        `/users/${userPrincipalName}/mailFolders/sentitems/messages/${immutableId}/attachments/createUploadSession`,
+        uploadSessionPayload,
+      );
+      const readStream = fs.createReadStream(attachment.path);
+      const fileObject = new StreamUpload(readStream, fileName, fileSize);
+      const options = {
+        rangeSize: 327680,
+        uploadEventHandlers: {
+          progress: (range) => { console.info(`Progress uploading attachment <${attachment.attachment}>. Bytes: [${range.minValue}, ${range.maxValue}]`) }
+        },
+      };
+      const uploadTask = new LargeFileUploadTask(client, fileObject, uploadSession, options);
+      await uploadTask.upload();
+    } else {
+      console.warn(`Attachment <${attachment.attachment}> for email <${emailUri}> is too large to be sent as attachment. File size (in bytes): ${fileStats.size}`);
+    }
+
+  }
 }
 
 export default sendMSGraphAPI;
