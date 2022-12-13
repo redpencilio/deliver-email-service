@@ -51,7 +51,9 @@ deliver-email-service:
 ## Attachments
 
 Attachments are linked through  `nmo:hasAttachment` property on the email. 
-The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service)
+The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service).
+
+Note that when using the Graph API to send attachments there's a hard limit of 150 MB per file. The service won't attach larger files to emails. Other size restrictions apply to the total size of the email, these based on the mail provider's settings. In general, 35 MB is the max total size (i.e. the sum size of all the attachments and the email itself) for emails sent via the Graph API
 
 # Example Structure
 
