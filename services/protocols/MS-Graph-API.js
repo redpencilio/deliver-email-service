@@ -52,7 +52,7 @@ async function _sendMail(email, count) {
   await sendOrRetry(async () => {
     const client = Client.initWithMiddleware({
       authProvider: MS_GRAPH_API_AUTH_PROVIDER,
-      debugLogging: LOG_MS_GRAPH_API_REQUETS,
+      debugLogging: LOG_MS_GRAPH_API_REQUESTS,
     });
 
 
