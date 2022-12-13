@@ -1,7 +1,6 @@
 import { ClientSecretCredential } from "@azure/identity";
 import { TokenCredentialAuthenticationProvider } from "@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials";
 
-const NODE_ENV = process.env.NODE_ENV;
 const MAILBOX_URI = process.env.MAILBOX_URI;
 const EMAIL_PROTOCOL = process.env.EMAIL_PROTOCOL || 'smtp';
 const FROM_NAME = process.env.FROM_NAME || '';
@@ -23,6 +22,7 @@ const MS_GRAPH_API_CLIENT_ID = process.env.MS_GRAPH_API_CLIENT_ID;
 const MS_GRAPH_API_TENANT_ID = process.env.MS_GRAPH_API_TENANT_ID;
 const MS_GRAPH_API_CLIENT_SECRET = process.env.MS_GRAPH_API_CLIENT_SECRET;
 const MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME = process.env.MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME || 10000;
+const LOG_MS_GRAPH_API_REQUESTS = ["true", "yes", "1", "on"].includes(process.env.LOG_MS_GRAPH_API_REQUESTS);
 
 let MS_GRAPH_API_CREDENTIAL;
 let MS_GRAPH_API_AUTH_PROVIDER;
@@ -122,5 +122,5 @@ export {
   NODE_MAILER_SERVICES,
   MS_GRAPH_API_AUTH_PROVIDER,
   MS_GRAPH_API_EMAIL_RETRIEVE_WAIT_TIME,
-  NODE_ENV,
+  LOG_MS_GRAPH_API_REQUESTS,
 };

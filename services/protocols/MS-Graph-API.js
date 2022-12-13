@@ -5,7 +5,7 @@ import moveEmailToFolder from "../../queries/move-email-to-folder";
 import ensureSentDate from "../../utils/ensure-sent-date";
 import fetchAttachmentsForEmail from "../../queries/fetch-attachments-for-email";
 import {
-  NODE_ENV,
+  LOG_MS_GRAPH_API_REQUESTS,
   EMAIL_ADDRESS,
   MAILBOX_URI,
   MS_GRAPH_API_AUTH_PROVIDER,
@@ -52,7 +52,7 @@ async function _sendMail(email, count) {
   await sendOrRetry(async () => {
     const client = Client.initWithMiddleware({
       authProvider: MS_GRAPH_API_AUTH_PROVIDER,
-      debugLogging: NODE_ENV === "development",
+      debugLogging: LOG_MS_GRAPH_API_REQUETS,
     });
 
 

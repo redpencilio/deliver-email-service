@@ -128,6 +128,7 @@ The following environment variables can be added to your docker-compose file. Yo
 | ENV  | Description | default | required |
 |---|---|---|---|
 | NODE_ENV  | Choose your node environment. options: "production" or "development"   | "production" | |
+| LOG_MS_GRAPH_API_REQUESTS | whether to log all the requests sent to the Microsoft Graph API | false |
 
 </details>
 
