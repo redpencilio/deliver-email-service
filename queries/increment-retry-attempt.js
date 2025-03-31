@@ -10,7 +10,7 @@ import { sparqlEscapeUri, sparqlEscapeInt } from 'mu';
  */
 async function incrementRetryAttempt(email) {
 
-  const incrementedAttempt = parseInt(email.numberOfRetries || 0) + 1;
+  const incrementedAttempt = (parseInt(email.numberOfRetries) || 0) + 1;
 
   const result = await query(`
     PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
