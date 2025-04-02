@@ -88,4 +88,4 @@ typings/
 .dynamodb/
 
 # package-lock.json gives many merge conflicts in practice, hence we ignore it
-package-lock.json
+# package-lock.json
