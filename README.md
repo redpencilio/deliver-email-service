@@ -29,7 +29,7 @@ To use the service add the following to your docker-compose.yml file
 ```yaml
 deliver-email-service:
     image: redpencil/deliver-email-service:latest
-    environment: 
+    environment:
       MAILBOX_URI: 'http://data.lblod.info/id/mailboxes/1'
 ```
 
@@ -50,7 +50,7 @@ deliver-email-service:
 
 ## Attachments
 
-Attachments are linked through  `nmo:hasAttachment` property on the email. 
+Attachments are linked through  `nmo:hasAttachment` property on the email.
 The model of the attachment itself is based on [NEPOMUK](http://oscaf.sourceforge.net/nmo.html#nmo:hasAttachment) and the conventions used for the [mu-semtech/file-service](https://github.com/mu-semtech/file-service).
 
 Note that when using the Graph API to send attachments there's a hard limit of 150 MB per file. The service won't attach larger files to emails. Other size restrictions apply to the total size of the email, these based on the mail provider's settings. In general, 35 MB is the max total size (i.e. the sum size of all the attachments and the email itself) for emails sent via the Graph API
@@ -115,8 +115,8 @@ The following environment variables can be added to your docker-compose file. Yo
 | EMAIL_PASSWORD | Password from sender (api-key if service is SendGrid)  | null | unless "test"  |
 | ERROR_LOGS_GRAPH | Graph where your error logs will be stored | "http://mu.semte.ch/graphs/public" | |
 | LOG_ERRORS | If true, will log the error message in the database when an email was send but returned an error | false | |
-| HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
-| PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
+| EMAIL_HOST | Is the hostname or IP address to connect to.  | null | unless "test" |
+| EMAIL_PORT | is the port to connect to (defaults to 587 if "SECURE_CONNECTION" is false or 465 if true)  | null |
 | MS_GRAPH_API_CLIENT_ID | Client (or Application) ID of the Microsoft App that will be used to connect with the Graph API | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
 | MS_GRAPH_API_TENANT_ID | Tenant (or Directory) ID of the tenant/Active Directory that hosts the email accounts we will use for sending | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
 | MS_GRAPH_API_CLIENT_SECRET | Client secret value of the Microsoft App | null | if `EMAIL_PROTOCOL="MS_Graph_API"` |
@@ -146,7 +146,7 @@ This will show you how to setup a development environment so you can take advant
 
 <details>
  <summary>Backend</summary>
- 
+
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
@@ -154,7 +154,7 @@ If you already have a backend you want to use for development then you can ignor
 
 <details>
  <summary>Docker-compose</summary>
- 
+
 As the image has been build using the [mu-javascript-template](https://hub.docker.com/r/semtech/mu-javascript-template), you will be able to setup a development environment with chrome debugging. To get started quickly, change the deliver-email-service in your docker-compose file to this:
 
 ```yaml
@@ -193,7 +193,7 @@ Testing environment will create a temporary ethereal mailbox where you can inspe
 
 <details>
  <summary>Backend</summary>
- 
+
 If you already have a backend you want to use for development then you can ignore this, otherwise we have a development backend available that is already configured and has the example structure migrations file to get you up and running quickly. Follow the readme file of the following repo:
 
 [App-deliver-email](https://github.com/aatauil/app-deliver-email)
@@ -201,7 +201,7 @@ If you already have a backend you want to use for development then you can ignor
 
 <details>
  <summary>Docker-compose</summary>
- 
+
 You can easily inspect the mails by changing the WELL_KNOWN_SERVICE in your docker-compose file to "test"
 ```yaml
   deliver-email-service:
@@ -237,9 +237,9 @@ Returns **500 Bad Request** if something unexpected went wrong while initiating 
 
 <details>
  <summary>Manually triggering the service</summary>
- 
+
  Add the following snippet to your dispatcher file.
- 
+
  ```ruby
   post "/email-delivery/*path" do
     Proxy.forward conn, path, "http://deliver-email-service/email-delivery/"
@@ -288,7 +288,7 @@ INSERT DATA {
 
 <details>
  <summary>Tracking mails</summary>
- 
+
  ```
 
 PREFIX nmo: <http://www.semanticdesktop.org/ontologies/2007/03/22/nmo#>
