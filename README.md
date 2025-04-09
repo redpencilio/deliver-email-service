@@ -99,6 +99,9 @@ The following environment variables can be added to your docker-compose file. Yo
 <details>
  <summary>Emails</summary>
 
+ > [!WARNING]
+ > The `EMAIL_HOST` and `EMAIL_PORT` environment variables were previously known as `HOST` and `PORT` but the javascript-template also uses those and attempted to start an express server there. We therefore had to rename these environment variables.
+
 | ENV  | Description | default | required |
 |---|---|---|---|
 | EMAIL_CRON_PATTERN | Pattern describing when a new cron job should trigger. Default: every second of every minute of every first hour of the day. Useful: [cron-pattern-generator](https://crontab.guru/#*/2_*_*_*_*) & [used cron library](https://www.npmjs.com/package/cron#available-cron-patterns). Note that this library uses **6 fields** as opposed to 5, i.e. it has granularity up to 1 second. | * * 1 * * * |
