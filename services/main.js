@@ -46,7 +46,7 @@ async function _checkForLostEmails() {
     const modifiedDate = new Date(email.sentDate);
     const currentDate = new Date();
     const timeout =
-      (currentDate - modifiedDate) / (1000 * 60 * 60) <= HOURS_SENDING_TIMEOUT;
+      (currentDate - modifiedDate) / (1000 * 60 * 60) >= HOURS_SENDING_TIMEOUT;
     if (timeout && email.numberOfRetries >= MAX_RETRY_ATTEMPTS) {
       await moveEmailToFolder(MAILBOX_URI, email, "failbox");
       console.log(
