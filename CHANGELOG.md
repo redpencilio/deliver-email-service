@@ -11,3 +11,6 @@
 - Improve int parsing for email retry counts.
 - Update woodpecker configuration.
 - Remove `.rc` tag from `mu-auth-sudo` in `package.json`
+
+## 0.2.0
+- Add Error logging capability
